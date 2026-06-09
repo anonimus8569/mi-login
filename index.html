@@ -3,433 +3,450 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>KO-ffee — Specialty Coffee & Dojo</title>
+<title>KO-ffee — Specialty Coffee & Taekwondo</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --obsidian:#0d0d0d;
-  --ink:#1a1a1a;
-  --graphite:#2a2a2a;
-  --steel:#3d3d3d;
-  --linen:#f5f2ed;
-  --bone:#ece8e1;
-  --mist:#d4cfc8;
-  --muted:#8a8480;
-  --crimson:#c0162c;
-  --crimson-dark:#8b0e1f;
-  --crimson-glow:rgba(192,22,44,0.15);
+  --obsidian:#0c0c0c;
+  --ink:#181818;
+  --graphite:#242424;
+  --steel:#303030;
+  --carbon:#3a3a3a;
+  --linen:#f4f1ec;
+  --bone:#ece8e0;
+  --mist:#d8d2c8;
+  --muted:#8a847c;
+  --crimson:#c01428;
+  --crimson-dark:#8a0e1c;
+  --crimson-glow:rgba(192,20,40,0.18);
   --white:#ffffff;
-  --gold:#b8952a;
-  --green:#2d6a4f;
-  --border:#2f2f2f;
-  --border-light:#e0dbd4;
+  --gold:#c49a28;
+  --border-dark:#2a2a2a;
+  --border-light:#e2dbd0;
+  --success:#2a7a50;
+  --warning:#b8831a;
 }
 body{font-family:'Inter',sans-serif;background:var(--linen);color:var(--ink);min-height:100vh}
-h1,h2,h3,.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
-.serif{font-family:'Noto Serif JP',serif}
 
-/* ════════════════════════════════════
-   LANDING PAGE
-════════════════════════════════════ */
-.landing{background:var(--obsidian);min-height:100vh;color:var(--white)}
+/* ── BELT COLORS ── */
+:root{
+  --belt-white:#e8e8e8;
+  --belt-yellow:#e8c830;
+  --belt-green:#2d7a3a;
+  --belt-blue:#1a4a9a;
+  --belt-red:#c01428;
+  --belt-black:#1a1a1a;
+}
 
-/* hero */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,rgba(192,22,44,0.12) 0%,transparent 70%)}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.hero-kanji{font-family:'Noto Serif JP',serif;font-size:120px;font-weight:300;color:rgba(255,255,255,0.04);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1;white-space:nowrap}
-.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(192,22,44,0.4);border-radius:2px;padding:5px 14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--crimson);margin-bottom:1.5rem}
-.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,12vw,130px);letter-spacing:4px;line-height:0.9;margin-bottom:1rem;position:relative;z-index:1}
-.hero-title span{color:var(--crimson)}
-.hero-sub{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;font-weight:300}
-.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
-.btn-hero{padding:0.85rem 2.5rem;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif}
-.btn-hero-primary{background:var(--crimson);color:var(--white)}
-.btn-hero-primary:hover{background:var(--crimson-dark)}
-.btn-hero-outline{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.2)}
-.btn-hero-outline:hover{border-color:var(--white);background:rgba(255,255,255,0.05)}
-
-/* nav landing */
-.land-nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.land-nav-brand{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--white)}
-.land-nav-brand span{color:var(--crimson)}
+/* ══════════════════════════════
+   LANDING
+══════════════════════════════ */
+.landing{background:var(--obsidian);color:var(--white);min-height:100vh}
+.land-nav{position:fixed;top:0;left:0;right:0;z-index:50;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;background:rgba(12,12,12,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border-dark)}
+.land-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:var(--white)}
+.land-logo span{color:var(--crimson)}
 .land-nav-links{display:flex;gap:2rem}
-.land-nav-links a{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.2s}
+.land-nav-links a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:color .2s}
 .land-nav-links a:hover{color:var(--white)}
-.btn-nav-login{padding:0.5rem 1.5rem;background:var(--crimson);color:var(--white);border:none;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s}
-.btn-nav-login:hover{background:var(--crimson-dark)}
-
-/* sections landing */
-.land-section{padding:6rem 3rem;max-width:1200px;margin:0 auto}
-.section-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--crimson);margin-bottom:1rem}
-.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5vw,68px);letter-spacing:2px;line-height:0.95;margin-bottom:1.5rem;color:var(--white)}
-.section-body{font-size:15px;color:var(--muted);font-weight:300;line-height:1.8;max-width:560px}
-
-/* belt levels */
-.belts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-top:2.5rem}
-.belt-card{border:1px solid var(--border);border-radius:4px;padding:1.25rem;background:var(--graphite);text-align:center;transition:border-color 0.2s}
-.belt-card:hover{border-color:var(--crimson)}
-.belt-icon{font-size:28px;margin-bottom:8px}
-.belt-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--white)}
-.belt-pts{font-size:11px;color:var(--muted);margin-top:4px}
-.belt-reward{font-size:11px;color:var(--crimson);margin-top:6px;font-weight:500}
-
-/* info section */
+.btn-nav{padding:.45rem 1.4rem;background:var(--crimson);color:var(--white);border:none;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+.btn-nav:hover{background:var(--crimson-dark)}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 55%,rgba(192,20,40,.1) 0%,transparent 65%)}
+.hero-kanji{font-family:'Noto Serif JP',serif;font-size:160px;font-weight:300;color:rgba(255,255,255,.03);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1}
+.hero-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--crimson);margin-bottom:1.25rem;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:30px;height:1px;background:var(--crimson);opacity:.5}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,14vw,148px);letter-spacing:5px;line-height:.88;margin-bottom:1rem;position:relative;z-index:1}
+.hero-title span{color:var(--crimson)}
+.hero-sub{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-hero-p{padding:.85rem 2.5rem;background:var(--crimson);color:var(--white);border:none;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+.btn-hero-p:hover{background:var(--crimson-dark)}
+.btn-hero-o{padding:.85rem 2.5rem;background:transparent;color:var(--white);border:1px solid rgba(255,255,255,.2);border-radius:2px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn-hero-o:hover{border-color:var(--white);background:rgba(255,255,255,.05)}
+.land-section{padding:5rem 3rem;max-width:1180px;margin:0 auto}
+.section-eye{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--crimson);margin-bottom:.75rem}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(38px,5vw,64px);letter-spacing:2px;line-height:.95;color:var(--white);margin-bottom:1.25rem}
+.section-body{font-size:14px;color:var(--muted);font-weight:300;line-height:1.85;max-width:540px}
+.land-divider{border:none;border-top:1px solid var(--border-dark);margin:0 3rem}
+/* belt cards */
+.belts-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;margin-top:2rem}
+@media(max-width:900px){.belts-grid{grid-template-columns:repeat(3,1fr)}}
+.belt-card{border:1px solid var(--border-dark);border-radius:3px;padding:1rem;background:var(--graphite);text-align:center;transition:border-color .2s,transform .15s}
+.belt-card:hover{transform:translateY(-2px)}
+.belt-stripe{height:6px;border-radius:2px;margin:0 auto 10px;width:50px}
+.belt-card-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--white)}
+.belt-card-pts{font-size:10px;color:var(--muted);margin-top:3px}
+.belt-card-reward{font-size:10px;color:var(--crimson);margin-top:6px;font-weight:500}
+/* info */
 .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
 @media(max-width:768px){.info-grid{grid-template-columns:1fr}}
-.info-block{margin-bottom:2rem}
-.info-block-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--crimson);margin-bottom:0.5rem}
-.info-block-value{font-size:15px;color:var(--white);font-weight:300;line-height:1.7}
-.map-placeholder{background:var(--graphite);border:1px solid var(--border);border-radius:4px;height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.75rem;color:var(--muted)}
-.map-ph-icon{font-size:36px;opacity:0.4}
-.map-ph-text{font-size:13px;letter-spacing:1px}
-.hours-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:14px}
+.info-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--crimson);margin-bottom:.4rem}
+.info-val{font-size:14px;color:var(--white);font-weight:300;line-height:1.75;margin-bottom:1.5rem}
+.hours-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border-dark);font-size:13px}
 .hours-row:last-child{border-bottom:none}
 .hours-day{color:var(--muted);font-weight:300}
-.hours-time{color:var(--white);font-weight:400}
-.social-links{display:flex;gap:1rem;margin-top:1.5rem}
-.social-btn{width:40px;height:40px;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:border-color 0.2s;text-decoration:none}
+.hours-time{color:var(--white)}
+.map-ph{background:var(--graphite);border:1px solid var(--border-dark);border-radius:3px;height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--muted)}
+.map-ph-icon{font-size:32px;opacity:.4}
+.map-ph-txt{font-size:12px;letter-spacing:.5px}
+.social-row{display:flex;gap:.75rem;margin-top:1.25rem}
+.social-btn{width:38px;height:38px;border:1px solid var(--border-dark);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:border-color .2s}
 .social-btn:hover{border-color:var(--crimson)}
+/* features */
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+@media(max-width:900px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+.feat-card{border:1px solid var(--border-dark);border-radius:3px;padding:1.25rem;background:var(--graphite)}
+.feat-icon{font-size:26px;margin-bottom:.75rem}
+.feat-name{font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px}
+.feat-desc{font-size:11px;color:var(--muted);font-weight:300;line-height:1.5}
 
-/* divider */
-.land-divider{border:none;border-top:1px solid var(--border);margin:0 3rem}
-
-/* ════════════════════════════════════
+/* ══════════════════════════════
    AUTH
-════════════════════════════════════ */
+══════════════════════════════ */
 .auth-page{min-height:100vh;display:flex;background:var(--obsidian)}
-.auth-left{display:none;width:45%;background:var(--graphite);border-right:1px solid var(--border);flex-direction:column;justify-content:center;align-items:center;padding:3rem;text-align:center;position:relative;overflow:hidden}
-@media(min-width:900px){.auth-left{display:flex}}
-.auth-bg-kanji{font-family:'Noto Serif JP',serif;font-size:200px;font-weight:300;color:rgba(255,255,255,0.025);position:absolute;line-height:1;user-select:none}
-.auth-quote{font-family:'Noto Serif JP',serif;font-size:20px;font-style:italic;color:rgba(255,255,255,0.6);line-height:1.6;position:relative;z-index:1;margin-bottom:1rem}
-.auth-quote-attr{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.auth-left{display:none;width:44%;flex-direction:column;justify-content:center;align-items:center;padding:3rem;text-align:center;position:relative;overflow:hidden;background:var(--graphite);border-right:1px solid var(--border-dark)}
+@media(min-width:880px){.auth-left{display:flex}}
+.auth-bg-kanji{font-family:'Noto Serif JP',serif;font-size:220px;font-weight:300;color:rgba(255,255,255,.025);position:absolute;line-height:1;user-select:none}
+.auth-quote{font-family:'Noto Serif JP',serif;font-size:19px;font-style:italic;color:rgba(255,255,255,.55);line-height:1.65;position:relative;z-index:1}
+.auth-quote-sub{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:.75rem}
 .auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem}
-.auth-card{background:var(--graphite);border:1px solid var(--border);border-radius:4px;padding:2.5rem 2.75rem;width:100%;max-width:420px;position:relative}
+.auth-card{background:var(--graphite);border:1px solid var(--border-dark);border-radius:4px;padding:2.5rem 2.75rem;width:100%;max-width:420px;position:relative}
 .auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--crimson);border-radius:4px 4px 0 0}
-.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
-.auth-brand-icon{width:38px;height:38px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
+.auth-brand-icon{width:38px;height:38px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
 .auth-brand-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white)}
 .auth-brand-name span{color:var(--crimson)}
-.auth-brand-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
-.auth-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--white);margin-bottom:0.25rem}
+.auth-brand-tag{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.auth-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--white);margin-bottom:.2rem}
 .auth-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;font-weight:300}
-.form-group{margin-bottom:0.9rem}
-.form-label{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.35rem}
-.form-input{width:100%;padding:0.65rem 0.85rem;border:1px solid var(--border);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--white);background:var(--steel);outline:none;transition:border-color 0.2s}
+.form-group{margin-bottom:.85rem}
+.form-label{display:block;font-size:10px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.35rem}
+.form-input{width:100%;padding:.65rem .85rem;border:1px solid var(--border-dark);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--white);background:var(--steel);outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--crimson)}
-.form-input::placeholder{color:#555}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-.btn-primary{width:100%;padding:0.8rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;transition:background 0.2s,transform 0.1s}
-.btn-primary:hover{background:var(--crimson-dark)}
-.btn-primary:active{transform:scale(0.99)}
-.btn-primary:disabled{background:#444;cursor:not-allowed;color:#777}
+.form-input::placeholder{color:#484848}
+.form-input.light{color:var(--ink);background:var(--white);border-color:var(--border-light)}
+.form-input.light:focus{border-color:var(--crimson)}
+.form-input.light::placeholder{color:#bbb}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.btn-p{width:100%;padding:.8rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:background .2s,transform .1s}
+.btn-p:hover{background:var(--crimson-dark)}
+.btn-p:active{transform:scale(.99)}
+.btn-p:disabled{background:#333;color:#555;cursor:not-allowed}
 .link-row{text-align:center;font-size:13px;color:var(--muted);margin-top:1.25rem;font-weight:300}
-.link-btn{background:none;border:none;color:var(--crimson);font-weight:500;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px}
-.alert{padding:0.7rem 0.9rem;border-radius:3px;font-size:13px;margin-bottom:1rem;font-weight:300}
-.alert-error{background:rgba(192,22,44,0.15);color:#ff6b7a;border-left:3px solid var(--crimson)}
-.alert-success{background:rgba(45,106,79,0.15);color:#6fcf97;border-left:3px solid var(--green)}
-.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+.link-btn{background:none;border:none;color:var(--crimson);font-weight:600;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px}
+.alert-err{background:rgba(192,20,40,.15);color:#ff7080;border-left:3px solid var(--crimson);padding:.7rem .9rem;border-radius:3px;font-size:13px;margin-bottom:1rem;font-weight:300}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
 /* staff toggle */
-.staff-toggle{border:1px solid var(--border);border-radius:3px;padding:0.85rem 1rem;background:var(--steel);margin-bottom:0.9rem;transition:border-color 0.2s}
-.staff-toggle.active{border-color:var(--crimson);background:rgba(192,22,44,0.08)}
-.staff-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.staff-toggle-label{font-size:13px;color:var(--white);font-weight:400;display:flex;align-items:center;gap:8px}
-.staff-toggle-icon{font-size:16px}
-.toggle-switch{width:38px;height:20px;background:var(--border);border-radius:10px;position:relative;transition:background 0.2s;flex-shrink:0}
-.toggle-switch.on{background:var(--crimson)}
-.toggle-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--white);border-radius:50%;transition:transform 0.2s}
-.toggle-switch.on .toggle-knob{transform:translateX(18px)}
-.staff-code-wrap{margin-top:0.75rem;overflow:hidden}
+.staff-box{border:1px solid var(--border-dark);border-radius:3px;padding:.85rem 1rem;background:var(--steel);margin-bottom:.85rem;transition:border-color .2s}
+.staff-box.on{border-color:rgba(192,20,40,.5);background:rgba(192,20,40,.06)}
+.staff-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
+.staff-lbl{font-size:13px;color:var(--white);display:flex;align-items:center;gap:8px}
+.sw{width:38px;height:20px;background:var(--border-dark);border-radius:10px;position:relative;transition:background .2s;flex-shrink:0}
+.sw.on{background:var(--crimson)}
+.sw-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--white);border-radius:50%;transition:transform .2s}
+.sw.on .sw-knob{transform:translateX(18px)}
 
-/* ════════════════════════════════════
-   APP SHELL (DASHBOARD)
-════════════════════════════════════ */
-.app-shell{display:flex;min-height:100vh;background:var(--linen)}
-.sidebar{width:230px;flex-shrink:0;background:var(--obsidian);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;height:100vh;z-index:20;border-right:1px solid var(--border)}
-.sb-brand{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
-.sb-brand-icon{width:34px;height:34px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.sb-brand-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white)}
-.sb-brand-name span{color:var(--crimson)}
-.sb-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
-.sb-section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;padding:0.75rem 0.85rem 0.35rem;font-weight:500}
-.nav-btn{display:flex;align-items:center;gap:10px;padding:0.6rem 0.85rem;border-radius:3px;font-size:13px;font-weight:400;color:rgba(255,255,255,0.45);cursor:pointer;transition:all 0.15s;border:none;background:none;font-family:'Inter',sans-serif;width:100%;text-align:left}
-.nav-btn:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}
-.nav-btn.active{background:rgba(192,22,44,0.15);color:var(--crimson)}
-.nav-btn .nb-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
-.sb-footer{padding:1rem;border-top:1px solid var(--border)}
-.sb-user-info{font-size:11px;color:#444;margin-bottom:8px;padding:0 0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sb-user-name{color:rgba(255,255,255,0.5);font-weight:500}
-.btn-signout{width:100%;padding:0.5rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:3px;color:rgba(255,255,255,0.35);font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s}
-.btn-signout:hover{border-color:var(--crimson);color:var(--crimson)}
-.main{margin-left:230px;flex:1;padding:2.5rem;min-height:100vh}
+/* ══════════════════════════════
+   APP SHELL
+══════════════════════════════ */
+.app{display:flex;min-height:100vh}
+.sidebar{width:225px;flex-shrink:0;background:var(--obsidian);border-right:1px solid var(--border-dark);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:20}
+.sb-top{padding:1.35rem 1.2rem;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;gap:9px}
+.sb-icon{width:34px;height:34px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sb-name{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;color:var(--white)}
+.sb-name span{color:var(--crimson)}
+.sb-tag{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.sb-nav{flex:1;padding:.85rem .7rem;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-sec{font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#3a3a3a;padding:.65rem .8rem .3rem;font-weight:600}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:.58rem .8rem;border-radius:3px;font-size:13px;font-weight:400;color:rgba(255,255,255,.38);cursor:pointer;transition:all .15s;border:none;background:none;font-family:'Inter',sans-serif;width:100%;text-align:left;letter-spacing:.2px}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:rgba(255,255,255,.75)}
+.nav-btn.active{background:rgba(192,20,40,.15);color:var(--crimson)}
+.nav-btn .ni{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-foot{padding:1rem;border-top:1px solid var(--border-dark)}
+.sb-user{font-size:11px;color:#3a3a3a;margin-bottom:7px;padding:0 .2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-user strong{color:rgba(255,255,255,.45)}
+.btn-logout{width:100%;padding:.48rem;background:rgba(255,255,255,.04);border:1px solid var(--border-dark);border-radius:3px;color:rgba(255,255,255,.3);font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.4px}
+.btn-logout:hover{border-color:var(--crimson);color:var(--crimson)}
+.main{margin-left:225px;flex:1;padding:2.5rem;min-height:100vh;background:var(--linen)}
+.main.dark{background:var(--ink)}
 
-/* STAFF sidebar */
-.app-shell.staff-mode .sidebar{background:#0a0a0a;border-right-color:rgba(192,22,44,0.3)}
-.staff-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(192,22,44,0.15);border:1px solid rgba(192,22,44,0.3);border-radius:2px;padding:2px 8px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:8px}
+/* page header */
+.page-hd{margin-bottom:1.75rem}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--ink);line-height:1}
+.page-title.w{color:var(--white)}
+.page-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:3px}
 
-/* page headers */
-.page-hd{margin-bottom:2rem}
-.page-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--ink);line-height:1}
-.page-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:4px}
-.page-title.light{color:var(--white)}
-.page-sub.light{color:var(--muted)}
-
-/* cards/panels */
-.panel{background:var(--white);border:1px solid var(--border-light);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
-.panel-dark{background:var(--graphite);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
-.panel-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.02)}
-.panel-hd-dark{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.panel-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--ink)}
-.panel-title-light{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--white)}
-.badge{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:2px;font-weight:600}
-.badge-red{background:rgba(192,22,44,0.12);color:var(--crimson)}
-.badge-green{background:rgba(45,106,79,0.12);color:var(--green)}
-.badge-gold{background:rgba(184,149,42,0.12);color:var(--gold)}
-.badge-muted{background:rgba(0,0,0,0.06);color:var(--muted)}
+/* panels */
+.panel{background:var(--white);border:1px solid var(--border-light);border-radius:4px;overflow:hidden;margin-bottom:1.25rem}
+.panel-dark{background:var(--graphite);border:1px solid var(--border-dark);border-radius:4px;overflow:hidden;margin-bottom:1.25rem}
+.ph{padding:.9rem 1.4rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.02)}
+.ph-dark{padding:.9rem 1.4rem;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between}
+.pt{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--ink)}
+.pt.w{color:var(--white)}
+.badge{font-size:9.5px;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:2px;font-weight:700}
+.br{background:rgba(192,20,40,.1);color:var(--crimson)}
+.bg{background:rgba(42,122,80,.1);color:var(--success)}
+.bgo{background:rgba(184,131,26,.1);color:var(--warning)}
+.bm{background:rgba(0,0,0,.06);color:var(--muted)}
 
 /* stats */
-.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
-.stat-box{background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+.stat-box{background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:1.1rem 1.4rem;position:relative;overflow:hidden}
 .stat-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
-.stat-box.s1::after{background:var(--crimson)}
-.stat-box.s2::after{background:var(--green)}
-.stat-box.s3::after{background:var(--gold)}
-.stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--ink);line-height:1}
-.stat-val.accent{color:var(--crimson)}
-.stat-hint{font-size:11px;color:var(--muted);font-weight:300;margin-top:6px}
+.s1::after{background:var(--crimson)} .s2::after{background:var(--success)} .s3::after{background:var(--gold)}
+.sl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px}
+.sv{font-family:'Bebas Neue',sans-serif;font-size:38px;color:var(--ink);line-height:1}
+.sv.red{color:var(--crimson)}
+.sh{font-size:11px;color:var(--muted);font-weight:300;margin-top:5px}
 
 /* belt indicator */
-.belt-indicator{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:0.85rem 1.25rem;margin-bottom:1.5rem}
-.belt-color-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0}
-.belt-info{flex:1}
-.belt-rank{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--ink)}
-.belt-progress-wrap{margin-top:4px}
-.belt-bar{height:4px;background:var(--bone);border-radius:2px;overflow:hidden}
+.belt-ind{display:flex;align-items:center;gap:12px;background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:.8rem 1.2rem;margin-bottom:1.25rem}
+.belt-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0;border:2px solid rgba(0,0,0,.1)}
+.belt-ind-info{flex:1}
+.belt-ind-name{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px;color:var(--ink)}
+.belt-bar{height:5px;background:var(--bone);border-radius:2px;overflow:hidden;margin-top:5px}
 .belt-fill{height:100%;border-radius:2px;transition:width 1s ease}
-.belt-pts-txt{font-size:11px;color:var(--muted);margin-top:3px}
+.belt-pts-txt{font-size:10px;color:var(--muted);margin-top:3px}
 
-/* reservas dashboard */
-.reserva-row{display:flex;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid rgba(0,0,0,0.05);gap:1rem}
-.reserva-row:last-child{border-bottom:none}
-.res-date{text-align:center;min-width:46px}
-.res-day{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--crimson);line-height:1}
-.res-mon{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
-.res-sep{width:1px;height:34px;background:var(--border-light)}
+/* reservas */
+.res-row{display:flex;align-items:center;padding:.9rem 1.4rem;border-bottom:1px solid rgba(0,0,0,.04);gap:1rem}
+.res-row:last-child{border-bottom:none}
+.res-date{text-align:center;min-width:44px}
+.res-day{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--crimson);line-height:1}
+.res-mon{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.res-sep{width:1px;height:32px;background:var(--border-light)}
 .res-info{flex:1}
-.res-name{font-size:14px;color:var(--ink);font-weight:500;margin-bottom:2px}
-.res-detail{font-size:12px;color:var(--muted);font-weight:300}
-.res-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:2px;font-weight:600}
-.rs-confirmada{background:rgba(45,106,79,0.1);color:var(--green)}
-.rs-pendiente{background:rgba(184,149,42,0.1);color:var(--gold)}
+.res-nm{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.res-dt{font-size:11px;color:var(--muted);font-weight:300}
+.res-st{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:2px;font-weight:700}
+.rs-conf{background:rgba(42,122,80,.1);color:var(--success)}
+.rs-pend{background:rgba(184,131,26,.1);color:var(--warning)}
 
-/* pedido row */
-.pedido-row{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.5rem;border-bottom:1px solid rgba(0,0,0,0.05)}
-.pedido-row:last-child{border-bottom:none}
-.ped-left{display:flex;align-items:center;gap:12px}
-.ped-icon{width:36px;height:36px;border-radius:50%;background:var(--bone);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
-.ped-name{font-size:14px;color:var(--ink);font-weight:500;margin-bottom:1px}
-.ped-date{font-size:11px;color:var(--muted);font-weight:300}
-.ped-right{text-align:right}
-.ped-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink)}
-.ped-pts{font-size:10px;color:var(--crimson);font-weight:600;margin-top:1px}
+/* pedidos historial */
+.ped-row{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.4rem;border-bottom:1px solid rgba(0,0,0,.04)}
+.ped-row:last-child{border-bottom:none}
+.ped-l{display:flex;align-items:center;gap:11px}
+.ped-ico{width:34px;height:34px;border-radius:50%;background:var(--bone);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ped-nm{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:1px}
+.ped-dt{font-size:11px;color:var(--muted);font-weight:300}
+.ped-r{text-align:right}
+.ped-pr{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--ink)}
+.ped-pts{font-size:10px;color:var(--crimson);font-weight:700}
 
-/* puntos */
-.pts-body{padding:1.5rem}
-.pts-rate-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(192,22,44,0.08);color:var(--crimson);padding:4px 12px;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:0.5px;margin-bottom:1rem;border:1px solid rgba(192,22,44,0.2)}
-.pts-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:300}
-.pts-bar{height:8px;background:var(--bone);border-radius:4px;overflow:hidden;margin-bottom:0.75rem}
-.pts-fill{height:100%;background:linear-gradient(90deg,var(--crimson),var(--crimson-dark));border-radius:4px;transition:width 1s ease}
+/* puntos section */
+.pts-body{padding:1.4rem}
+.pts-rate{display:inline-flex;align-items:center;gap:6px;background:rgba(192,20,40,.07);color:var(--crimson);padding:4px 12px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:1rem;border:1px solid rgba(192,20,40,.18)}
+.pts-bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:300}
+.pts-bar{height:8px;background:var(--bone);border-radius:4px;overflow:hidden;margin-bottom:.75rem}
+.pts-fill{height:100%;border-radius:4px;transition:width 1s ease}
 .pts-msg{font-size:12px;color:var(--muted);text-align:center;font-weight:300}
-.pts-msg strong{color:var(--crimson);font-weight:600}
+.pts-msg strong{color:var(--crimson);font-weight:700}
 
-/* menú */
-.cat-tabs{display:flex;gap:8px;padding:1rem 1.5rem 0;flex-wrap:wrap}
-.cat-tab{padding:0.4rem 1rem;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border:1.5px solid var(--border-light);background:none;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
+/* ── MENÚ ── */
+.cat-tabs{display:flex;gap:8px;padding:1rem 1.4rem 0;flex-wrap:wrap}
+.cat-tab{padding:.38rem .95rem;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1.5px solid var(--border-light);background:none;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
 .cat-tab.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
-.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;padding:1.5rem}
-.menu-card{border:1px solid var(--border-light);border-radius:4px;overflow:hidden;background:var(--white);transition:box-shadow 0.2s,transform 0.15s}
-.menu-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);transform:translateY(-2px)}
-.menu-emoji{background:var(--bone);height:80px;display:flex;align-items:center;justify-content:center;font-size:36px}
-.menu-body{padding:0.85rem 1rem}
-.menu-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
-.menu-desc{font-size:11px;color:var(--muted);font-weight:300;margin-bottom:0.6rem;line-height:1.4}
-.menu-footer{display:flex;align-items:center;justify-content:space-between}
-.menu-price-wrap{}
-.menu-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink)}
-.menu-pts-hint{font-size:10px;color:var(--crimson);font-weight:600}
-.btn-add{background:var(--ink);color:var(--white);border:none;border-radius:2px;padding:0.4rem 0.85rem;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:background 0.15s}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(196px,1fr));gap:1rem;padding:1.4rem}
+.mc{border:1px solid var(--border-light);border-radius:4px;overflow:hidden;background:var(--white);transition:box-shadow .2s,transform .15s}
+.mc:hover{box-shadow:0 4px 18px rgba(0,0,0,.1);transform:translateY(-2px)}
+.mc-emoji{background:var(--bone);height:76px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.mc-body{padding:.8rem .95rem}
+.mc-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--muted);font-weight:300;margin-bottom:.6rem;line-height:1.45}
+.mc-foot{display:flex;align-items:center;justify-content:space-between}
+.mc-price{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--ink)}
+.mc-pts{font-size:10px;color:var(--crimson);font-weight:700}
+.btn-add{background:var(--ink);color:var(--white);border:none;border-radius:2px;padding:.38rem .8rem;font-size:11px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.4px;cursor:pointer;transition:background .15s}
 .btn-add:hover{background:var(--crimson)}
 
-/* carrito lateral */
-.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;animation:fadeIn 0.2s}
+/* ── CARRITO LATERAL ── */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:100;animation:fadeIn .2s}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.cart-drawer{position:fixed;top:0;right:0;width:380px;height:100vh;background:var(--white);z-index:101;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,0.15);animation:slideLeft 0.3s ease}
-@keyframes slideLeft{from{transform:translateX(100%)}to{transform:translateX(0)}}
-.cart-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
-.cart-hd-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--ink)}
-.btn-close-cart{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px}
-.btn-close-cart:hover{color:var(--ink)}
-.cart-items{flex:1;overflow-y:auto;padding:1rem 1.5rem}
-.cart-item{display:flex;align-items:center;gap:12px;padding:0.75rem 0;border-bottom:1px solid var(--border-light)}
-.cart-item:last-child{border-bottom:none}
-.ci-emoji{font-size:24px;flex-shrink:0}
+.cart-drawer{position:fixed;top:0;right:0;width:375px;height:100vh;background:var(--white);z-index:101;display:flex;flex-direction:column;box-shadow:-6px 0 40px rgba(0,0,0,.18);animation:slideIn .3s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.cart-hd{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.cart-hd-title{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:1px;color:var(--ink)}
+.btn-close{background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);padding:3px;transition:color .15s}
+.btn-close:hover{color:var(--ink)}
+.cart-items{flex:1;overflow-y:auto;padding:1rem 1.4rem}
+.ci{display:flex;align-items:center;gap:11px;padding:.7rem 0;border-bottom:1px solid var(--border-light)}
+.ci:last-child{border-bottom:none}
+.ci-em{font-size:22px;flex-shrink:0}
 .ci-info{flex:1}
-.ci-name{font-size:14px;font-weight:500;color:var(--ink)}
-.ci-price{font-size:12px;color:var(--muted);font-weight:300}
-.ci-qty{display:flex;align-items:center;gap:8px}
-.qty-btn{width:26px;height:26px;border:1px solid var(--border-light);border-radius:2px;background:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all 0.15s;font-family:'Inter',sans-serif}
+.ci-nm{font-size:13px;font-weight:500;color:var(--ink)}
+.ci-pr{font-size:12px;color:var(--muted);font-weight:300}
+.ci-qty{display:flex;align-items:center;gap:7px}
+.qty-btn{width:25px;height:25px;border:1px solid var(--border-light);border-radius:2px;background:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all .15s;font-family:'Inter',sans-serif}
 .qty-btn:hover{border-color:var(--crimson);color:var(--crimson)}
-.qty-num{font-size:14px;font-weight:600;min-width:20px;text-align:center;color:var(--ink)}
-.btn-remove{background:none;border:none;font-size:14px;cursor:pointer;color:var(--muted);padding:4px;transition:color 0.15s}
-.btn-remove:hover{color:var(--crimson)}
-.cart-empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px;font-weight:300}
-.cart-empty-icon{font-size:48px;margin-bottom:1rem;opacity:0.4}
-.cart-footer{padding:1.5rem;border-top:1px solid var(--border-light)}
+.qty-n{font-size:13px;font-weight:700;min-width:18px;text-align:center;color:var(--ink)}
+.btn-rm{background:none;border:none;font-size:13px;cursor:pointer;color:var(--muted);padding:3px;transition:color .15s}
+.btn-rm:hover{color:var(--crimson)}
+.cart-empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:13px;font-weight:300}
+.cart-foot{padding:1.4rem;border-top:1px solid var(--border-light)}
 .cart-totals{margin-bottom:1rem}
 .cart-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:3px 0;font-weight:300}
-.cart-total-line{display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:var(--ink);padding:8px 0;border-top:1px solid var(--border-light);margin-top:4px}
-.cart-pts-earn{background:rgba(192,22,44,0.07);border:1px solid rgba(192,22,44,0.15);border-radius:3px;padding:0.6rem 1rem;font-size:12px;color:var(--crimson);font-weight:600;text-align:center;margin-bottom:1rem}
-.btn-checkout{width:100%;padding:0.85rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.cart-total-line{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:var(--ink);padding:7px 0;border-top:1px solid var(--border-light);margin-top:3px}
+.cart-pts-earn{background:rgba(192,20,40,.06);border:1px solid rgba(192,20,40,.14);border-radius:2px;padding:.55rem .9rem;font-size:12px;color:var(--crimson);font-weight:700;text-align:center;margin-bottom:.9rem}
+.btn-checkout{width:100%;padding:.82rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s}
 .btn-checkout:hover{background:var(--crimson-dark)}
 .btn-checkout:disabled{background:#ccc;cursor:not-allowed}
-
-/* carrito FAB */
-.cart-fab{position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:var(--white);border:none;border-radius:50px;padding:0.85rem 1.75rem;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;transition:background 0.2s;letter-spacing:0.3px}
+/* FAB */
+.cart-fab{position:fixed;bottom:1.75rem;right:1.75rem;background:var(--ink);color:var(--white);border:none;border-radius:50px;padding:.8rem 1.6rem;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;z-index:50;box-shadow:0 6px 28px rgba(0,0,0,.28);display:flex;align-items:center;gap:9px;transition:background .2s}
 .cart-fab:hover{background:var(--crimson)}
-.cart-fab-count{background:var(--crimson);color:var(--white);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.cart-fab-n{background:var(--crimson);color:var(--white);border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
 
-/* checkout / pago */
-.checkout-steps{display:flex;gap:1rem;margin-bottom:2rem}
-.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
-.step-dot.active{border-color:var(--crimson);background:var(--crimson);color:var(--white)}
-.step-dot.done{border-color:var(--green);background:var(--green);color:var(--white)}
-.step-label{font-size:12px;font-weight:500;color:var(--muted);margin-top:5px;letter-spacing:0.5px}
-.step-connector{flex:1;height:2px;background:var(--border-light);margin-top:14px}
-.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
-.pay-method-btn{border:2px solid var(--border-light);border-radius:4px;padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--white)}
-.pay-method-btn:hover{border-color:var(--ink)}
-.pay-method-btn.selected{border-color:var(--crimson);background:rgba(192,22,44,0.04)}
-.pay-method-icon{font-size:28px;margin-bottom:8px}
-.pay-method-name{font-size:13px;font-weight:600;color:var(--ink)}
-.pay-method-desc{font-size:11px;color:var(--muted);margin-top:3px;font-weight:300}
-/* card form */
-.card-number-input{letter-spacing:3px;font-family:'Inter',monospace}
-.card-expiry-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
-/* transfer */
-.bank-info-box{background:var(--bone);border:1px solid var(--border-light);border-radius:4px;padding:1.25rem;margin-bottom:1.25rem}
-.bank-row{display:flex;justify-content:space-between;padding:0.4rem 0;font-size:13px}
-.bank-label{color:var(--muted);font-weight:300}
-.bank-value{color:var(--ink);font-weight:500}
-.drop-zone{border:2px dashed var(--border-light);border-radius:4px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--white)}
-.drop-zone:hover,.drop-zone.drag-over{border-color:var(--crimson)}
-.drop-icon{font-size:32px;margin-bottom:8px;opacity:0.5}
-.drop-text{font-size:13px;color:var(--muted);font-weight:300}
-.drop-uploaded{border-color:var(--green);background:rgba(45,106,79,0.05)}
-.drop-uploaded .drop-icon{opacity:1}
-.btn-pay-confirm{width:100%;padding:0.85rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:1.25rem;transition:background 0.2s}
-.btn-pay-confirm:hover{background:var(--crimson-dark)}
+/* ── CHECKOUT ── */
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem}
+.pay-card{border:2px solid var(--border-light);border-radius:4px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--white)}
+.pay-card:hover{border-color:var(--ink)}
+.pay-card.sel{border-color:var(--crimson);background:rgba(192,20,40,.04)}
+.pay-icon{font-size:28px;margin-bottom:8px}
+.pay-nm{font-size:13px;font-weight:700;color:var(--ink)}
+.pay-desc{font-size:11px;color:var(--muted);margin-top:3px;font-weight:300}
+.card-mono{letter-spacing:3px;font-family:'Inter',monospace}
+.bank-box{background:var(--bone);border:1px solid var(--border-light);border-radius:3px;padding:1.1rem;margin-bottom:1.1rem}
+.bank-row{display:flex;justify-content:space-between;padding:.38rem 0;font-size:13px}
+.bank-lbl{color:var(--muted);font-weight:300}
+.bank-val{color:var(--ink);font-weight:600}
+.drop-z{border:2px dashed var(--border-light);border-radius:3px;padding:1.75rem;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--white)}
+.drop-z:hover,.drop-z.drag{border-color:var(--crimson)}
+.drop-z.uploaded{border-color:var(--success);background:rgba(42,122,80,.04)}
+.drop-icon{font-size:30px;margin-bottom:7px;opacity:.5}
+.drop-txt{font-size:13px;color:var(--muted);font-weight:300}
+.efectivo-info{background:rgba(184,131,26,.08);border:1px solid rgba(184,131,26,.2);border-radius:3px;padding:1rem;font-size:13px;color:var(--warning);font-weight:400;line-height:1.6}
+.btn-pay{width:100%;padding:.82rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:1.1rem;transition:background .2s}
+.btn-pay:hover{background:var(--crimson-dark)}
+.btn-pay:disabled{background:#ccc;cursor:not-allowed}
+.btn-back{padding:.65rem 1.25rem;background:none;border:1.5px solid var(--border-light);border-radius:3px;font-size:12px;font-family:'Inter',sans-serif;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--ink);color:var(--ink)}
 
-/* reservas page */
-.zonas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;padding:1.5rem}
+/* ── RESERVAS PAGE ── */
+.zonas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:1rem;padding:1.4rem}
 .zona-card{border:1px solid var(--border-light);border-radius:4px;overflow:hidden;background:var(--white)}
-.zona-hd{padding:0.9rem 1.1rem;background:var(--bone);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-light)}
-.zona-icon{font-size:20px}
-.zona-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--ink)}
+.zona-hd{padding:.85rem 1.05rem;background:var(--bone);display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border-light)}
+.zona-nm{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.8px;color:var(--ink)}
 .zona-desc{font-size:11px;color:var(--muted);font-weight:300}
-.mesas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:1rem}
-.mesa-btn{border-radius:3px;padding:0.6rem 0.4rem;text-align:center;border:1.5px solid;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;font-size:11px;font-weight:600;letter-spacing:0.5px}
-.mesa-btn.libre{border-color:#2d6a4f;background:rgba(45,106,79,0.08);color:var(--green)}
-.mesa-btn.libre:hover{background:var(--green);color:var(--white)}
-.mesa-btn.ocupada{border-color:var(--border-light);background:var(--bone);color:var(--muted);cursor:not-allowed;opacity:0.5}
-.mesa-btn.seleccionada{border-color:var(--crimson);background:var(--crimson);color:var(--white)}
-.mesa-cap{font-size:10px;font-weight:300;margin-top:2px;opacity:0.75}
-.reserva-form-panel{padding:1.5rem;background:var(--bone);border-top:1px solid var(--border-light)}
-.res-sel-info{background:rgba(192,22,44,0.08);border:1px solid rgba(192,22,44,0.2);border-radius:3px;padding:0.7rem 1rem;font-size:13px;color:var(--crimson);font-weight:500;margin-bottom:1rem}
-.btn-reservar{width:100%;padding:0.75rem;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.mesas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:.95rem}
+.mesa{border-radius:3px;padding:.55rem .4rem;text-align:center;border:1.5px solid;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;font-size:11px;font-weight:600;letter-spacing:.4px}
+.mesa.libre{border-color:var(--success);background:rgba(42,122,80,.07);color:var(--success)}
+.mesa.libre:hover{background:var(--success);color:var(--white)}
+.mesa.ocupada{border-color:var(--border-light);background:var(--bone);color:var(--muted);cursor:not-allowed;opacity:.5}
+.mesa.sel{border-color:var(--crimson);background:var(--crimson);color:var(--white)}
+.mesa-cap{font-size:9px;font-weight:300;margin-top:2px;opacity:.8}
+.res-form-panel{padding:1.4rem;border-top:1px solid var(--border-light);background:var(--bone)}
+.res-sel-info{background:rgba(192,20,40,.07);border:1px solid rgba(192,20,40,.18);border-radius:3px;padding:.65rem .95rem;font-size:13px;color:var(--crimson);font-weight:600;margin-bottom:1rem}
+.btn-reservar{width:100%;padding:.75rem;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s}
 .btn-reservar:hover{background:var(--crimson)}
 .btn-reservar:disabled{background:#ccc;cursor:not-allowed}
+.select-inp{width:100%;padding:.62rem .82rem;border:1.5px solid var(--border-light);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);background:var(--white);outline:none;transition:border-color .2s}
+.select-inp:focus{border-color:var(--crimson)}
 
-/* ══ STAFF DASHBOARD ══ */
-.staff-main{background:var(--ink);min-height:100vh}
-.staff-panel{background:var(--graphite);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
-.staff-panel-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2)}
+/* ══════════════════════════════
+   STAFF DASHBOARD
+══════════════════════════════ */
+.staff-main{background:var(--ink)}
 
-/* KDS */
-.kds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1.5rem}
-.kds-card{border:1px solid var(--border);border-radius:4px;background:var(--steel);overflow:hidden}
-.kds-card.recibido{border-color:#555}
-.kds-card.preparacion{border-color:var(--gold)}
-.kds-card.listo{border-color:var(--green)}
-.kds-card-hd{padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
-.kds-id{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:var(--white)}
-.kds-status{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;font-weight:700}
-.ks-recibido{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}
-.ks-preparacion{background:rgba(184,149,42,0.2);color:var(--gold)}
-.ks-listo{background:rgba(45,106,79,0.2);color:#6fcf97}
-.kds-body{padding:1rem}
-.kds-items{font-size:13px;color:rgba(255,255,255,0.7);font-weight:300;margin-bottom:0.75rem;line-height:1.6}
-.kds-meta{font-size:11px;color:#555;margin-bottom:0.75rem}
-.btn-kds{width:100%;padding:0.6rem;border:none;border-radius:2px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
-.btn-kds-next{background:var(--crimson);color:var(--white)}
-.btn-kds-next:hover{background:var(--crimson-dark)}
-.btn-kds-done{background:rgba(45,106,79,0.3);color:#6fcf97;cursor:default}
+/* kanban */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:1000px){.kanban{grid-template-columns:1fr}}
+.kboard{background:var(--graphite);border:1px solid var(--border-dark);border-radius:4px;overflow:hidden}
+.kboard-hd{padding:.85rem 1.2rem;border-bottom:1px solid var(--border-dark);display:flex;align-items:center;justify-content:space-between}
+.kboard-title{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;color:var(--white)}
+.kboard-count{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.kboard-items{padding:.75rem;display:flex;flex-direction:column;gap:.6rem;min-height:100px}
+.korder{background:var(--steel);border:1px solid var(--border-dark);border-radius:3px;padding:.85rem;transition:border-color .2s}
+.korder.pendiente{border-color:rgba(184,131,26,.4)}
+.korder.espera{border-color:rgba(192,20,40,.3)}
+.korder.preparacion{border-color:rgba(184,131,26,.4)}
+.korder.listo{border-color:rgba(42,122,80,.4)}
+.ko-id{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:var(--white);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.ko-pay{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-weight:700}
+.kp-card{background:rgba(42,122,80,.15);color:#6fcf97}
+.kp-transfer{background:rgba(184,131,26,.15);color:var(--warning)}
+.kp-efectivo{background:rgba(184,131,26,.15);color:var(--warning)}
+.kp-pendiente{background:rgba(255,255,255,.06);color:#555}
+.ko-items{font-size:12px;color:rgba(255,255,255,.55);font-weight:300;line-height:1.55;margin-bottom:.65rem}
+.ko-total{font-size:11px;color:#444;margin-bottom:.65rem}
+.ko-btns{display:flex;flex-direction:column;gap:.4rem}
+.btn-ko{padding:.45rem .75rem;border:none;border-radius:2px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:background .15s}
+.btn-validate{background:rgba(184,131,26,.2);color:var(--warning);border:1px solid rgba(184,131,26,.3)}
+.btn-validate:hover{background:rgba(184,131,26,.35)}
+.btn-advance{background:var(--crimson);color:var(--white)}
+.btn-advance:hover{background:var(--crimson-dark)}
+.btn-done{background:rgba(42,122,80,.2);color:#6fcf97;border:1px solid rgba(42,122,80,.3);cursor:default}
 
-/* staff reservas */
-.staff-res-table{width:100%;border-collapse:collapse}
-.staff-res-table th{padding:0.75rem 1.5rem;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;font-weight:500;text-align:left;border-bottom:1px solid var(--border)}
-.staff-res-table td{padding:0.85rem 1.5rem;font-size:13px;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.04)}
-.staff-res-table tr:last-child td{border-bottom:none}
-.btn-status{padding:0.35rem 0.85rem;border-radius:2px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
-.bs-aceptar{background:rgba(45,106,79,0.2);color:#6fcf97;border:1px solid rgba(45,106,79,0.3)}
-.bs-aceptar:hover{background:rgba(45,106,79,0.4)}
-.bs-curso{background:rgba(184,149,42,0.2);color:var(--gold);border:1px solid rgba(184,149,42,0.3)}
-.bs-finalizar{background:rgba(255,255,255,0.06);color:#555;border:1px solid #333;cursor:default}
+/* staff reservas table */
+.s-table{width:100%;border-collapse:collapse}
+.s-table th{padding:.65rem 1.2rem;font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;color:#444;font-weight:600;text-align:left;border-bottom:1px solid var(--border-dark)}
+.s-table td{padding:.75rem 1.2rem;font-size:12px;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.04)}
+.s-table tr:last-child td{border-bottom:none}
+.btn-s{padding:.32rem .8rem;border-radius:2px;font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.bs-a{background:rgba(42,122,80,.18);color:#6fcf97;border:1px solid rgba(42,122,80,.28)}
+.bs-a:hover{background:rgba(42,122,80,.32)}
+.bs-c{background:rgba(184,131,26,.15);color:var(--warning);border:1px solid rgba(184,131,26,.25)}
+.bs-f{background:rgba(255,255,255,.05);color:#444;border:1px solid #2a2a2a;cursor:default}
 
-/* control clientes */
-.search-bar{display:flex;gap:0.75rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
-.search-input{flex:1;padding:0.6rem 0.85rem;background:var(--steel);border:1px solid var(--border);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none}
-.search-input:focus{border-color:var(--crimson)}
-.search-input::placeholder{color:#555}
-.btn-search{padding:0.6rem 1.25rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
-.client-result{padding:1.25rem 1.5rem}
-.client-card{background:var(--steel);border:1px solid var(--border);border-radius:4px;padding:1.25rem;margin-bottom:1rem}
-.client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--white);margin-bottom:4px}
-.client-meta{font-size:12px;color:#555;margin-bottom:1rem}
-.client-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem}
-.client-stat{background:var(--graphite);border-radius:3px;padding:0.75rem;text-align:center}
-.cs-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white)}
-.cs-val.red{color:var(--crimson)}
-.cs-lbl{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:500}
-.pts-adjust-row{display:flex;gap:0.75rem;margin-top:1rem}
-.pts-adjust-input{flex:1;padding:0.6rem 0.85rem;background:var(--graphite);border:1px solid var(--border);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none}
-.pts-adjust-input:focus{border-color:var(--crimson)}
-.btn-pts-add{padding:0.6rem 1rem;background:rgba(45,106,79,0.2);color:#6fcf97;border:1px solid rgba(45,106,79,0.3);border-radius:3px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
-.btn-pts-sub{padding:0.6rem 1rem;background:rgba(192,22,44,0.2);color:var(--crimson);border:1px solid rgba(192,22,44,0.3);border-radius:3px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
+/* clientes staff */
+.search-bar{display:flex;gap:.75rem;padding:1.1rem 1.4rem;border-bottom:1px solid var(--border-dark)}
+.search-inp{flex:1;padding:.55rem .82rem;background:var(--steel);border:1px solid var(--border-dark);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--crimson)}
+.search-inp::placeholder{color:#444}
+.btn-search{padding:.55rem 1.1rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+.client-card{background:var(--steel);border:1px solid var(--border-dark);border-radius:4px;padding:1.1rem;margin-bottom:.85rem}
+.cc-name{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1px;color:var(--white);margin-bottom:3px}
+.cc-meta{font-size:11px;color:#444;margin-bottom:.85rem}
+.cc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:.85rem}
+.cc-stat{background:var(--graphite);border-radius:3px;padding:.65rem;text-align:center}
+.ccv{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white)}
+.ccv.r{color:var(--crimson)}
+.ccl{font-size:9px;color:#444;letter-spacing:1px;text-transform:uppercase}
+.pts-adj{display:flex;gap:.65rem;margin-top:.85rem}
+.pts-adj-inp{flex:1;padding:.55rem .82rem;background:var(--graphite);border:1px solid var(--border-dark);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none}
+.pts-adj-inp:focus{border-color:var(--crimson)}
+.btn-pts-a{padding:.55rem .9rem;background:rgba(42,122,80,.18);color:#6fcf97;border:1px solid rgba(42,122,80,.28);border-radius:3px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+.btn-pts-s{padding:.55rem .9rem;background:rgba(192,20,40,.18);color:var(--crimson);border:1px solid rgba(192,20,40,.28);border-radius:3px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
 
-/* TOAST */
-.toast-container{position:fixed;top:1.5rem;right:1.5rem;z-index:500;display:flex;flex-direction:column;gap:10px;pointer-events:none}
-.toast{background:var(--ink);color:var(--white);padding:0.85rem 1.25rem;border-radius:4px;font-size:13px;font-weight:400;box-shadow:0 8px 30px rgba(0,0,0,0.3);animation:toastIn 0.3s ease;display:flex;align-items:center;gap:10px;min-width:280px;max-width:360px;pointer-events:all}
-.toast.t-success{border-left:3px solid var(--green)}
-.toast.t-crimson{border-left:3px solid var(--crimson)}
-.toast.t-gold{border-left:3px solid var(--gold)}
+/* ══════════════════════════════
+   MURO DE COMENTARIOS
+══════════════════════════════ */
+.muro-page{background:var(--linen);min-height:100vh;padding:2.5rem}
+.comment-form{background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:1.4rem;margin-bottom:1.4rem}
+.comment-form textarea{width:100%;padding:.75rem .9rem;border:1.5px solid var(--border-light);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--ink);background:var(--linen);outline:none;resize:vertical;min-height:90px;transition:border-color .2s}
+.comment-form textarea:focus{border-color:var(--crimson);background:var(--white)}
+.comment-form textarea::placeholder{color:#bbb}
+.btn-comment{padding:.65rem 1.5rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-top:.75rem}
+.btn-comment:hover{background:var(--crimson-dark)}
+.btn-comment:disabled{background:#ccc;cursor:not-allowed}
+.comment-card{background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:1.1rem 1.4rem;margin-bottom:.75rem;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.comment-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem}
+.comment-avatar{width:34px;height:34px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--white);font-weight:700;flex-shrink:0}
+.comment-author{font-size:13px;font-weight:600;color:var(--ink)}
+.comment-time{font-size:11px;color:var(--muted);font-weight:300}
+.comment-text{font-size:14px;color:var(--ink);font-weight:300;line-height:1.7}
+.comment-belt{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-weight:700;margin-left:auto}
+
+/* ══════════════════════════════
+   TOASTS
+══════════════════════════════ */
+.toast-wrap{position:fixed;top:1.4rem;right:1.4rem;z-index:600;display:flex;flex-direction:column;gap:9px;pointer-events:none}
+.toast{background:var(--ink);color:var(--white);padding:.8rem 1.2rem;border-radius:4px;font-size:13px;box-shadow:0 6px 28px rgba(0,0,0,.35);animation:toastIn .3s ease;display:flex;align-items:flex-start;gap:10px;min-width:270px;max-width:340px;pointer-events:all;line-height:1.5}
+.toast.t-s{border-left:3px solid var(--success)}
+.toast.t-r{border-left:3px solid var(--crimson)}
+.toast.t-g{border-left:3px solid var(--gold)}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-.toast-icon{font-size:18px;flex-shrink:0}
-.toast-msg{flex:1;line-height:1.4}
+.toast-icon{font-size:17px;flex-shrink:0;margin-top:1px}
 
-/* confirm screen */
+/* misc */
+.empty{padding:1.75rem;text-align:center;color:var(--muted);font-size:13px;font-weight:300;font-style:italic}
 .confirm-screen{text-align:center}
-.confirm-icon{font-size:52px;margin-bottom:1rem}
-
-.empty{padding:2rem;text-align:center;color:var(--muted);font-size:13px;font-weight:300;font-style:italic}
-.select-input{width:100%;padding:0.65rem 0.85rem;border:1px solid var(--border-light);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--ink);background:var(--linen);outline:none;transition:border-color 0.2s}
-.select-input:focus{border-color:var(--crimson)}
+.confirm-icon{font-size:48px;margin-bottom:1rem}
+.staff-badge-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(192,20,40,.14);border:1px solid rgba(192,20,40,.28);border-radius:2px;padding:2px 8px;font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:7px}
 </style>
 </head>
 <body>
@@ -442,73 +459,64 @@ const sb = createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbGxzbGJsY2N4dmR1YXFlamZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDQ3OTAsImV4cCI6MjA5NjUyMDc5MH0.ztGkc572MXH8qQK0hruAUXN64hXMuU4maPgSi2Dg6WQ"
 );
 
-// ── CONSTANTES ───────────────────────────────────────────────────────────
+// ── CONSTANTES ────────────────────────────────────────────────────────────
 const STAFF_CODE = "KOFFEE-001";
-const PTS_POR_DOLAR = 100;
+const PTS_X_DOLAR = 100;
 const IVA = 0.12;
+const LS_COMMENTS = "koffee_comments";
 
+// ── CINTURONES WTF ────────────────────────────────────────────────────────
 const BELTS = [
-  { nombre:"Cinturón Blanco",  color:"#e0e0e0", min:0,    max:2000,  reward:"10% dto en tu próximo pedido" },
-  { nombre:"Cinturón Amarillo",color:"#f0c040", min:2000,  max:6000,  reward:"Bebida gratis mensual" },
-  { nombre:"Cinturón Naranja", color:"#e07820", min:6000,  max:12000, reward:"Acceso a degustaciones" },
-  { nombre:"Cinturón Verde",   color:"#2d6a4f", min:12000, max:22000, reward:"Reserva prioritaria" },
-  { nombre:"Cinturón Azul",    color:"#1a4a8a", min:22000, max:36000, reward:"Menú especial mensual" },
-  { nombre:"Cinturón Marrón",  color:"#5c3317", min:36000, max:55000, reward:"Evento privado anual" },
-  { nombre:"Cinturón Negro",   color:"#1a1a1a", min:55000, max:Infinity, reward:"Acceso VIP & experiencias" },
+  { nombre:"Blanco",  color:"#e8e8e8", textColor:"#555",  min:0,     max:3000,  reward:"5% dto primer pedido" },
+  { nombre:"Amarillo",color:"#e8c830", textColor:"#8a6800",min:3000,  max:9000,  reward:"Bebida gratis al mes" },
+  { nombre:"Verde",   color:"#2a7a38", textColor:"#fff",  min:9000,  max:18000, reward:"Acceso a catas privadas" },
+  { nombre:"Azul",    color:"#1a4a9a", textColor:"#fff",  min:18000, max:30000, reward:"Reserva prioritaria VIP" },
+  { nombre:"Rojo",    color:"#c01428", textColor:"#fff",  min:30000, max:50000, reward:"Menú especial mensual" },
+  { nombre:"Negro",   color:"#1a1a1a", textColor:"#fff",  min:50000, max:Infinity, reward:"Maestro — Acceso total" },
 ];
+const getBelt = pts => BELTS.find(b => pts >= b.min && pts < b.max) || BELTS[BELTS.length-1];
+const getNextBelt = pts => BELTS.find(b => b.min > pts) || null;
 
-function getBelt(pts) {
-  return BELTS.find(b => pts >= b.min && pts < b.max) || BELTS[BELTS.length-1];
-}
-
+// ── MENÚ ──────────────────────────────────────────────────────────────────
 const MENU = [
-  {id:1,cat:"Café",emoji:"☕",nombre:"Espresso Doble",desc:"Origen Etiopía Yirgacheffe, tostado oscuro",precio:3.50},
-  {id:2,cat:"Café",emoji:"🥛",nombre:"Latte Signature",desc:"Espresso, leche de avena vaporizada y arte latte",precio:5.20},
-  {id:3,cat:"Café",emoji:"🧊",nombre:"Cold Brew Nitro",desc:"18h extracción, servido con nitrógeno en grifo",precio:6.00},
-  {id:4,cat:"Café",emoji:"🌿",nombre:"Matcha Ceremonial",desc:"Matcha de primera cosecha, leche de macadamia",precio:5.80},
-  {id:5,cat:"Café",emoji:"🍫",nombre:"Mocha Obsidiana",desc:"Espresso, chocolate 70% y leche vaporizada",precio:5.50},
-  {id:6,cat:"Comida",emoji:"🥐",nombre:"Croissant Mantequilla",desc:"Horneado al momento, masa laminada 72h",precio:3.80},
-  {id:7,cat:"Comida",emoji:"🥑",nombre:"Tostada Aguacate",desc:"Masa madre, aguacate, huevo poché y semillas",precio:8.50},
-  {id:8,cat:"Comida",emoji:"🥣",nombre:"Bowl de Granola",desc:"Granola artesanal, yogur griego, frutos rojos",precio:7.00},
-  {id:9,cat:"Comida",emoji:"🥪",nombre:"Sandwich Black Dojo",desc:"Prosciutto, mozzarella y pesto en pan negro",precio:9.00},
-  {id:10,cat:"Especiales",emoji:"🍮",nombre:"Affogato KO",desc:"Helado de vainilla Bourbon + espresso caliente",precio:6.50},
-  {id:11,cat:"Especiales",emoji:"🧁",nombre:"Banana Bread Ninja",desc:"Nueces, chips de chocolate 70% y cardamomo",precio:4.80},
-  {id:12,cat:"Especiales",emoji:"☯️",nombre:"Cheesecake Dojo",desc:"Base de oreo, queso cremoso y té matcha",precio:7.00},
+  {id:1,cat:"Café",emoji:"☕",nombre:"Espresso Doble",desc:"Origen Etiopía, tostado oscuro",precio:3.50},
+  {id:2,cat:"Café",emoji:"🥛",nombre:"Latte Signature",desc:"Espresso + leche de avena + arte latte",precio:5.20},
+  {id:3,cat:"Café",emoji:"🧊",nombre:"Cold Brew Nitro",desc:"18h extracción en frío, con nitrógeno",precio:6.00},
+  {id:4,cat:"Café",emoji:"🌿",nombre:"Matcha Ceremonial",desc:"Matcha primera cosecha + leche macadamia",precio:5.80},
+  {id:5,cat:"Café",emoji:"🍫",nombre:"Mocha Obsidiana",desc:"Espresso + chocolate 70% + leche",precio:5.50},
+  {id:6,cat:"Comida",emoji:"🥐",nombre:"Croissant Mantequilla",desc:"Masa laminada 72h, horneado fresco",precio:3.80},
+  {id:7,cat:"Comida",emoji:"🥑",nombre:"Tostada Aguacate",desc:"Masa madre, aguacate, huevo poché",precio:8.50},
+  {id:8,cat:"Comida",emoji:"🥣",nombre:"Bowl Granola",desc:"Granola artesanal, yogur griego, frutos",precio:7.00},
+  {id:9,cat:"Comida",emoji:"🥪",nombre:"Sandwich Black Dojo",desc:"Prosciutto, mozzarella y pesto pan negro",precio:9.00},
+  {id:10,cat:"Especiales",emoji:"🍮",nombre:"Affogato KO",desc:"Helado vainilla Bourbon + espresso",precio:6.50},
+  {id:11,cat:"Especiales",emoji:"🧁",nombre:"Banana Bread Ninja",desc:"Nueces, chips chocolate 70%, cardamomo",precio:4.80},
+  {id:12,cat:"Especiales",emoji:"☯️",nombre:"Cheesecake Dojo",desc:"Oreo, queso cremoso y té matcha",precio:7.00},
 ];
 
-const ZONAS_DATA = [
-  {id:"ventana",nombre:"Zona Ventana",icon:"🪟",desc:"Luz natural, ideal para trabajar",
-   mesas:[{num:1,cap:2,libre:true},{num:2,cap:2,libre:false},{num:3,cap:4,libre:true}]},
-  {id:"terraza",nombre:"Terraza",icon:"🌿",desc:"Jardín cubierto, brisa y música",
-   mesas:[{num:4,cap:2,libre:true},{num:5,cap:4,libre:true},{num:6,cap:6,libre:false}]},
-  {id:"interior",nombre:"Rincón Dojo",icon:"⛩️",desc:"Sofás, luz cálida, ambiente íntimo",
-   mesas:[{num:7,cap:2,libre:false},{num:8,cap:2,libre:true},{num:9,cap:4,libre:true}]},
-  {id:"barra",nombre:"Barra del Maestro",icon:"☕",desc:"Frente a los baristas",
-   mesas:[{num:10,cap:1,libre:true},{num:11,cap:1,libre:true},{num:12,cap:2,libre:false}]},
+const ZONAS = [
+  {id:"ventana",nombre:"Zona Ventana",icon:"🪟",desc:"Luz natural",mesas:[{num:1,cap:2,libre:true},{num:2,cap:2,libre:false},{num:3,cap:4,libre:true}]},
+  {id:"terraza",nombre:"Terraza",icon:"🌿",desc:"Jardín cubierto",mesas:[{num:4,cap:2,libre:true},{num:5,cap:4,libre:true},{num:6,cap:6,libre:false}]},
+  {id:"dojo",nombre:"Rincón Dojo",icon:"⛩️",desc:"Sofás, luz cálida",mesas:[{num:7,cap:2,libre:false},{num:8,cap:2,libre:true},{num:9,cap:4,libre:true}]},
+  {id:"barra",nombre:"Barra del Maestro",icon:"☕",desc:"Frente a baristas",mesas:[{num:10,cap:1,libre:true},{num:11,cap:1,libre:true},{num:12,cap:2,libre:false}]},
 ];
 
-// ── TOAST SYSTEM ─────────────────────────────────────────────────────────
-function ToastContainer({ toasts }) {
-  return (
-    <div className="toast-container">
-      {toasts.map(t => (
-        <div key={t.id} className={"toast t-"+t.type}>
-          <span className="toast-icon">{t.icon}</span>
-          <span className="toast-msg">{t.msg}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
+// ── TOAST HOOK ────────────────────────────────────────────────────────────
 function useToasts() {
   const [toasts, setToasts] = useState([]);
-  const add = (msg, type="success", icon="✓") => {
-    const id = Date.now();
-    setToasts(t => [...t, {id,msg,type,icon}]);
-    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4000);
+  const add = (msg, type="s", icon="✓") => {
+    const id = Date.now() + Math.random();
+    setToasts(t => [...t, {id, msg, type, icon}]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 5000);
   };
   return [toasts, add];
+}
+function Toasts({ toasts }) {
+  return <div className="toast-wrap">{toasts.map(t=>(
+    <div key={t.id} className={"toast t-"+t.type}>
+      <span className="toast-icon">{t.icon}</span>
+      <span>{t.msg}</span>
+    </div>
+  ))}</div>;
 }
 
 // ── AUTH BRAND ────────────────────────────────────────────────────────────
@@ -517,63 +525,62 @@ const AuthBrand = () => (
     <div className="auth-brand-icon">☕</div>
     <div>
       <div className="auth-brand-name">KO<span>-ffee</span></div>
-      <div className="auth-brand-tag">Specialty Coffee & Dojo</div>
+      <div className="auth-brand-tag">Specialty Coffee & Dojang</div>
     </div>
   </div>
 );
 
-// ── LANDING PAGE ──────────────────────────────────────────────────────────
-function LandingPage({ onGoLogin }) {
+// ══════════════════════════════════════════════════════════════════════════
+// LANDING PAGE
+// ══════════════════════════════════════════════════════════════════════════
+function LandingPage({ onGoLogin, onGoMuro }) {
   return (
     <div className="landing">
-      {/* NAV */}
       <nav className="land-nav">
-        <div className="land-nav-brand">KO<span style={{color:"var(--crimson)"}}>-ffee</span></div>
+        <div className="land-logo">KO<span>-ffee</span></div>
         <div className="land-nav-links">
-          <a onClick={() => document.getElementById('concept')?.scrollIntoView({behavior:'smooth'})}>Concepto</a>
-          <a onClick={() => document.getElementById('levels')?.scrollIntoView({behavior:'smooth'})}>Niveles</a>
-          <a onClick={() => document.getElementById('info')?.scrollIntoView({behavior:'smooth'})}>Visítanos</a>
+          <a onClick={()=>document.getElementById('concepto')?.scrollIntoView({behavior:'smooth'})}>Concepto</a>
+          <a onClick={()=>document.getElementById('cinturones')?.scrollIntoView({behavior:'smooth'})}>Rangos</a>
+          <a onClick={()=>document.getElementById('visita')?.scrollIntoView({behavior:'smooth'})}>Visítanos</a>
+          <a onClick={onGoMuro}>💬 Muro</a>
         </div>
-        <button className="btn-nav-login" onClick={onGoLogin}>Acceder →</button>
+        <button className="btn-nav" onClick={onGoLogin}>Acceder →</button>
       </nav>
 
       {/* HERO */}
-      <section className="hero" style={{paddingTop:"80px"}}>
+      <section className="hero">
         <div className="hero-kanji">武道</div>
-        <div className="hero-badge">☕ Est. 2023 · Quito, Ecuador</div>
+        <div className="hero-eyebrow">Est. 2023 · Quito, Ecuador</div>
         <div className="hero-title">KO<span>-ffee</span></div>
-        <div className="hero-sub">Specialty Coffee · Martial Arts Philosophy</div>
-        <p style={{fontSize:15,color:"rgba(255,255,255,0.45)",maxWidth:480,marginBottom:"2.5rem",fontWeight:300,lineHeight:1.8}}>
-          Donde la disciplina del dojo se encuentra con el ritual del café de especialidad. Cada taza, una práctica. Cada visita, un entrenamiento para los sentidos.
+        <div className="hero-sub">Specialty Coffee · Taekwondo WTF Philosophy</div>
+        <p style={{fontSize:14,color:"rgba(255,255,255,.4)",maxWidth:480,marginBottom:"2.5rem",fontWeight:300,lineHeight:1.85}}>
+          La disciplina del dojang fusionada con el arte del café de especialidad. Cada taza, un kata. Cada visita, un entrenamiento para los sentidos.
         </p>
-        <div className="hero-cta">
-          <button className="btn-hero btn-hero-primary" onClick={onGoLogin}>Crear cuenta gratis</button>
-          <button className="btn-hero btn-hero-outline" onClick={() => document.getElementById('concept')?.scrollIntoView({behavior:'smooth'})}>Descubrir →</button>
+        <div className="hero-btns">
+          <button className="btn-hero-p" onClick={onGoLogin}>Crear cuenta gratis</button>
+          <button className="btn-hero-o" onClick={onGoMuro}>Ver el Muro del Dojang 💬</button>
         </div>
       </section>
 
       <hr className="land-divider"/>
 
       {/* CONCEPTO */}
-      <section className="land-section" id="concept">
+      <section className="land-section" id="concepto">
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4rem",alignItems:"center"}}>
           <div>
-            <div className="section-eyebrow">✦ Nuestra filosofía</div>
+            <div className="section-eye">✦ Nuestra filosofía</div>
             <div className="section-title">EL CAFÉ<br/>COMO<br/>ARTE<br/>MARCIAL</div>
           </div>
           <div>
             <p className="section-body" style={{marginBottom:"1.5rem"}}>
-              En KO-ffee creemos que preparar un espresso perfecto requiere la misma concentración que un kata. La precisión, la repetición y la maestría son los pilares de nuestra barra.
+              Un espresso perfecto requiere la misma concentración que un kata de Taekwondo. Precisión, repetición y maestría son los pilares de nuestra barra.
             </p>
-            <p className="section-body">
-              Cada cliente que avanza en su camino con nosotros obtiene un cinturón que refleja su dedicación. Desde el Cinturón Blanco hasta el Cinturón Negro, cada nivel desbloquea experiencias únicas.
-            </p>
-            <div style={{marginTop:"2rem",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
-              {[["☕","Granos de especialidad","Origen único, trazabilidad total"],["🏯","Ambiente dojo","Diseño inspirado en la arquitectura japonesa"],["⚖️","Precisión barista","Cada extracción pesada al gramo"],["🎯","Comunidad","Eventos, catas y talleres mensuales"]].map(([i,t,d])=>(
-                <div key={t} style={{padding:"1rem",border:"1px solid var(--border)",borderRadius:4}}>
-                  <div style={{fontSize:24,marginBottom:8}}>{i}</div>
-                  <div style={{fontSize:13,fontWeight:600,color:"var(--white)",marginBottom:4}}>{t}</div>
-                  <div style={{fontSize:11,color:"var(--muted)",fontWeight:300}}>{d}</div>
+            <div className="feat-grid">
+              {[["☕","Granos single origin","Trazabilidad total"],["🥋","Sistema de rangos","6 cinturones Taekwondo WTF"],["⚖️","Precisión barista","Cada extracción al gramo"],["🎯","Comunidad activa","Catas y eventos mensuales"]].map(([i,t,d])=>(
+                <div className="feat-card" key={t}>
+                  <div className="feat-icon">{i}</div>
+                  <div className="feat-name">{t}</div>
+                  <div className="feat-desc">{d}</div>
                 </div>
               ))}
             </div>
@@ -583,19 +590,18 @@ function LandingPage({ onGoLogin }) {
 
       <hr className="land-divider"/>
 
-      {/* NIVELES */}
-      <section className="land-section" id="levels">
-        <div className="section-eyebrow">✦ Sistema de rangos</div>
-        <div className="section-title">TU CAMINO<br/>AL CINTURÓN<br/>NEGRO</div>
-        <p className="section-body" style={{marginBottom:"2.5rem"}}>Acumula 100 puntos por cada $1 gastado y avanza en tu rango. Cada cinturón desbloquea beneficios exclusivos.</p>
+      {/* CINTURONES */}
+      <section className="land-section" id="cinturones">
+        <div className="section-eye">✦ Sistema de rangos Taekwondo WTF</div>
+        <div className="section-title">TU CAMINO AL<br/>CINTURÓN NEGRO</div>
+        <p className="section-body" style={{marginBottom:"2.25rem"}}>100 puntos por cada $1 gastado. Avanza en tu cinturón y desbloquea beneficios exclusivos.</p>
         <div className="belts-grid">
-          {BELTS.map(b => (
-            <div className="belt-card" key={b.nombre}>
-              <div className="belt-icon" style={{fontSize:28}}>🥋</div>
-              <div style={{width:32,height:4,borderRadius:2,background:b.color,margin:"8px auto"}}></div>
-              <div className="belt-name">{b.nombre.replace("Cinturón ","")}</div>
-              <div className="belt-pts">{b.min === 0 ? "0" : b.min.toLocaleString()}+ pts</div>
-              <div className="belt-reward">{b.reward}</div>
+          {BELTS.map(b=>(
+            <div className="belt-card" key={b.nombre} style={{borderColor:b.color+"33"}}>
+              <div className="belt-stripe" style={{background:b.color}}/>
+              <div className="belt-card-name">{b.nombre}</div>
+              <div className="belt-card-pts">{b.min===0?"0":b.min.toLocaleString()}+ pts</div>
+              <div className="belt-card-reward">{b.reward}</div>
             </div>
           ))}
         </div>
@@ -603,53 +609,46 @@ function LandingPage({ onGoLogin }) {
 
       <hr className="land-divider"/>
 
-      {/* INFO */}
-      <section className="land-section" id="info">
-        <div className="section-eyebrow">✦ Encuéntranos</div>
-        <div className="section-title">EL DOJO<br/>TE ESPERA</div>
-        <div className="info-grid" style={{marginTop:"2.5rem"}}>
+      {/* VISITA */}
+      <section className="land-section" id="visita">
+        <div className="section-eye">✦ Encuéntranos</div>
+        <div className="section-title">EL DOJANG<br/>TE ESPERA</div>
+        <div className="info-grid" style={{marginTop:"2rem"}}>
           <div>
-            <div className="info-block">
-              <div className="info-block-label">Dirección</div>
-              <div className="info-block-value">Av. República de El Salvador N34-183<br/>y Suecia, Sector La Carolina<br/>Quito, Pichincha — Ecuador</div>
-            </div>
-            <div className="info-block">
-              <div className="info-block-label">Horarios</div>
-              {[["Lun — Vie","07:00 — 21:00"],["Sábado","08:00 — 22:00"],["Domingo","09:00 — 18:00"]].map(([d,h])=>(
-                <div className="hours-row" key={d}><span className="hours-day">{d}</span><span className="hours-time">{h}</span></div>
-              ))}
-            </div>
-            <div className="info-block">
-              <div className="info-block-label">Contacto</div>
-              <div className="info-block-value">+593 2 345 6789<br/>hola@ko-ffee.ec</div>
-            </div>
-            <div className="social-links">
-              {[["📸","Instagram"],["🐦","Twitter / X"],["📘","Facebook"],["🎵","TikTok"]].map(([i,n])=>(
-                <div key={n} className="social-btn" title={n}>{i}</div>
-              ))}
+            <div className="info-lbl">Dirección</div>
+            <div className="info-val">Av. República de El Salvador N34-183<br/>y Suecia, Sector La Carolina<br/>Quito, Pichincha — Ecuador</div>
+            <div className="info-lbl">Horarios</div>
+            {[["Lun — Vie","07:00 — 21:00"],["Sábado","08:00 — 22:00"],["Domingo","09:00 — 18:00"]].map(([d,h])=>(
+              <div className="hours-row" key={d}><span className="hours-day">{d}</span><span className="hours-time">{h}</span></div>
+            ))}
+            <div className="info-lbl" style={{marginTop:"1.25rem"}}>Contacto</div>
+            <div className="info-val">+593 2 345 6789<br/>hola@ko-ffee.ec</div>
+            <div className="social-row">
+              {["📸","🐦","📘","🎵"].map(i=><div key={i} className="social-btn">{i}</div>)}
             </div>
           </div>
           <div>
-            <div className="map-placeholder">
+            <div className="map-ph">
               <div className="map-ph-icon">📍</div>
-              <div className="map-ph-text">Av. República de El Salvador, Quito</div>
-              <div style={{fontSize:11,color:"var(--muted)",marginTop:4,fontWeight:300}}>Google Maps · La Carolina, Quito EC</div>
+              <div className="map-ph-txt">Av. República de El Salvador, La Carolina</div>
+              <div style={{fontSize:11,color:"#333",marginTop:4,fontWeight:300}}>Quito, Ecuador</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <div style={{borderTop:"1px solid var(--border)",padding:"2rem 3rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
-        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:2,color:"var(--white)"}}>KO<span style={{color:"var(--crimson)"}}>-ffee</span></div>
-        <div style={{fontSize:12,color:"var(--muted)",fontWeight:300}}>© 2025 KO-ffee Specialty Coffee & Dojo · Quito, Ecuador</div>
-        <button className="btn-hero btn-hero-primary" style={{padding:"0.6rem 1.5rem",fontSize:11}} onClick={onGoLogin}>Acceder al portal →</button>
+      <div style={{borderTop:"1px solid var(--border-dark)",padding:"1.75rem 3rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:19,letterSpacing:2,color:"var(--white)"}}>KO<span style={{color:"var(--crimson)"}}>-ffee</span></div>
+        <div style={{fontSize:12,color:"var(--muted)",fontWeight:300}}>© 2025 KO-ffee Specialty Coffee & Dojang · Quito, Ecuador</div>
+        <button className="btn-nav" onClick={onGoLogin}>Acceder al portal →</button>
       </div>
     </div>
   );
 }
 
-// ── LOGIN ─────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════════════════════
 function LoginForm({ onSwitch }) {
   const [email, setEmail] = useState(""); const [pass, setPass] = useState("");
   const [staffOn, setStaffOn] = useState(false); const [staffCode, setStaffCode] = useState("");
@@ -660,11 +659,10 @@ function LoginForm({ onSwitch }) {
     if (staffOn && staffCode !== STAFF_CODE) {
       setError("Código de Staff inválido. Acceso denegado."); setLoading(false); return;
     }
-    const { data, error: err } = await sb.auth.signInWithPassword({ email, password: pass });
+    const { error: err } = await sb.auth.signInWithPassword({ email, password: pass });
     if (err) { setError("Correo o contraseña incorrectos."); setLoading(false); return; }
-    if (staffOn) {
-      await sb.auth.updateUser({ data: { is_staff: true } });
-    }
+    if (staffOn) await sb.auth.updateUser({ data: { is_staff: true } });
+    else await sb.auth.updateUser({ data: { is_staff: false } });
     setLoading(false);
   };
 
@@ -673,47 +671,34 @@ function LoginForm({ onSwitch }) {
       <div className="auth-left">
         <div className="auth-bg-kanji">武</div>
         <div className="auth-quote">"La disciplina es el puente entre las metas y los logros."</div>
-        <div className="auth-quote-attr" style={{marginTop:8}}>— Filosofía KO-ffee</div>
+        <div className="auth-quote-sub" style={{marginTop:12}}>Filosofía KO-ffee · Taekwondo WTF</div>
       </div>
       <div className="auth-right">
         <div className="auth-card">
           <AuthBrand/>
-          <div className="auth-title">Acceso al Dojo</div>
+          <div className="auth-title">Acceso al Dojang</div>
           <div className="auth-sub">Ingresa tus credenciales para continuar</div>
-          {error && <div className="alert alert-error">{error}</div>}
+          {error && <div className="alert-err">{error}</div>}
           <form onSubmit={submit}>
             <div className="form-group"><label className="form-label">Correo</label>
               <input className="form-input" type="email" placeholder="maestro@ko-ffee.ec" value={email} onChange={e=>setEmail(e.target.value)} required/></div>
             <div className="form-group"><label className="form-label">Contraseña</label>
               <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required/></div>
-
-        {/* Staff toggle */}
-<div className={"staff-toggle"+(staffOn?" active":"")}>
-  <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
-    <span className="staff-toggle-label"><span className="staff-toggle-icon">🔐</span> ¿Posees código de Staff?</span>
-    <div className={"toggle-switch"+(staffOn?" on":"")}>
-      <div className="toggle-knob"/>
-    </div>
-  </div>
-  {staffOn && (
-    <div className="staff-code-wrap">
-      <div style={{height:10}}/>
-      <div className="form-group" style={{marginBottom:0}}>
-        <label className="form-label">Código de validación (10 caracteres)</label>
-        <input 
-          className="form-input" 
-          type="text" 
-          placeholder="KOFFEE-000" 
-          maxLength={10} 
-          value={staffCode} 
-          onChange={e=>setStaffCode(e.target.value.toUpperCase())}
-        />
-      </div>
-    </div>
-  )}
-</div>
-            <button className="btn-primary" type="submit" disabled={loading}>
-              {loading && <span className="spinner"/>}{loading ? "Verificando…" : staffOn ? "Acceder como Staff →" : "Entrar al Dojo →"}</button>
+            <div className={"staff-box"+(staffOn?" on":"")}>
+              <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
+                <span className="staff-lbl"><span>🔐</span> ¿Posees código de Staff?</span>
+                <div className={"sw"+(staffOn?" on":"")}><div className="sw-knob"/></div>
+              </div>
+              {staffOn && (
+                <div style={{marginTop:10}}>
+                  <label className="form-label">Código de validación (10 caracteres)</label>
+                  <input className="form-input" type="text" placeholder="KOFFEE-001" maxLength={10}
+                    value={staffCode} onChange={e=>setStaffCode(e.target.value.toUpperCase())}/>
+                </div>
+              )}
+            </div>
+            <button className="btn-p" type="submit" disabled={loading}>
+              {loading && <span className="spinner"/>}{loading?"Verificando…":staffOn?"Acceder como Staff →":"Entrar al Dojang →"}</button>
           </form>
           <div className="link-row">¿Sin cuenta? <button className="link-btn" onClick={onSwitch}>Regístrate gratis</button></div>
         </div>
@@ -722,23 +707,25 @@ function LoginForm({ onSwitch }) {
   );
 }
 
-// ── REGISTRO ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// REGISTRO
+// ══════════════════════════════════════════════════════════════════════════
 function RegisterForm({ onSwitch }) {
-  const [form, setForm] = useState({nombre:"",email:"",tel:"",nac:"",pass:""});
+  const [f, setF] = useState({nombre:"",email:"",tel:"",nac:"",pass:""});
   const [loading, setLoading] = useState(false); const [error, setError] = useState(""); const [done, setDone] = useState(false);
-  const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
+  const set = k => e => setF(v=>({...v,[k]:e.target.value}));
   const submit = async e => {
     e.preventDefault(); setError(""); setLoading(true);
-    const {error:err} = await sb.auth.signUp({email:form.email,password:form.pass,
-      options:{data:{nombre_completo:form.nombre,telefono:form.tel,fecha_nacimiento:form.nac,puntos:0,is_staff:false}}});
+    const {error:err} = await sb.auth.signUp({email:f.email,password:f.pass,
+      options:{data:{nombre_completo:f.nombre,telefono:f.tel,fecha_nacimiento:f.nac,puntos:0,is_staff:false}}});
     if(err) setError(err.message); else setDone(true);
     setLoading(false);
   };
   if(done) return (
     <div className="auth-page"><div className="auth-right"><div className="auth-card confirm-screen">
       <AuthBrand/><div className="confirm-icon">📬</div>
-      <div className="auth-title">¡Bienvenido al Dojo!</div>
-      <div className="auth-sub" style={{marginBottom:"1.5rem"}}>Confirmación enviada a <strong style={{color:"var(--crimson)"}}>{form.email}</strong>.<br/>Activa tu cuenta para empezar a acumular puntos.</div>
+      <div className="auth-title">¡Al Dojang!</div>
+      <div className="auth-sub" style={{marginBottom:"1.5rem"}}>Confirmación enviada a <strong style={{color:"var(--crimson)"}}>{f.email}</strong>.<br/>Activa tu cuenta para empezar tu camino al Cinturón Negro.</div>
       <button className="link-btn" onClick={onSwitch}>Ir al login →</button>
     </div></div></div>
   );
@@ -747,29 +734,29 @@ function RegisterForm({ onSwitch }) {
       <div className="auth-left">
         <div className="auth-bg-kanji">道</div>
         <div className="auth-quote">"Un viaje de mil millas comienza con un solo paso."</div>
-        <div className="auth-quote-attr" style={{marginTop:8}}>— Lao Tzu</div>
+        <div className="auth-quote-sub" style={{marginTop:12}}>Lao Tzu</div>
       </div>
       <div className="auth-right">
         <div className="auth-card">
           <AuthBrand/>
           <div className="auth-title">Iniciar el Camino</div>
-          <div className="auth-sub">Crea tu cuenta y gana <strong style={{color:"var(--crimson)"}}>100 pts</strong> por cada $1</div>
-          {error && <div className="alert alert-error">{error}</div>}
+          <div className="auth-sub">Crea tu cuenta — <strong style={{color:"var(--crimson)"}}>100 pts por cada $1</strong></div>
+          {error && <div className="alert-err">{error}</div>}
           <form onSubmit={submit}>
             <div className="form-group"><label className="form-label">Nombre completo</label>
-              <input className="form-input" type="text" placeholder="Kenji García" value={form.nombre} onChange={set("nombre")} required/></div>
+              <input className="form-input" type="text" placeholder="Kenji García" value={f.nombre} onChange={set("nombre")} required/></div>
             <div className="form-row">
               <div className="form-group"><label className="form-label">Teléfono</label>
-                <input className="form-input" type="tel" placeholder="+593 99…" value={form.tel} onChange={set("tel")}/></div>
+                <input className="form-input" type="tel" placeholder="+593 99…" value={f.tel} onChange={set("tel")}/></div>
               <div className="form-group"><label className="form-label">Fecha nac.</label>
-                <input className="form-input" type="date" value={form.nac} onChange={set("nac")}/></div>
+                <input className="form-input" type="date" value={f.nac} onChange={set("nac")}/></div>
             </div>
             <div className="form-group"><label className="form-label">Correo</label>
-              <input className="form-input" type="email" placeholder="tu@correo.com" value={form.email} onChange={set("email")} required/></div>
+              <input className="form-input" type="email" placeholder="tu@correo.com" value={f.email} onChange={set("email")} required/></div>
             <div className="form-group"><label className="form-label">Contraseña</label>
-              <input className="form-input" type="password" placeholder="Mínimo 6 caracteres" value={form.pass} onChange={set("pass")} minLength={6} required/></div>
-            <button className="btn-primary" type="submit" disabled={loading}>
-              {loading && <span className="spinner"/>}{loading ? "Creando…" : "Comenzar entrenamiento →"}</button>
+              <input className="form-input" type="password" placeholder="Mín. 6 caracteres" value={f.pass} onChange={set("pass")} minLength={6} required/></div>
+            <button className="btn-p" type="submit" disabled={loading}>
+              {loading&&<span className="spinner"/>}{loading?"Creando…":"Comenzar entrenamiento →"}</button>
           </form>
           <div className="link-row">¿Ya tienes cuenta? <button className="link-btn" onClick={onSwitch}>Inicia sesión</button></div>
         </div>
@@ -778,49 +765,48 @@ function RegisterForm({ onSwitch }) {
   );
 }
 
-// ── CARRITO LATERAL ───────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// CARRITO LATERAL
+// ══════════════════════════════════════════════════════════════════════════
 function CartDrawer({ carrito, onClose, onUpdate, onRemove, onCheckout }) {
-  const subtotal = carrito.reduce((s,x)=>s+x.precio*x.qty,0);
-  const impuesto = subtotal * IVA;
-  const total = subtotal + impuesto;
-  const pts = Math.round(total * PTS_POR_DOLAR);
+  const sub = carrito.reduce((s,x)=>s+x.precio*x.qty,0);
+  const iva = sub * IVA;
+  const total = sub + iva;
+  const pts = Math.round(total * PTS_X_DOLAR);
   return (
     <>
       <div className="cart-overlay" onClick={onClose}/>
       <div className="cart-drawer">
         <div className="cart-hd">
           <div className="cart-hd-title">🛒 Mi Pedido</div>
-          <button className="btn-close-cart" onClick={onClose}>✕</button>
+          <button className="btn-close" onClick={onClose}>✕</button>
         </div>
         <div className="cart-items">
-          {carrito.length === 0
-            ? <div className="cart-empty"><div className="cart-empty-icon">☕</div><div>Tu carrito está vacío.<br/>Explora el menú y añade tus favoritos.</div></div>
+          {carrito.length===0
+            ? <div className="cart-empty"><div style={{fontSize:44,marginBottom:12,opacity:.3}}>☕</div>Tu carrito está vacío.<br/>Explora el menú y añade tus favoritos.</div>
             : carrito.map(x=>(
-              <div className="cart-item" key={x.id}>
-                <div className="ci-emoji">{x.emoji}</div>
-                <div className="ci-info">
-                  <div className="ci-name">{x.nombre}</div>
-                  <div className="ci-price">${(x.precio*x.qty).toFixed(2)}</div>
-                </div>
+              <div className="ci" key={x.id}>
+                <div className="ci-em">{x.emoji}</div>
+                <div className="ci-info"><div className="ci-nm">{x.nombre}</div><div className="ci-pr">${(x.precio*x.qty).toFixed(2)}</div></div>
                 <div className="ci-qty">
                   <button className="qty-btn" onClick={()=>onUpdate(x.id,-1)}>−</button>
-                  <span className="qty-num">{x.qty}</span>
+                  <span className="qty-n">{x.qty}</span>
                   <button className="qty-btn" onClick={()=>onUpdate(x.id,1)}>+</button>
-                  <button className="btn-remove" onClick={()=>onRemove(x.id)}>🗑</button>
+                  <button className="btn-rm" onClick={()=>onRemove(x.id)}>🗑</button>
                 </div>
               </div>
             ))
           }
         </div>
-        {carrito.length > 0 && (
-          <div className="cart-footer">
+        {carrito.length>0 && (
+          <div className="cart-foot">
             <div className="cart-totals">
-              <div className="cart-line"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-              <div className="cart-line"><span>IVA (12%)</span><span>${impuesto.toFixed(2)}</span></div>
+              <div className="cart-line"><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
+              <div className="cart-line"><span>IVA (12%)</span><span>${iva.toFixed(2)}</span></div>
               <div className="cart-total-line"><span>Total</span><span>${total.toFixed(2)}</span></div>
             </div>
-            <div className="cart-pts-earn">🥋 Ganarás <strong>+{pts.toLocaleString()} puntos</strong> con este pedido</div>
-            <button className="btn-checkout" onClick={()=>onCheckout({subtotal,impuesto,total,pts})}>Proceder al Pago →</button>
+            <div className="cart-pts-earn">🥋 Ganarás <strong>+{pts.toLocaleString()} pts</strong> con este pedido</div>
+            <button className="btn-checkout" onClick={()=>onCheckout({sub,iva,total,pts})}>Proceder al Pago →</button>
           </div>
         )}
       </div>
@@ -828,200 +814,225 @@ function CartDrawer({ carrito, onClose, onUpdate, onRemove, onCheckout }) {
   );
 }
 
-// ── CHECKOUT / PAGO ───────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// CHECKOUT
+// ══════════════════════════════════════════════════════════════════════════
 function CheckoutPage({ resumen, carrito, onConfirm, onBack }) {
   const [method, setMethod] = useState(null);
-  const [cardNum, setCardNum] = useState(""); const [cardExp, setCardExp] = useState(""); const [cardCVV, setCardCVV] = useState(""); const [cardName, setCardName] = useState("");
-  const [file, setFile] = useState(null); const [dragOver, setDragOver] = useState(false);
+  const [subMethod, setSubMethod] = useState("transferencia"); // transferencia | efectivo
+  const [cardNum, setCardNum] = useState(""); const [cardExp, setCardExp] = useState("");
+  const [cardCVV, setCardCVV] = useState(""); const [cardName, setCardName] = useState("");
+  const [file, setFile] = useState(null); const [drag, setDrag] = useState(false);
   const fileRef = useRef();
 
-  const formatCard = v => v.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();
-  const formatExp = v => { const c = v.replace(/\D/g,"").slice(0,4); return c.length > 2 ? c.slice(0,2)+"/"+c.slice(2) : c; };
+  const fmtCard = v => v.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();
+  const fmtExp = v => { const c=v.replace(/\D/g,"").slice(0,4); return c.length>2?c.slice(0,2)+"/"+c.slice(2):c; };
 
-  const canPay = method==="card" ? cardNum.replace(/\s/g,"").length===16 && cardExp.length===5 && cardCVV.length===3 && cardName.length > 2
-               : method==="transfer" ? !!file : false;
+  const canPay = method==="card"
+    ? cardNum.replace(/\s/g,"").length===16 && cardExp.length===5 && cardCVV.length===3 && cardName.length>2
+    : method==="manual"
+      ? subMethod==="efectivo" || !!file
+      : false;
+
+  const handlePay = () => onConfirm(method, subMethod);
 
   return (
-    <div style={{maxWidth:560,margin:"0 auto"}}>
-      <div className="page-hd">
-        <div className="page-title">Finalizar Pago</div>
-        <div className="page-sub">Elige tu método de pago</div>
-      </div>
+    <div style={{maxWidth:540,margin:"0 auto"}}>
+      <div className="page-hd"><div className="page-title">Finalizar Pago</div><div className="page-sub">Elige tu método de pago</div></div>
       {/* resumen */}
-      <div className="panel" style={{marginBottom:"1.5rem"}}>
-        <div className="panel-hd"><span className="panel-title">Resumen del pedido</span><span className="badge badge-red">${resumen.total.toFixed(2)}</span></div>
-        <div style={{padding:"1rem 1.5rem"}}>
+      <div className="panel" style={{marginBottom:"1.25rem"}}>
+        <div className="ph"><span className="pt">Resumen</span><span className="badge br">${resumen.total.toFixed(2)}</span></div>
+        <div style={{padding:"1rem 1.4rem"}}>
           {carrito.map(x=>(
-            <div key={x.id} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"4px 0",color:"var(--muted)"}}>
-              <span>{x.emoji} {x.nombre}{x.qty>1?` ×${x.qty}`:""}</span>
-              <span>${(x.precio*x.qty).toFixed(2)}</span>
+            <div key={x.id} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"3px 0",color:"var(--muted)"}}>
+              <span>{x.emoji} {x.nombre}{x.qty>1?` ×${x.qty}`:""}</span><span>${(x.precio*x.qty).toFixed(2)}</span>
             </div>
           ))}
-          <div style={{borderTop:"1px solid var(--border-light)",marginTop:8,paddingTop:8,display:"flex",justifyContent:"space-between",fontSize:13,color:"var(--muted)"}}>
-            <span>IVA 12%</span><span>${resumen.impuesto.toFixed(2)}</span>
-          </div>
-          <div style={{display:"flex",justifyContent:"space-between",fontSize:16,fontWeight:700,color:"var(--ink)",marginTop:8}}>
-            <span>Total</span><span>${resumen.total.toFixed(2)}</span>
-          </div>
-          <div style={{background:"rgba(192,22,44,0.07)",border:"1px solid rgba(192,22,44,0.15)",borderRadius:3,padding:"6px 12px",fontSize:12,color:"var(--crimson)",fontWeight:600,marginTop:"0.75rem",textAlign:"center"}}>
-            🥋 +{resumen.pts.toLocaleString()} puntos al confirmar
-          </div>
+          <div style={{borderTop:"1px solid var(--border-light)",marginTop:8,paddingTop:8,display:"flex",justifyContent:"space-between",fontSize:12,color:"var(--muted)"}}>
+            <span>IVA 12%</span><span>${resumen.iva.toFixed(2)}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",fontSize:15,fontWeight:700,color:"var(--ink)",marginTop:8}}>
+            <span>Total</span><span>${resumen.total.toFixed(2)}</span></div>
+          <div style={{background:"rgba(192,20,40,.06)",border:"1px solid rgba(192,20,40,.14)",borderRadius:3,padding:"5px 11px",fontSize:11,color:"var(--crimson)",fontWeight:700,marginTop:10,textAlign:"center"}}>
+            🥋 +{resumen.pts.toLocaleString()} puntos al confirmar</div>
         </div>
       </div>
 
-      {/* métodos */}
+      {/* método */}
       <div className="pay-methods">
-        <div className={"pay-method-btn"+(method==="card"?" selected":"")} onClick={()=>setMethod("card")}>
-          <div className="pay-method-icon">💳</div>
-          <div className="pay-method-name">Tarjeta</div>
-          <div className="pay-method-desc">Crédito o débito</div>
+        <div className={"pay-card"+(method==="card"?" sel":"")} onClick={()=>setMethod("card")}>
+          <div className="pay-icon">💳</div>
+          <div className="pay-nm">Tarjeta</div>
+          <div className="pay-desc">Crédito o Débito<br/><strong style={{color:"var(--success)",fontSize:10}}>✓ Proceso inmediato</strong></div>
         </div>
-        <div className={"pay-method-btn"+(method==="transfer"?" selected":"")} onClick={()=>setMethod("transfer")}>
-          <div className="pay-method-icon">🏦</div>
-          <div className="pay-method-name">Transferencia</div>
-          <div className="pay-method-desc">Sube tu comprobante</div>
+        <div className={"pay-card"+(method==="manual"?" sel":"")} onClick={()=>setMethod("manual")}>
+          <div className="pay-icon">🏦</div>
+          <div className="pay-nm">Transferencia / Efectivo</div>
+          <div className="pay-desc">Requiere validación<br/><strong style={{color:"var(--warning)",fontSize:10}}>⚠ Staff debe confirmar</strong></div>
         </div>
       </div>
 
-      {/* form tarjeta */}
+      {/* formulario tarjeta */}
       {method==="card" && (
         <div className="panel">
-          <div className="panel-hd"><span className="panel-title">Datos de tarjeta</span><span style={{fontSize:18}}>🔒</span></div>
-          <div style={{padding:"1.5rem"}}>
+          <div className="ph"><span className="pt">Datos de tarjeta</span><span style={{fontSize:18}}>🔒</span></div>
+          <div style={{padding:"1.4rem"}}>
             <div className="form-group"><label className="form-label">Número de tarjeta</label>
-              <input className="select-input card-number-input" placeholder="0000 0000 0000 0000" value={cardNum} onChange={e=>setCardNum(formatCard(e.target.value))} maxLength={19}/></div>
+              <input className="select-inp card-mono" placeholder="0000 0000 0000 0000" value={cardNum} onChange={e=>setCardNum(fmtCard(e.target.value))} maxLength={19}/></div>
             <div className="form-group"><label className="form-label">Nombre en tarjeta</label>
-              <input className="select-input" placeholder="NOMBRE APELLIDO" value={cardName} onChange={e=>setCardName(e.target.value.toUpperCase())}/></div>
-            <div className="card-expiry-row">
+              <input className="select-inp" placeholder="NOMBRE APELLIDO" value={cardName} onChange={e=>setCardName(e.target.value.toUpperCase())}/></div>
+            <div className="form-row">
               <div className="form-group"><label className="form-label">Vencimiento</label>
-                <input className="select-input" placeholder="MM/AA" value={cardExp} onChange={e=>setCardExp(formatExp(e.target.value))} maxLength={5}/></div>
+                <input className="select-inp" placeholder="MM/AA" value={cardExp} onChange={e=>setCardExp(fmtExp(e.target.value))} maxLength={5}/></div>
               <div className="form-group"><label className="form-label">CVV</label>
-                <input className="select-input" placeholder="•••" type="password" value={cardCVV} onChange={e=>setCardCVV(e.target.value.replace(/\D/g,"").slice(0,3))} maxLength={3}/></div>
+                <input className="select-inp" placeholder="•••" type="password" value={cardCVV} onChange={e=>setCardCVV(e.target.value.replace(/\D/g,"").slice(0,3))} maxLength={3}/></div>
             </div>
           </div>
         </div>
       )}
 
-      {/* transferencia */}
-      {method==="transfer" && (
+      {/* transferencia / efectivo */}
+      {method==="manual" && (
         <div className="panel">
-          <div className="panel-hd"><span className="panel-title">Datos bancarios</span></div>
-          <div style={{padding:"1.5rem"}}>
-            <div className="bank-info-box">
-              {[["Banco","Banco Pichincha"],["Tipo de cuenta","Cuenta Corriente"],["Número","2200-4891-7730"],["Titular","KO-ffee S.A."],["RUC","1791823456001"],["Monto exacto",`$${resumen.total.toFixed(2)}`]].map(([l,v])=>(
-                <div className="bank-row" key={l}><span className="bank-label">{l}</span><span className="bank-value">{v}</span></div>
-              ))}
+          <div className="ph"><span className="pt">Método manual</span></div>
+          <div style={{padding:"1.4rem"}}>
+            <div className="pay-methods" style={{marginBottom:"1rem"}}>
+              <div className={"pay-card"+(subMethod==="transferencia"?" sel":"")} onClick={()=>setSubMethod("transferencia")} style={{padding:".85rem"}}>
+                <div className="pay-icon" style={{fontSize:22}}>🏦</div>
+                <div className="pay-nm" style={{fontSize:12}}>Transferencia</div>
+              </div>
+              <div className={"pay-card"+(subMethod==="efectivo"?" sel":"")} onClick={()=>setSubMethod("efectivo")} style={{padding:".85rem"}}>
+                <div className="pay-icon" style={{fontSize:22}}>💵</div>
+                <div className="pay-nm" style={{fontSize:12}}>Efectivo en Caja</div>
+              </div>
             </div>
-            <div className={"drop-zone"+(dragOver?" drag-over":"")+(file?" drop-uploaded":"")}
-              onClick={()=>fileRef.current.click()}
-              onDragOver={e=>{e.preventDefault();setDragOver(true)}}
-              onDragLeave={()=>setDragOver(false)}
-              onDrop={e=>{e.preventDefault();setDragOver(false);setFile(e.dataTransfer.files[0])}}>
-              <input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>setFile(e.target.files[0])}/>
-              <div className="drop-icon">{file?"✅":"📎"}</div>
-              <div className="drop-text">{file ? file.name : "Arrastra aquí tu comprobante o haz click para seleccionar"}</div>
-              <div style={{fontSize:11,color:"var(--muted)",marginTop:4,fontWeight:300}}>PNG, JPG o PDF · Máx. 5MB</div>
-            </div>
+            {subMethod==="transferencia" && (
+              <>
+                <div className="bank-box">
+                  {[["Banco","Banco Pichincha"],["Tipo","Cuenta Corriente"],["Número","2200-4891-7730"],["Titular","KO-ffee S.A."],["RUC","1791823456001"],["Monto exacto","$"+resumen.total.toFixed(2)]].map(([l,v])=>(
+                    <div className="bank-row" key={l}><span className="bank-lbl">{l}</span><span className="bank-val">{v}</span></div>
+                  ))}
+                </div>
+                <div className={"drop-z"+(drag?" drag":"")+(file?" uploaded":"")}
+                  onClick={()=>fileRef.current.click()}
+                  onDragOver={e=>{e.preventDefault();setDrag(true)}}
+                  onDragLeave={()=>setDrag(false)}
+                  onDrop={e=>{e.preventDefault();setDrag(false);setFile(e.dataTransfer.files[0])}}>
+                  <input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>setFile(e.target.files[0])}/>
+                  <div className="drop-icon">{file?"✅":"📎"}</div>
+                  <div className="drop-txt">{file?file.name:"Arrastra tu comprobante o haz click"}</div>
+                  <div style={{fontSize:11,color:"var(--muted)",marginTop:3,fontWeight:300}}>PNG, JPG o PDF · Máx 5MB</div>
+                </div>
+              </>
+            )}
+            {subMethod==="efectivo" && (
+              <div className="efectivo-info">
+                💵 Paga en efectivo directamente en la caja de KO-ffee al llegar.<br/>
+                Tu pedido quedará en <strong>Pendiente de Validación</strong> hasta que el staff confirme el pago en caja.
+              </div>
+            )}
           </div>
         </div>
       )}
 
-      <div style={{display:"flex",gap:"0.75rem",marginTop:"0.5rem"}}>
-        <button style={{flex:1,padding:"0.75rem",background:"none",border:"1.5px solid var(--border-light)",borderRadius:3,fontSize:13,fontFamily:"'Inter',sans-serif",color:"var(--muted)",cursor:"pointer"}} onClick={onBack}>← Volver</button>
-        <button className="btn-pay-confirm" style={{flex:2,marginTop:0}} disabled={!canPay} onClick={onConfirm}>Confirmar Pago →</button>
+      <div style={{display:"flex",gap:".75rem",marginTop:".5rem"}}>
+        <button className="btn-back" onClick={onBack}>← Volver</button>
+        <button className="btn-pay" style={{flex:1,marginTop:0}} disabled={!canPay} onClick={handlePay}>Confirmar Pedido →</button>
       </div>
     </div>
   );
 }
 
-// ── PANEL GENERAL ─────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// PANEL GENERAL CLIENTE
+// ══════════════════════════════════════════════════════════════════════════
 function PanelGeneral({ pedidos, reservas, puntos }) {
   const belt = getBelt(puntos);
-  const nextBelt = BELTS.find(b=>b.min > puntos) || belt;
-  const pct = nextBelt.min === Infinity ? 100 : Math.min(100,Math.round(((puntos-belt.min)/(nextBelt.min-belt.min))*100));
+  const nextBelt = getNextBelt(puntos);
+  const pct = nextBelt ? Math.min(100,Math.round(((puntos-belt.min)/(nextBelt.min-belt.min))*100)) : 100;
+
   return (
     <div>
-      <div className="page-hd"><div className="page-title">Mi Panel</div><div className="page-sub">Resumen de tu actividad en KO-ffee</div></div>
+      <div className="page-hd"><div className="page-title">Mi Panel</div><div className="page-sub">Tu actividad en KO-ffee</div></div>
       <div className="stats-grid">
-        <div className="stat-box s1"><div className="stat-lbl">Puntos acumulados</div><div className="stat-val accent">{puntos.toLocaleString()}</div><div className="stat-hint">Sistema: 100 pts / $1</div></div>
-        <div className="stat-box s2"><div className="stat-lbl">Reservas activas</div><div className="stat-val">{reservas.length}</div><div className="stat-hint">{reservas.length>0?`Próxima: ${reservas[0].fecha}`:"Sin reservas"}</div></div>
-        <div className="stat-box s3"><div className="stat-lbl">Pedidos realizados</div><div className="stat-val">{pedidos.length}</div><div className="stat-hint">{pedidos.length>0?`Último: ${pedidos[pedidos.length-1].fecha}`:"Sin pedidos"}</div></div>
+        <div className="stat-box s1"><div className="sl">Puntos</div><div className="sv red">{puntos.toLocaleString()}</div><div className="sh">100 pts / $1</div></div>
+        <div className="stat-box s2"><div className="sl">Reservas activas</div><div className="sv">{reservas.length}</div><div className="sh">{reservas.length>0?`Próxima: ${reservas[0].fecha}`:"Sin reservas"}</div></div>
+        <div className="stat-box s3"><div className="sl">Pedidos</div><div className="sv">{pedidos.length}</div><div className="sh">{pedidos.length>0?`Último: ${pedidos[pedidos.length-1].fecha}`:"Sin pedidos"}</div></div>
       </div>
       {/* cinturón */}
-      <div className="belt-indicator">
-        <div className="belt-color-dot" style={{background:belt.color}}/>
-        <div className="belt-info">
-          <div className="belt-rank">🥋 {belt.nombre} — {belt.reward}</div>
-          <div className="belt-progress-wrap">
-            <div className="belt-bar"><div className="belt-fill" style={{width:pct+"%",background:belt.color}}/></div>
-            <div className="belt-pts-txt">{puntos.toLocaleString()} pts · {nextBelt.min===Infinity?"Nivel máximo alcanzado":`Próximo nivel a los ${nextBelt.min.toLocaleString()} pts`}</div>
-          </div>
+      <div className="belt-ind">
+        <div className="belt-dot" style={{background:belt.color}}/>
+        <div className="belt-ind-info" style={{flex:1}}>
+          <div className="belt-ind-name">🥋 Cinturón {belt.nombre} — {belt.reward}</div>
+          <div className="belt-bar"><div className="belt-fill" style={{width:pct+"%",background:belt.color}}/></div>
+          <div className="belt-pts-txt">{puntos.toLocaleString()} pts · {nextBelt?`Cinturón ${nextBelt.nombre} a los ${nextBelt.min.toLocaleString()} pts`:"¡Nivel Maestro alcanzado! 🏆"}</div>
         </div>
       </div>
       {/* reservas */}
       <div className="panel">
-        <div className="panel-hd"><span className="panel-title">Próximas Reservas</span><span className="badge badge-red">{reservas.length} activas</span></div>
-        {reservas.length===0 ? <div className="empty">Sin reservas — ¡reserva tu mesa en el dojo!</div>
+        <div className="ph"><span className="pt">Próximas Reservas</span><span className="badge br">{reservas.length}</span></div>
+        {reservas.length===0 ? <div className="empty">Sin reservas — ¡reserva tu mesa en el Dojang!</div>
           : reservas.map((r,i)=>(
-            <div className="reserva-row" key={i}>
+            <div className="res-row" key={i}>
               <div className="res-date"><div className="res-day">{r.dia}</div><div className="res-mon">{r.mes}</div></div>
               <div className="res-sep"/>
-              <div className="res-info"><div className="res-name">{r.zona} · Mesa {r.mesa}</div><div className="res-detail">{r.hora} · {r.personas} persona{r.personas>1?"s":""}</div></div>
-              <span className={"res-status rs-"+(r.estado||"confirmada")}>{r.estado==="aceptada"?"Aceptada ✓":r.estado==="en_curso"?"En curso":"Confirmada"}</span>
+              <div className="res-info"><div className="res-nm">{r.zona} · Mesa {r.mesa}</div><div className="res-dt">{r.hora} · {r.personas}p</div></div>
+              <span className={"res-st "+(r.estado==="aceptada"?"rs-conf":"rs-pend")}>{r.estado==="aceptada"?"Aceptada ✓":"Pendiente"}</span>
             </div>
           ))
         }
       </div>
       {/* pedidos */}
       <div className="panel">
-        <div className="panel-hd"><span className="panel-title">Historial de Pedidos</span><span className="badge badge-green">{pedidos.length} pedidos</span></div>
+        <div className="ph"><span className="pt">Historial de Pedidos</span><span className="badge bg">{pedidos.length}</span></div>
         {pedidos.length===0 ? <div className="empty">Sin pedidos — ¡explora el menú!</div>
           : [...pedidos].reverse().map((p,i)=>(
-            <div className="pedido-row" key={i}>
-              <div className="ped-left"><div className="ped-icon">🛍️</div>
-                <div><div className="ped-name">{p.items.join(", ")}</div><div className="ped-date">{p.fecha}</div></div>
+            <div className="ped-row" key={i}>
+              <div className="ped-l"><div className="ped-ico">🛍️</div>
+                <div><div className="ped-nm">{p.items.join(", ")}</div><div className="ped-dt">{p.fecha} · {p.payMethod==="card"?"💳 Tarjeta":p.payMethod==="efectivo"?"💵 Efectivo":"🏦 Transferencia"}</div></div>
               </div>
-              <div className="ped-right"><div className="ped-price">${p.total.toFixed(2)}</div><div className="ped-pts">+{p.pts.toLocaleString()} pts</div></div>
+              <div className="ped-r">
+                <div className="ped-pr">${p.total.toFixed(2)}</div>
+                <div className="ped-pts">{p.payMethod==="card"?`+${p.pts.toLocaleString()} pts`:"Pendiente validación"}</div>
+              </div>
             </div>
           ))
         }
       </div>
       {/* puntos */}
       <div className="panel">
-        <div className="panel-hd"><span className="panel-title">Sistema de Puntos</span><span className="badge badge-gold">{belt.nombre}</span></div>
+        <div className="ph"><span className="pt">Sistema de Puntos</span><span className="badge br" style={{background:belt.color+"22",color:belt.color}}>C. {belt.nombre}</span></div>
         <div className="pts-body">
-          <div className="pts-rate-tag">🥋 100 puntos por cada $1 de compra</div>
-          <div className="pts-bar-labels"><span>{puntos.toLocaleString()} pts actuales</span><span>{nextBelt.min===Infinity?"Nivel máximo":nextBelt.min.toLocaleString()+" pts → "+nextBelt.nombre}</span></div>
-          <div className="pts-bar"><div className="pts-fill" style={{width:pct+"%"}}/></div>
-          <div className="pts-msg">{nextBelt.min===Infinity?"¡Has alcanzado el nivel máximo! Eres un Maestro del Dojo 🏆":(<>Te faltan <strong>{(nextBelt.min-puntos).toLocaleString()} puntos</strong> para el {nextBelt.nombre} · Beneficio: {nextBelt.reward}</>)}</div>
+          <div className="pts-rate">🥋 100 puntos por cada $1 de compra</div>
+          <div className="pts-bar-lbl"><span>{puntos.toLocaleString()} pts</span><span>{nextBelt?nextBelt.min.toLocaleString()+" pts → C. "+nextBelt.nombre:"Nivel máximo"}</span></div>
+          <div className="pts-bar" style={{background:"#f0ece6"}}><div className="pts-fill" style={{width:pct+"%",background:belt.color}}/></div>
+          <div className="pts-msg">{nextBelt?<>Faltan <strong>{(nextBelt.min-puntos).toLocaleString()} pts</strong> para el Cinturón {nextBelt.nombre} · {nextBelt.reward}</>:"¡Eres un Maestro del Dojang! 🏆"}</div>
         </div>
       </div>
     </div>
   );
 }
 
-// ── MENÚ ──────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// MENÚ PAGE
+// ══════════════════════════════════════════════════════════════════════════
 function MenuPage({ onAdd }) {
   const cats = ["Todos","Café","Comida","Especiales"];
   const [cat, setCat] = useState("Todos");
-  const filtered = cat==="Todos" ? MENU : MENU.filter(m=>m.cat===cat);
+  const items = cat==="Todos"?MENU:MENU.filter(m=>m.cat===cat);
   return (
     <div>
-      <div className="page-hd"><div className="page-title">Menú del Dojo</div><div className="page-sub">Specialty coffee & cocina artesanal · <span style={{color:"var(--crimson)",fontWeight:600}}>100 pts por $1</span></div></div>
+      <div className="page-hd"><div className="page-title">Menú del Dojang</div><div className="page-sub">Specialty coffee & cocina artesanal · <strong style={{color:"var(--crimson)"}}>100 pts por $1</strong></div></div>
       <div className="panel">
         <div className="cat-tabs">{cats.map(c=><button key={c} className={"cat-tab"+(cat===c?" active":"")} onClick={()=>setCat(c)}>{c}</button>)}</div>
         <div className="menu-grid">
-          {filtered.map(item=>(
-            <div className="menu-card" key={item.id}>
-              <div className="menu-emoji">{item.emoji}</div>
-              <div className="menu-body">
-                <div className="menu-name">{item.nombre}</div>
-                <div className="menu-desc">{item.desc}</div>
-                <div className="menu-footer">
-                  <div className="menu-price-wrap">
-                    <div className="menu-price">${item.precio.toFixed(2)}</div>
-                    <div className="menu-pts-hint">+{Math.round(item.precio*PTS_POR_DOLAR*(1+IVA))} pts</div>
-                  </div>
+          {items.map(item=>(
+            <div className="mc" key={item.id}>
+              <div className="mc-emoji">{item.emoji}</div>
+              <div className="mc-body">
+                <div className="mc-name">{item.nombre}</div>
+                <div className="mc-desc">{item.desc}</div>
+                <div className="mc-foot">
+                  <div><div className="mc-price">${item.precio.toFixed(2)}</div><div className="mc-pts">+{Math.round(item.precio*PTS_X_DOLAR*(1+IVA))} pts</div></div>
                   <button className="btn-add" onClick={()=>onAdd(item)}>+ Añadir</button>
                 </div>
               </div>
@@ -1033,31 +1044,33 @@ function MenuPage({ onAdd }) {
   );
 }
 
-// ── RESERVAS ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// RESERVAS PAGE
+// ══════════════════════════════════════════════════════════════════════════
 function ReservasPage({ onReserva }) {
   const [sel, setSel] = useState(null);
-  const [fecha, setFecha] = useState(""); const [hora, setHora] = useState(""); const [personas, setPersonas] = useState("2");
+  const [fecha, setFecha] = useState(""); const [hora, setHora] = useState(""); const [pax, setPax] = useState("2");
   const today = new Date().toISOString().split("T")[0];
-  const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
   const handle = () => {
     if(!sel||!fecha||!hora) return;
     const d = new Date(fecha+"T12:00:00");
-    onReserva({dia:String(d.getDate()).padStart(2,"0"),mes:meses[d.getMonth()],zona:sel.zona,mesa:sel.num,hora,personas:parseInt(personas),fecha:`${d.getDate()} ${meses[d.getMonth()]}`,estado:"confirmada"});
-    setSel(null); setFecha(""); setHora(""); setPersonas("2");
+    onReserva({dia:String(d.getDate()).padStart(2,"0"),mes:MESES[d.getMonth()],zona:sel.zona,mesa:sel.num,hora,personas:parseInt(pax),fecha:`${d.getDate()} ${MESES[d.getMonth()]}`,estado:"pendiente"});
+    setSel(null); setFecha(""); setHora(""); setPax("2");
   };
   return (
     <div>
-      <div className="page-hd"><div className="page-title">Reservar Mesa</div><div className="page-sub">Elige tu zona favorita del Dojo</div></div>
+      <div className="page-hd"><div className="page-title">Reservar Mesa</div><div className="page-sub">Elige tu zona del Dojang</div></div>
       <div className="zonas-grid">
-        {ZONAS_DATA.map(zona=>(
+        {ZONAS.map(zona=>(
           <div className="zona-card" key={zona.id}>
-            <div className="zona-hd"><span className="zona-icon">{zona.icon}</span>
-              <div><div className="zona-name">{zona.nombre}</div><div className="zona-desc">{zona.desc}</div></div>
+            <div className="zona-hd"><span style={{fontSize:19}}>{zona.icon}</span>
+              <div><div className="zona-nm">{zona.nombre}</div><div className="zona-desc">{zona.desc}</div></div>
             </div>
             <div className="mesas-grid">
               {zona.mesas.map(m=>{
-                const isSel = sel && sel.zona===zona.nombre && sel.num===m.num;
-                return <button key={m.num} className={"mesa-btn "+(isSel?"seleccionada":m.libre?"libre":"ocupada")} disabled={!m.libre} onClick={()=>setSel({zona:zona.nombre,num:m.num,cap:m.cap})}>
+                const isSel = sel&&sel.zona===zona.nombre&&sel.num===m.num;
+                return <button key={m.num} className={"mesa "+(isSel?"sel":m.libre?"libre":"ocupada")} disabled={!m.libre} onClick={()=>setSel({zona:zona.nombre,num:m.num,cap:m.cap})}>
                   Mesa {m.num}<div className="mesa-cap">{m.cap}p</div></button>;
               })}
             </div>
@@ -1066,17 +1079,17 @@ function ReservasPage({ onReserva }) {
       </div>
       {sel && (
         <div className="panel">
-          <div className="panel-hd"><span className="panel-title">Confirmar Reserva</span></div>
-          <div className="reserva-form-panel">
-            <div className="res-sel-info">⛩️ {sel.zona} · Mesa {sel.num} · hasta {sel.cap} persona{sel.cap>1?"s":""}</div>
-            <div className="form-row" style={{marginBottom:"0.9rem"}}>
+          <div className="ph"><span className="pt">Confirmar Reserva</span></div>
+          <div className="res-form-panel">
+            <div className="res-sel-info">⛩️ {sel.zona} · Mesa {sel.num} · hasta {sel.cap}p</div>
+            <div className="form-row" style={{marginBottom:".85rem"}}>
               <div className="form-group"><label className="form-label">Fecha</label>
-                <input className="select-input" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
+                <input className="select-inp" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
               <div className="form-group"><label className="form-label">Hora</label>
-                <input className="select-input" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
+                <input className="select-inp" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
             </div>
             <div className="form-group" style={{marginBottom:"1rem"}}><label className="form-label">Personas</label>
-              <select className="select-input" value={personas} onChange={e=>setPersonas(e.target.value)}>
+              <select className="select-inp" value={pax} onChange={e=>setPax(e.target.value)}>
                 {[...Array(sel.cap)].map((_,i)=><option key={i+1} value={i+1}>{i+1}</option>)}</select></div>
             <button className="btn-reservar" onClick={handle} disabled={!fecha||!hora}>Confirmar Reserva</button>
           </div>
@@ -1086,100 +1099,217 @@ function ReservasPage({ onReserva }) {
   );
 }
 
-// ── STAFF DASHBOARD ───────────────────────────────────────────────────────
-function StaffDashboard({ onSignOut, addToast, globalReservas, globalPedidos, onUpdateReserva, onUpdatePedido }) {
-  const [vista, setVista] = useState("kds");
-  const [search, setSearch] = useState(""); const [foundClient, setFoundClient] = useState(null);
-  const [ptsAdj, setPtsAdj] = useState("");
+// ══════════════════════════════════════════════════════════════════════════
+// MURO DE COMENTARIOS (público, persiste en localStorage)
+// ══════════════════════════════════════════════════════════════════════════
+function MuroDojang({ currentUser, onBack }) {
+  const loadComments = () => {
+    try { const r = localStorage.getItem(LS_COMMENTS); return r ? JSON.parse(r) : []; } catch { return []; }
+  };
+  const [comments, setComments] = useState(loadComments);
+  const [text, setText] = useState("");
+  const [anonName, setAnonName] = useState("");
+  const isLoggedIn = !!currentUser;
+  const authorName = isLoggedIn ? (currentUser.user_metadata?.nombre_completo || currentUser.email.split("@")[0]) : (anonName.trim() || "Anónimo");
+  const authorBelt = isLoggedIn ? getBelt(currentUser.user_metadata?.puntos || 0) : null;
 
-  const mockClients = [
+  const addComment = () => {
+    if(!text.trim()) return;
+    const now = new Date();
+    const fmt = now.toLocaleString("es-EC",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+    const nc = { id:Date.now(), author:authorName, time:fmt, text:text.trim(), belt: authorBelt?.nombre || null, beltColor: authorBelt?.color || null };
+    const updated = [nc, ...comments];
+    setComments(updated);
+    localStorage.setItem(LS_COMMENTS, JSON.stringify(updated));
+    setText("");
+  };
+
+  const initials = name => name.split(" ").map(n=>n[0]).slice(0,2).join("").toUpperCase();
+
+  return (
+    <div style={{maxWidth:700,margin:"0 auto"}}>
+      <div style={{marginBottom:"1.5rem",display:"flex",alignItems:"center",gap:"1rem"}}>
+        <button className="btn-back" onClick={onBack}>← Volver</button>
+        <div>
+          <div className="page-title">💬 Muro del Dojang</div>
+          <div className="page-sub">Comentarios de la comunidad KO-ffee — visible para todos</div>
+        </div>
+      </div>
+
+      {/* Formulario */}
+      <div className="comment-form">
+        {!isLoggedIn && (
+          <div className="form-group" style={{marginBottom:".75rem"}}>
+            <input className="form-input light" type="text" placeholder="Tu nombre (opcional — aparecerá como 'Anónimo' si no pones nada)" value={anonName} onChange={e=>setAnonName(e.target.value)} style={{marginBottom:0}}/>
+          </div>
+        )}
+        {isLoggedIn && (
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:".85rem"}}>
+            <div className="comment-avatar" style={{background: authorBelt?.color || "var(--ink)"}}>{initials(authorName)}</div>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"var(--ink)"}}>{authorName}</div>
+              {authorBelt && <div style={{fontSize:10,color:authorBelt.color,fontWeight:700,letterSpacing:1,textTransform:"uppercase"}}>🥋 Cinturón {authorBelt.nombre}</div>}
+            </div>
+          </div>
+        )}
+        <textarea placeholder="Escribe tu experiencia, sugerencia o saludo a la comunidad KO-ffee… ☕" value={text} onChange={e=>setText(e.target.value)}/>
+        <button className="btn-comment" onClick={addComment} disabled={!text.trim()}>Publicar en el Muro</button>
+      </div>
+
+      {/* Lista */}
+      {comments.length===0
+        ? <div className="panel"><div className="empty">Sé el primero en dejar un comentario en el Muro del Dojang 🥋</div></div>
+        : comments.map(c=>(
+          <div className="comment-card" key={c.id}>
+            <div className="comment-meta">
+              <div className="comment-avatar" style={{background:c.beltColor||"var(--ink)"}}>{initials(c.author)}</div>
+              <div style={{flex:1}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                  <span className="comment-author">{c.author}</span>
+                  {c.belt && <span style={{fontSize:9,letterSpacing:1,textTransform:"uppercase",padding:"2px 7px",borderRadius:2,fontWeight:700,background:c.beltColor+"22",color:c.beltColor}}>C. {c.belt}</span>}
+                </div>
+                <div className="comment-time">{c.time}</div>
+              </div>
+            </div>
+            <div className="comment-text">{c.text}</div>
+          </div>
+        ))
+      }
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// STAFF DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════
+function StaffDashboard({ onSignOut, addToast, orders, reservas, onAdvanceOrder, onValidateOrder, onUpdateReserva }) {
+  const [vista, setVista] = useState("kanban");
+  const [search, setSearch] = useState(""); const [foundClient, setFoundClient] = useState(null); const [ptsAdj, setPtsAdj] = useState("");
+
+  const MOCK_CLIENTS = [
     {nombre:"María Fernanda López",email:"maria@ko-ffee.ec",puntos:8400,pedidos:12,reservas:3},
     {nombre:"Carlos Andrade",email:"carlos@ko-ffee.ec",puntos:2100,pedidos:5,reservas:1},
+    {nombre:"Valentina Ruiz",email:"valen@ko-ffee.ec",puntos:32500,pedidos:28,reservas:8},
   ];
 
   const searchClient = () => {
-    const q = search.toLowerCase();
-    const found = mockClients.find(c=>c.nombre.toLowerCase().includes(q)||c.email.toLowerCase().includes(q));
-    setFoundClient(found || null);
+    const q=search.toLowerCase();
+    setFoundClient(MOCK_CLIENTS.find(c=>c.nombre.toLowerCase().includes(q)||c.email.toLowerCase().includes(q))||"notfound");
   };
 
-  const kdsNav = [{id:"kds",icon:"🖥️",label:"KDS — Pedidos"},{id:"reservas",icon:"📋",label:"Gestión Reservas"},{id:"clientes",icon:"👥",label:"Control Clientes"}];
+  // Agrupar pedidos por estado kanban
+  const pendientes  = orders.filter(o=>o.kStatus==="pendiente");
+  const enEspera    = orders.filter(o=>o.kStatus==="espera");
+  const enPrep      = orders.filter(o=>o.kStatus==="preparacion");
+  const listos      = orders.filter(o=>o.kStatus==="listo");
 
-  const getKdsLabel = s => s==="preparacion"?"En Preparación":s==="listo"?"Listo ✓":"Recibido";
-  const nextStatus = s => s==="recibido"?"preparacion":s==="preparacion"?"listo":"listo";
+  const navItems = [{id:"kanban",icon:"🗂️",label:"KDS — Pedidos"},{id:"reservas",icon:"📋",label:"Reservas"},{id:"clientes",icon:"👥",label:"Clientes"}];
+
+  const payLabel = m => m==="card"?"💳 Tarjeta":m==="efectivo"?"💵 Efectivo":"🏦 Transferencia";
+  const payClass = m => m==="card"?"kp-card":m==="efectivo"?"kp-efectivo":"kp-transfer";
 
   return (
-    <div className="app-shell staff-mode">
+    <div className="app">
       <aside className="sidebar">
-        <div className="sb-brand">
-          <div className="sb-brand-icon">⚔️</div>
-          <div>
-            <div className="sb-brand-name">KO<span>-ffee</span></div>
-            <div style={{fontSize:9,letterSpacing:"1.5px",textTransform:"uppercase",color:"var(--crimson)",marginTop:2}}>Staff Panel</div>
-          </div>
+        <div className="sb-top">
+          <div className="sb-icon">⚔️</div>
+          <div><div className="sb-name">KO<span>-ffee</span></div><div className="sb-tag">Staff Panel</div></div>
         </div>
         <nav className="sb-nav">
-          <div className="sb-section-label">Control del Dojo</div>
-          {kdsNav.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}><span className="nb-icon">{n.icon}</span>{n.label}</button>)}
+          <div className="sb-sec">Control del Dojang</div>
+          {navItems.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}><span className="ni">{n.icon}</span>{n.label}</button>)}
         </nav>
-        <div className="sb-footer">
-          <div className="staff-badge">⚔️ Staff</div>
-          <div className="sb-user-info">Panel de Administración</div>
-          <button className="btn-signout" onClick={onSignOut}>Cerrar sesión</button>
+        <div className="sb-foot">
+          <div className="staff-badge-pill">⚔️ Staff</div>
+          <div className="sb-user">Panel de Administración</div>
+          <button className="btn-logout" onClick={onSignOut}>Cerrar sesión</button>
         </div>
       </aside>
-      <main className="main staff-main" style={{color:"var(--white)"}}>
-        {/* KDS */}
-        {vista==="kds" && (
+      <main className="main dark">
+        {vista==="kanban" && (
           <div>
-            <div className="page-hd"><div className="page-title light">Sistema KDS</div><div className="page-sub light">Kitchen Display System — Pedidos en tiempo real</div></div>
-            {globalPedidos.length===0
-              ? <div style={{padding:"3rem",textAlign:"center",color:"#444",fontStyle:"italic"}}>Sin pedidos activos en este momento</div>
-              : <div className="kds-grid">
-                {globalPedidos.map((p,i)=>(
-                  <div key={i} className={"kds-card "+(p.kdsStatus||"recibido")}>
-                    <div className="kds-card-hd">
-                      <span className="kds-id">PED-{String(i+1).padStart(3,"0")}</span>
-                      <span className={"kds-status ks-"+(p.kdsStatus||"recibido")}>{getKdsLabel(p.kdsStatus||"recibido")}</span>
+            <div className="page-hd"><div className="page-title w">KDS — Gestión de Pedidos</div><div className="page-sub">Kanban en tiempo real</div></div>
+            <div className="kanban">
+              {/* Pendiente de Validación */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kboard-title">⏳ Pendiente Validación</span>
+                  <div className="kboard-count" style={{background:"rgba(184,131,26,.2)",color:"var(--warning)"}}>{pendientes.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {pendientes.length===0&&<div style={{fontSize:12,color:"#444",fontStyle:"italic",padding:".5rem"}}>Sin pedidos pendientes</div>}
+                  {pendientes.map((o,i)=>(
+                    <div className="korder pendiente" key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-total">${o.total.toFixed(2)} · {o.fecha}</div>
+                      <div className="ko-btns">
+                        <button className="btn-ko btn-validate" onClick={()=>{onValidateOrder(o.id);addToast(`Pago validado — pedido PED-${String(o.id).slice(-3)} pasa a En Espera`,"g","✓");}}>✓ Validar Pago</button>
+                      </div>
                     </div>
-                    <div className="kds-body">
-                      <div className="kds-items">{p.items.join("\n")}</div>
-                      <div className="kds-meta">{p.fecha} · ${p.total.toFixed(2)}</div>
-                      {(p.kdsStatus||"recibido")!=="listo"
-                        ? <button className="btn-kds btn-kds-next" onClick={()=>{ onUpdatePedido(i,nextStatus(p.kdsStatus||"recibido")); addToast(nextStatus(p.kdsStatus||"recibido")==="listo"?"✅ Pedido listo para retirar":"🔥 Pedido en preparación","gold","⚡"); }}>
-                            {(p.kdsStatus||"recibido")==="recibido"?"→ Iniciar Preparación":"→ Marcar como Listo"}</button>
-                        : <button className="btn-kds btn-kds-done" disabled>✓ Listo para retirar</button>
-                      }
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            }
+              {/* En Espera + Preparación */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kboard-title">🔥 En Preparación</span>
+                  <div className="kboard-count" style={{background:"rgba(192,20,40,.2)",color:"var(--crimson)"}}>{enEspera.length+enPrep.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {[...enEspera,...enPrep].length===0&&<div style={{fontSize:12,color:"#444",fontStyle:"italic",padding:".5rem"}}>Sin pedidos activos</div>}
+                  {[...enEspera,...enPrep].map((o)=>(
+                    <div className={"korder "+o.kStatus} key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-total">${o.total.toFixed(2)} · Estado: {o.kStatus==="espera"?"En Espera":"En Preparación"}</div>
+                      <div className="ko-btns">
+                        <button className="btn-ko btn-advance" onClick={()=>{onAdvanceOrder(o.id);addToast(o.kStatus==="espera"?"🔥 Pedido en preparación":"✅ ¡Pedido listo! Notificando al cliente…","r","⚡");}}>
+                          {o.kStatus==="espera"?"→ Iniciar Preparación":"→ Marcar como Listo"}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Listos */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kboard-title">✅ Orden Lista</span>
+                  <div className="kboard-count" style={{background:"rgba(42,122,80,.2)",color:"#6fcf97"}}>{listos.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {listos.length===0&&<div style={{fontSize:12,color:"#444",fontStyle:"italic",padding:".5rem"}}>Sin órdenes listas</div>}
+                  {listos.map((o)=>(
+                    <div className="korder listo" key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-total">${o.total.toFixed(2)}</div>
+                      <div className="ko-btns"><button className="btn-ko btn-done" disabled>✓ Listo para retirar</button></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         )}
-        {/* RESERVAS STAFF */}
+
         {vista==="reservas" && (
           <div>
-            <div className="page-hd"><div className="page-title light">Dojo Manager</div><div className="page-sub light">Gestión de reservas en tiempo real</div></div>
-            <div className="staff-panel">
-              <div className="staff-panel-hd"><span className="panel-title-light">Reservas Activas</span><span className="badge badge-red">{globalReservas.length}</span></div>
-              {globalReservas.length===0
-                ? <div className="empty" style={{color:"#444"}}>Sin reservas activas</div>
-                : <table className="staff-res-table">
-                  <thead><tr><th>Mesa</th><th>Zona</th><th>Fecha</th><th>Hora</th><th>Personas</th><th>Estado</th><th>Acción</th></tr></thead>
+            <div className="page-hd"><div className="page-title w">Gestión de Reservas</div><div className="page-sub">Dojo Manager</div></div>
+            <div className="panel-dark">
+              <div className="ph-dark"><span className="pt w">Reservas Activas</span><span className="badge br">{reservas.length}</span></div>
+              {reservas.length===0 ? <div className="empty" style={{color:"#444"}}>Sin reservas activas</div>
+                : <table className="s-table">
+                  <thead><tr><th>Mesa</th><th>Zona</th><th>Fecha</th><th>Hora</th><th>Pax</th><th>Estado</th><th>Acción</th></tr></thead>
                   <tbody>
-                    {globalReservas.map((r,i)=>(
+                    {reservas.map((r,i)=>(
                       <tr key={i}>
                         <td style={{color:"var(--white)",fontWeight:600}}>Mesa {r.mesa}</td>
-                        <td>{r.zona}</td>
-                        <td>{r.dia} {r.mes}</td>
-                        <td>{r.hora}</td>
-                        <td>{r.personas}p</td>
-                        <td><span className={"res-status "+(r.estado==="aceptada"?"rs-confirmada":r.estado==="en_curso"?"s-pendiente":"rs-pendiente")}>{r.estado==="aceptada"?"Aceptada":r.estado==="en_curso"?"En Curso":"Pendiente"}</span></td>
-                        <td style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
-                          {r.estado!=="aceptada" && <button className="btn-status bs-aceptar" onClick={()=>{onUpdateReserva(i,"aceptada");addToast("Reserva aceptada — el cliente será notificado","success","📅");}}>Aceptar</button>}
-                          {r.estado==="aceptada" && <button className="btn-status bs-curso" onClick={()=>{onUpdateReserva(i,"en_curso");addToast("Reserva marcada como En Curso","gold","⏱️");}}>En Curso</button>}
-                          {r.estado==="en_curso" && <button className="btn-status bs-finalizar">Finalizada</button>}
+                        <td>{r.zona}</td><td>{r.dia} {r.mes}</td><td>{r.hora}</td><td>{r.personas}p</td>
+                        <td><span className={"res-st "+(r.estado==="aceptada"?"rs-conf":"rs-pend")}>{r.estado==="aceptada"?"Aceptada":"Pendiente"}</span></td>
+                        <td style={{display:"flex",gap:6}}>
+                          {r.estado!=="aceptada"&&<button className="btn-s bs-a" onClick={()=>{onUpdateReserva(i,"aceptada");addToast(`Reserva aceptada — ${r.zona} Mesa ${r.mesa}`,"s","📅");}}>Aceptar</button>}
+                          {r.estado==="aceptada"&&<button className="btn-s bs-f" disabled>Finalizada</button>}
                         </td>
                       </tr>
                     ))}
@@ -1189,31 +1319,31 @@ function StaffDashboard({ onSignOut, addToast, globalReservas, globalPedidos, on
             </div>
           </div>
         )}
-        {/* CLIENTES */}
+
         {vista==="clientes" && (
           <div>
-            <div className="page-hd"><div className="page-title light">Control de Clientes</div><div className="page-sub light">Busca, verifica y ajusta puntos de clientes</div></div>
-            <div className="staff-panel">
-              <div className="staff-panel-hd"><span className="panel-title-light">Buscador de Usuarios</span></div>
+            <div className="page-hd"><div className="page-title w">Control de Clientes</div><div className="page-sub">Busca y ajusta puntos</div></div>
+            <div className="panel-dark">
+              <div className="ph-dark"><span className="pt w">Buscador</span></div>
               <div className="search-bar">
-                <input className="search-input" placeholder="Buscar por nombre o correo…" value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==="Enter"&&searchClient()}/>
+                <input className="search-inp" placeholder="Nombre o correo…" value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==="Enter"&&searchClient()}/>
                 <button className="btn-search" onClick={searchClient}>Buscar</button>
               </div>
-              <div className="client-result">
-                {search && !foundClient && <div style={{color:"#555",fontSize:13,fontStyle:"italic",padding:"1rem 0"}}>No se encontró ningún cliente con ese criterio.</div>}
-                {foundClient && (
+              <div style={{padding:"1.1rem 1.4rem"}}>
+                {foundClient==="notfound"&&<div style={{color:"#444",fontSize:13,fontStyle:"italic"}}>No se encontró ningún cliente.</div>}
+                {foundClient&&foundClient!=="notfound"&&(
                   <div className="client-card">
-                    <div className="client-name">{foundClient.nombre}</div>
-                    <div className="client-meta">{foundClient.email} · {getBelt(foundClient.puntos).nombre}</div>
-                    <div className="client-stats">
-                      <div className="client-stat"><div className="cs-val red">{foundClient.puntos.toLocaleString()}</div><div className="cs-lbl">Puntos</div></div>
-                      <div className="client-stat"><div className="cs-val">{foundClient.pedidos}</div><div className="cs-lbl">Pedidos</div></div>
-                      <div className="client-stat"><div className="cs-val">{foundClient.reservas}</div><div className="cs-lbl">Reservas</div></div>
+                    <div className="cc-name">{foundClient.nombre}</div>
+                    <div className="cc-meta">{foundClient.email} · {getBelt(foundClient.puntos).nombre}</div>
+                    <div className="cc-stats">
+                      <div className="cc-stat"><div className="ccv r">{foundClient.puntos.toLocaleString()}</div><div className="ccl">Puntos</div></div>
+                      <div className="cc-stat"><div className="ccv">{foundClient.pedidos}</div><div className="ccl">Pedidos</div></div>
+                      <div className="cc-stat"><div className="ccv">{foundClient.reservas}</div><div className="ccl">Reservas</div></div>
                     </div>
-                    <div className="pts-adjust-row">
-                      <input className="pts-adjust-input" type="number" placeholder="Cantidad de puntos…" value={ptsAdj} onChange={e=>setPtsAdj(e.target.value)}/>
-                      <button className="btn-pts-add" onClick={()=>{if(ptsAdj){addToast(`+${parseInt(ptsAdj).toLocaleString()} pts añadidos a ${foundClient.nombre.split(" ")[0]}`,"success","✓");setPtsAdj("")}}}>+ Añadir</button>
-                      <button className="btn-pts-sub" onClick={()=>{if(ptsAdj){addToast(`-${parseInt(ptsAdj).toLocaleString()} pts descontados de ${foundClient.nombre.split(" ")[0]}`,"crimson","−");setPtsAdj("")}}}>− Quitar</button>
+                    <div className="pts-adj">
+                      <input className="pts-adj-inp" type="number" placeholder="Puntos a ajustar…" value={ptsAdj} onChange={e=>setPtsAdj(e.target.value)}/>
+                      <button className="btn-pts-a" onClick={()=>{if(ptsAdj){addToast(`+${parseInt(ptsAdj).toLocaleString()} pts añadidos a ${foundClient.nombre.split(" ")[0]}`,"s","✓");setPtsAdj("")}}}>+ Añadir</button>
+                      <button className="btn-pts-s" onClick={()=>{if(ptsAdj){addToast(`-${parseInt(ptsAdj).toLocaleString()} pts descontados`,"r","−");setPtsAdj("")}}}>− Quitar</button>
                     </div>
                   </div>
                 )}
@@ -1226,8 +1356,10 @@ function StaffDashboard({ onSignOut, addToast, globalReservas, globalPedidos, on
   );
 }
 
-// ── CLIENT DASHBOARD ──────────────────────────────────────────────────────
-function ClientDashboard({ user, addToast }) {
+// ══════════════════════════════════════════════════════════════════════════
+// CLIENT SHELL
+// ══════════════════════════════════════════════════════════════════════════
+function ClientShell({ user, addToast, sharedOrders, onAddOrder, onGoMuro }) {
   const meta = user.user_metadata || {};
   const nombre = meta.nombre_completo || user.email;
   const primerNombre = nombre.split(" ")[0];
@@ -1240,50 +1372,72 @@ function ClientDashboard({ user, addToast }) {
   const [showCart, setShowCart] = useState(false);
   const [checkout, setCheckout] = useState(null);
 
+  // Sincronizar estados de pedidos del cliente con el estado global (Staff los actualiza)
+  useEffect(() => {
+    pedidos.forEach((p, idx) => {
+      const shared = sharedOrders.find(o => o.clientId === p.clientId);
+      if (shared && shared.kStatus !== p.kStatus) {
+        setPedidos(prev => prev.map((x,i) => i===idx ? {...x,kStatus:shared.kStatus} : x));
+        if (shared.kStatus === "preparacion") addToast("🔥 Tu pedido ha entrado a preparación","g","🔥");
+        if (shared.kStatus === "listo") addToast("✅ ¡Tu orden está lista para retirar! Por favor déjanos tu feedback en el Muro del Dojang 💬","s","✅");
+      }
+    });
+  }, [sharedOrders]);
+
   const addToCart = item => setCarrito(c=>{ const ex=c.find(x=>x.id===item.id); return ex?c.map(x=>x.id===item.id?{...x,qty:x.qty+1}:x):[...c,{...item,qty:1}]; });
   const updateQty = (id,d) => setCarrito(c=>c.map(x=>x.id===id?{...x,qty:Math.max(1,x.qty+d)}:x));
   const removeItem = id => setCarrito(c=>c.filter(x=>x.id!==id));
-
   const handleCheckout = resumen => { setShowCart(false); setCheckout(resumen); setVista("checkout"); };
 
-  const confirmPay = () => {
+  const confirmPay = (method, subMethod) => {
+    const payMethod = method==="card" ? "card" : subMethod;
     const now = new Date();
-    const meses=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    const fecha=`${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
-    setPedidos(p=>[...p,{items:carrito.map(x=>x.qty>1?`${x.nombre} ×${x.qty}`:x.nombre),total:checkout.total,pts:checkout.pts,fecha,kdsStatus:"recibido"}]);
-    setPuntos(p=>p+checkout.pts);
+    const MESES = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const fecha = `${now.getDate()} ${MESES[now.getMonth()]} ${now.getFullYear()}`;
+    const clientId = Date.now();
+    // Estado inicial según método de pago
+    const kStatus = payMethod==="card" ? "espera" : "pendiente";
+    const newOrder = { id:clientId, clientId, items:carrito.map(x=>x.qty>1?`${x.nombre} ×${x.qty}`:x.nombre), total:checkout.total, pts:checkout.pts, fecha, payMethod, kStatus };
+
+    setPedidos(p=>[...p, newOrder]);
+    onAddOrder(newOrder);
+
+    if (payMethod==="card") {
+      setPuntos(p=>p+checkout.pts);
+      addToast(`¡Pedido confirmado! +${checkout.pts.toLocaleString()} pts acreditados 🥋`,"s","☕");
+      setTimeout(()=>addToast("Tu pedido ha entrado a la cola de preparación 🔥","g","🔥"),1200);
+    } else {
+      addToast(`Pedido enviado — Pendiente de validación por el Staff ⏳`,"g","⏳");
+      if(payMethod==="efectivo") addToast("Recuerda pagar en caja al llegar 💵","g","💵");
+    }
+
     setCarrito([]); setCheckout(null); setVista("panel");
-    addToast(`¡Pedido confirmado! +${checkout.pts.toLocaleString()} puntos acreditados 🥋`,"success","☕");
-    setTimeout(()=>addToast("Tu pedido ha sido recibido por cocina","gold","🔥"),1500);
   };
 
   const addReserva = r => {
-    setReservas(prev=>[...prev,r]);
-    addToast("¡Reserva enviada! El staff la confirmará pronto 📅","success","📅");
+    setReservas(prev=>[...prev, r]);
+    addToast("Reserva enviada — el Staff la confirmará pronto 📅","g","📅");
   };
 
   const cartCount = carrito.reduce((s,x)=>s+x.qty,0);
-
-  const nav = [
-    {id:"panel",icon:"🏠",label:"Mi Panel"},
-    {id:"menu",icon:"☕",label:"Menú"},
-    {id:"reservas",icon:"📅",label:"Reservar Mesa"},
-  ];
+  const navItems = [{id:"panel",icon:"🏠",label:"Mi Panel"},{id:"menu",icon:"☕",label:"Menú"},{id:"reservas",icon:"📅",label:"Reservar Mesa"}];
 
   return (
-    <div className="app-shell">
+    <div className="app">
       <aside className="sidebar">
-        <div className="sb-brand">
-          <div className="sb-brand-icon">☕</div>
-          <div><div className="sb-brand-name">KO<span>-ffee</span></div><div style={{fontSize:9,letterSpacing:"1.5px",textTransform:"uppercase",color:"var(--muted)",marginTop:2}}>Specialty Coffee</div></div>
+        <div className="sb-top">
+          <div className="sb-icon">☕</div>
+          <div><div className="sb-name">KO<span>-ffee</span></div><div className="sb-tag">Specialty Coffee</div></div>
         </div>
         <nav className="sb-nav">
-          <div className="sb-section-label">Mi Cuenta</div>
-          {nav.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id&&vista!=="checkout"?" active":"")} onClick={()=>{setVista(n.id);setCheckout(null)}}><span className="nb-icon">{n.icon}</span>{n.label}</button>)}
+          <div className="sb-sec">Mi Cuenta</div>
+          {navItems.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id&&vista!=="checkout"?" active":"")} onClick={()=>{setVista(n.id);setCheckout(null)}}><span className="ni">{n.icon}</span>{n.label}</button>)}
+          <div className="sb-sec">Comunidad</div>
+          <button className="nav-btn" onClick={onGoMuro}><span className="ni">💬</span>Muro del Dojang</button>
         </nav>
-        <div className="sb-footer">
-          <div className="sb-user-info">👤 <span className="sb-user-name">{primerNombre}</span> · {puntos.toLocaleString()} pts</div>
-          <button className="btn-signout" onClick={()=>sb.auth.signOut()}>Cerrar sesión</button>
+        <div className="sb-foot">
+          <div className="sb-user">👤 <strong>{primerNombre}</strong> · {puntos.toLocaleString()} pts</div>
+          <button className="btn-logout" onClick={()=>sb.auth.signOut()}>Cerrar sesión</button>
         </div>
       </aside>
       <main className="main">
@@ -1292,12 +1446,11 @@ function ClientDashboard({ user, addToast }) {
         {vista==="reservas" && <ReservasPage onReserva={addReserva}/>}
         {vista==="checkout" && checkout && <CheckoutPage resumen={checkout} carrito={carrito} onConfirm={confirmPay} onBack={()=>{setVista("menu");setCheckout(null)}}/>}
       </main>
-      {/* FAB carrito */}
       {carrito.length>0 && vista!=="checkout" && (
         <button className="cart-fab" onClick={()=>setShowCart(true)}>
-          <span>🛒 Ver pedido</span>
-          <span className="cart-fab-count">{cartCount}</span>
-          <span style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>${carrito.reduce((s,x)=>s+x.precio*x.qty,0).toFixed(2)}</span>
+          <span>🛒 Pedido</span>
+          <span className="cart-fab-n">{cartCount}</span>
+          <span style={{color:"rgba(255,255,255,.5)",fontSize:11}}>${carrito.reduce((s,x)=>s+x.precio*x.qty,0).toFixed(2)}</span>
         </button>
       )}
       {showCart && <CartDrawer carrito={carrito} onClose={()=>setShowCart(false)} onUpdate={updateQty} onRemove={removeItem} onCheckout={handleCheckout}/>}
@@ -1305,20 +1458,26 @@ function ClientDashboard({ user, addToast }) {
   );
 }
 
-// ── APP ROOT ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// APP ROOT
+// ══════════════════════════════════════════════════════════════════════════
 function App() {
-  const [screen, setScreen] = useState("landing"); // landing | login | register | app
+  const [screen, setScreen] = useState("landing"); // landing | login | register | app | muro
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isStaff, setIsStaff] = useState(false);
   const [toasts, addToast] = useToasts();
 
-  // estado global compartido entre client y staff
-  const [globalPedidos, setGlobalPedidos] = useState([]);
-  const [globalReservas, setGlobalReservas] = useState([]);
+  // Estado global de pedidos (compartido entre cliente y staff)
+  const [sharedOrders, setSharedOrders] = useState([]);
+  const [sharedReservas, setSharedReservas] = useState([]);
 
-  useEffect(() => {
-    sb.auth.getSession().then(({data:{session}})=>{ setSession(session); if(session) setScreen("app"); setLoading(false); });
+  useEffect(()=>{
+    sb.auth.getSession().then(({data:{session}})=>{
+      setSession(session);
+      if(session){ setIsStaff(session.user?.user_metadata?.is_staff||false); setScreen("app"); }
+      setLoading(false);
+    });
     const {data:{subscription}} = sb.auth.onAuthStateChange((_e,session)=>{
       setSession(session);
       if(session){ setIsStaff(session.user?.user_metadata?.is_staff||false); setScreen("app"); }
@@ -1327,23 +1486,52 @@ function App() {
     return ()=>subscription.unsubscribe();
   },[]);
 
-  const addGlobalPedido = p => setGlobalPedidos(prev=>[...prev,p]);
-  const addGlobalReserva = r => setGlobalReservas(prev=>[...prev,r]);
-  const updateReserva = (i,estado) => setGlobalReservas(prev=>prev.map((r,idx)=>idx===i?{...r,estado}:r));
-  const updatePedido = (i,status) => setGlobalPedidos(prev=>prev.map((p,idx)=>idx===i?{...p,kdsStatus:status}:p));
+  const addOrder = order => setSharedOrders(prev=>[...prev, order]);
+  const addReserva = r => setSharedReservas(prev=>[...prev, r]);
 
-  if(loading) return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--obsidian)",color:"#444",fontSize:13}}>Cargando…</div>;
+  const advanceOrder = id => {
+    setSharedOrders(prev=>prev.map(o=>{
+      if(o.id!==id) return o;
+      const next = o.kStatus==="espera"?"preparacion":o.kStatus==="preparacion"?"listo":"listo";
+      return {...o, kStatus:next};
+    }));
+  };
+
+  const validateOrder = id => {
+    setSharedOrders(prev=>prev.map(o=>o.id===id?{...o,kStatus:"espera"}:o));
+  };
+
+  const updateReserva = (i, estado) => setSharedReservas(prev=>prev.map((r,idx)=>idx===i?{...r,estado}:r));
+
+  if(loading) return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--obsidian)",color:"#333",fontSize:13}}>Cargando…</div>;
 
   return (
     <>
-      <ToastContainer toasts={toasts}/>
-      {screen==="landing" && <LandingPage onGoLogin={()=>setScreen("login")}/>}
+      <Toasts toasts={toasts}/>
+      {screen==="landing" && <LandingPage onGoLogin={()=>setScreen("login")} onGoMuro={()=>setScreen("muro")}/>}
       {screen==="login"   && <LoginForm onSwitch={()=>setScreen("register")}/>}
       {screen==="register"&& <RegisterForm onSwitch={()=>setScreen("login")}/>}
+      {screen==="muro"    && (
+        <div className="muro-page">
+          <MuroDojang currentUser={session?.user||null} onBack={()=>setScreen(session?"app":"landing")}/>
+        </div>
+      )}
       {screen==="app" && session && (
-        isStaff || session.user?.user_metadata?.is_staff
-          ? <StaffDashboard onSignOut={()=>sb.auth.signOut()} addToast={addToast} globalReservas={globalReservas} globalPedidos={globalPedidos} onUpdateReserva={updateReserva} onUpdatePedido={updatePedido}/>
-          : <ClientDashboard user={session.user} addToast={(msg,type,icon)=>{ addToast(msg,type,icon); const p=globalPedidos[globalPedidos.length-1]; if(p) addGlobalPedido(p); }} globalReservas={globalReservas} onAddReserva={r=>{addGlobalReserva(r);}} />
+        isStaff
+          ? <StaffDashboard
+              onSignOut={()=>sb.auth.signOut()}
+              addToast={addToast}
+              orders={sharedOrders}
+              reservas={sharedReservas}
+              onAdvanceOrder={advanceOrder}
+              onValidateOrder={validateOrder}
+              onUpdateReserva={updateReserva}/>
+          : <ClientShell
+              user={session.user}
+              addToast={addToast}
+              sharedOrders={sharedOrders}
+              onAddOrder={addOrder}
+              onGoMuro={()=>setScreen("muro")}/>
       )}
     </>
   );
