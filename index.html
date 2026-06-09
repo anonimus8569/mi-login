@@ -1,477 +1,768 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KO-ffee — Mi cuenta</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --espresso: #2c1a0e;
-      --roast:    #5c3317;
-      --caramel:  #c47f3a;
-      --caramel-light: #f5e6d0;
-      --cream:    #faf6f0;
-      --warm:     #f0e8d8;
-      --latte:    #d4b896;
-      --border:   #e0d0bc;
-      --muted:    #8a7060;
-      --white:    #ffffff;
-      --green:    #4a7c59;
-      --green-light: #e0ede4;
-    }
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KO-ffee — Specialty Coffee & Dojo</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --obsidian:#0d0d0d;
+  --ink:#1a1a1a;
+  --graphite:#2a2a2a;
+  --steel:#3d3d3d;
+  --linen:#f5f2ed;
+  --bone:#ece8e1;
+  --mist:#d4cfc8;
+  --muted:#8a8480;
+  --crimson:#c0162c;
+  --crimson-dark:#8b0e1f;
+  --crimson-glow:rgba(192,22,44,0.15);
+  --white:#ffffff;
+  --gold:#b8952a;
+  --green:#2d6a4f;
+  --border:#2f2f2f;
+  --border-light:#e0dbd4;
+}
+body{font-family:'Inter',sans-serif;background:var(--linen);color:var(--ink);min-height:100vh}
+h1,h2,h3,.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+.serif{font-family:'Noto Serif JP',serif}
 
-    /* ── AUTH PAGES ── */
-    .auth-page {
-      min-height: 100vh; display: flex;
-      background: var(--cream);
-      background-image: radial-gradient(ellipse at 85% 15%, rgba(196,127,58,0.12) 0%, transparent 55%),
-                        radial-gradient(ellipse at 10% 85%, rgba(92,51,23,0.08) 0%, transparent 50%);
-    }
-    .auth-left {
-      display: none;
-      width: 42%;
-      background: var(--espresso);
-      background-image: radial-gradient(ellipse at 30% 70%, rgba(196,127,58,0.25) 0%, transparent 60%);
-      flex-direction: column; justify-content: center; align-items: center;
-      padding: 3rem; text-align: center; position: relative; overflow: hidden;
-    }
-    @media(min-width:860px){ .auth-left { display: flex; } }
-    .auth-left-quote {
-      font-family: 'Playfair Display', serif;
-      font-size: 28px; font-style: italic; font-weight: 400;
-      color: var(--caramel-light); line-height: 1.45; margin-bottom: 1.5rem;
-    }
-    .auth-left-sub { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--latte); opacity: 0.7; }
-    .auth-left-beans {
-      position: absolute; font-size: 120px; opacity: 0.04;
-      bottom: -20px; right: -20px; line-height: 1;
-    }
-    .auth-right {
-      flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem;
-    }
-    .card {
-      background: var(--white); border-radius: 12px;
-      border: 1px solid var(--border);
-      padding: 2.5rem 2.75rem;
-      width: 100%; max-width: 420px;
-      box-shadow: 0 4px 24px rgba(44,26,14,0.07);
-    }
+/* ════════════════════════════════════
+   LANDING PAGE
+════════════════════════════════════ */
+.landing{background:var(--obsidian);min-height:100vh;color:var(--white)}
 
-    /* ── BRAND ── */
-    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
-    .brand-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: var(--espresso);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px; flex-shrink: 0;
-    }
-    .brand-text {}
-    .brand-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-weight: 600; color: var(--espresso);
-      letter-spacing: -0.3px; line-height: 1;
-    }
-    .brand-tagline { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
+/* hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 60%,rgba(192,22,44,0.12) 0%,transparent 70%)}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-kanji{font-family:'Noto Serif JP',serif;font-size:120px;font-weight:300;color:rgba(255,255,255,0.04);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;line-height:1;white-space:nowrap}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(192,22,44,0.4);border-radius:2px;padding:5px 14px;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--crimson);margin-bottom:1.5rem}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,12vw,130px);letter-spacing:4px;line-height:0.9;margin-bottom:1rem;position:relative;z-index:1}
+.hero-title span{color:var(--crimson)}
+.hero-sub{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:2.5rem;font-weight:300}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-hero{padding:0.85rem 2.5rem;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif}
+.btn-hero-primary{background:var(--crimson);color:var(--white)}
+.btn-hero-primary:hover{background:var(--crimson-dark)}
+.btn-hero-outline{background:transparent;color:var(--white);border:1px solid rgba(255,255,255,0.2)}
+.btn-hero-outline:hover{border-color:var(--white);background:rgba(255,255,255,0.05)}
 
-    /* ── FORM ── */
-    .card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; color: var(--espresso); margin-bottom: 0.25rem; }
-    .card-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; font-weight: 300; }
-    .form-group { margin-bottom: 0.9rem; }
-    .form-label { display: block; font-size: 10px; font-weight: 500; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.35rem; }
-    .form-input {
-      width: 100%; padding: 0.65rem 0.85rem;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 300;
-      color: var(--espresso); background: var(--cream); outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .form-input:focus { border-color: var(--caramel); background: var(--white); }
-    .form-input::placeholder { color: #c0b0a0; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-    .btn-primary {
-      width: 100%; padding: 0.8rem;
-      background: var(--espresso); color: var(--white);
-      border: none; border-radius: 8px;
-      font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif;
-      letter-spacing: 0.5px; cursor: pointer; margin-top: 0.5rem;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-primary:hover { background: var(--roast); }
-    .btn-primary:active { transform: scale(0.99); }
-    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
-    .link-row { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1.25rem; font-weight: 300; }
-    .link-btn { background: none; border: none; color: var(--caramel); font-weight: 500; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; text-decoration: underline; text-underline-offset: 2px; }
-    .alert { padding: 0.7rem 0.9rem; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; font-weight: 300; }
-    .alert-error { background: #fef2f2; color: #c0392b; border-left: 3px solid #e74c3c; }
-    .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+/* nav landing */
+.land-nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:1.25rem 3rem;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.land-nav-brand{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--white)}
+.land-nav-brand span{color:var(--crimson)}
+.land-nav-links{display:flex;gap:2rem}
+.land-nav-links a{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.2s}
+.land-nav-links a:hover{color:var(--white)}
+.btn-nav-login{padding:0.5rem 1.5rem;background:var(--crimson);color:var(--white);border:none;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s}
+.btn-nav-login:hover{background:var(--crimson-dark)}
 
-    /* ── DASHBOARD LAYOUT ── */
-    .app-shell { display: flex; min-height: 100vh; background: var(--cream); }
-    .sidebar {
-      width: 220px; flex-shrink: 0;
-      background: var(--espresso);
-      display: flex; flex-direction: column;
-      padding: 1.5rem 0;
-      position: fixed; top: 0; left: 0; height: 100vh;
-      z-index: 10;
-    }
-    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 0 1.25rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    .sidebar-brand-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--caramel); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .sidebar-brand-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--white); letter-spacing: -0.2px; }
-    .sidebar-nav { flex: 1; padding: 1.25rem 0.75rem; display: flex; flex-direction: column; gap: 2px; }
-    .nav-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 0.6rem 0.85rem; border-radius: 8px;
-      font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.55);
-      cursor: pointer; transition: all 0.15s; border: none; background: none;
-      font-family: 'DM Sans', sans-serif; width: 100%; text-align: left;
-    }
-    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
-    .nav-item.active { background: rgba(196,127,58,0.18); color: var(--caramel); }
-    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
-    .sidebar-footer { padding: 1rem 1rem 0; border-top: 1px solid rgba(255,255,255,0.08); }
-    .sidebar-user { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 0.25rem; }
-    .btn-signout { width: 100%; padding: 0.55rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: rgba(255,255,255,0.5); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
-    .btn-signout:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
-    .main-content { margin-left: 220px; flex: 1; padding: 2rem 2.5rem; min-height: 100vh; }
+/* sections landing */
+.land-section{padding:6rem 3rem;max-width:1200px;margin:0 auto}
+.section-eyebrow{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--crimson);margin-bottom:1rem}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5vw,68px);letter-spacing:2px;line-height:0.95;margin-bottom:1.5rem;color:var(--white)}
+.section-body{font-size:15px;color:var(--muted);font-weight:300;line-height:1.8;max-width:560px}
 
-    /* ── SECTION HEADERS ── */
-    .page-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; color: var(--espresso); margin-bottom: 0.3rem; }
-    .page-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 2rem; }
+/* belt levels */
+.belts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;margin-top:2.5rem}
+.belt-card{border:1px solid var(--border);border-radius:4px;padding:1.25rem;background:var(--graphite);text-align:center;transition:border-color 0.2s}
+.belt-card:hover{border-color:var(--crimson)}
+.belt-icon{font-size:28px;margin-bottom:8px}
+.belt-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--white)}
+.belt-pts{font-size:11px;color:var(--muted);margin-top:4px}
+.belt-reward{font-size:11px;color:var(--crimson);margin-top:6px;font-weight:500}
 
-    /* ── CARDS ── */
-    .panel { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
-    .panel-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--cream); display: flex; align-items: center; justify-content: space-between; }
-    .panel-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 400; color: var(--espresso); }
-    .badge { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-    .badge-caramel { background: var(--caramel-light); color: var(--roast); }
-    .badge-green { background: var(--green-light); color: var(--green); }
-    .badge-muted { background: var(--warm); color: var(--muted); }
+/* info section */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:768px){.info-grid{grid-template-columns:1fr}}
+.info-block{margin-bottom:2rem}
+.info-block-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--crimson);margin-bottom:0.5rem}
+.info-block-value{font-size:15px;color:var(--white);font-weight:300;line-height:1.7}
+.map-placeholder{background:var(--graphite);border:1px solid var(--border);border-radius:4px;height:260px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0.75rem;color:var(--muted)}
+.map-ph-icon{font-size:36px;opacity:0.4}
+.map-ph-text{font-size:13px;letter-spacing:1px}
+.hours-row{display:flex;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:14px}
+.hours-row:last-child{border-bottom:none}
+.hours-day{color:var(--muted);font-weight:300}
+.hours-time{color:var(--white);font-weight:400}
+.social-links{display:flex;gap:1rem;margin-top:1.5rem}
+.social-btn{width:40px;height:40px;border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;transition:border-color 0.2s;text-decoration:none}
+.social-btn:hover{border-color:var(--crimson)}
 
-    /* ── STATS ── */
-    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
-    .stat-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; }
-    .stat-box::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
-    .stat-box.s1::after { background: var(--caramel); }
-    .stat-box.s2::after { background: var(--green); }
-    .stat-box.s3::after { background: var(--roast); }
-    .stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
-    .stat-val { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 400; color: var(--espresso); line-height: 1; }
-    .stat-val.accent { color: var(--caramel); }
-    .stat-hint { font-size: 11px; color: var(--muted); font-weight: 300; margin-top: 6px; }
+/* divider */
+.land-divider{border:none;border-top:1px solid var(--border);margin:0 3rem}
 
-    /* ── RESERVAS ── */
-    .reserva-row { display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--warm); gap: 1rem; }
-    .reserva-row:last-child { border-bottom: none; }
-    .res-date { text-align: center; min-width: 46px; }
-    .res-day { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; color: var(--caramel); line-height: 1; }
-    .res-mon { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 500; }
-    .res-sep { width: 1px; height: 34px; background: var(--border); }
-    .res-info { flex: 1; }
-    .res-name { font-size: 14px; color: var(--espresso); font-weight: 400; margin-bottom: 2px; }
-    .res-detail { font-size: 12px; color: var(--muted); font-weight: 300; }
-    .res-status { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
-    .s-confirmada { background: var(--green-light); color: var(--green); }
-    .s-pendiente { background: #fef9ec; color: #b8923a; }
+/* ════════════════════════════════════
+   AUTH
+════════════════════════════════════ */
+.auth-page{min-height:100vh;display:flex;background:var(--obsidian)}
+.auth-left{display:none;width:45%;background:var(--graphite);border-right:1px solid var(--border);flex-direction:column;justify-content:center;align-items:center;padding:3rem;text-align:center;position:relative;overflow:hidden}
+@media(min-width:900px){.auth-left{display:flex}}
+.auth-bg-kanji{font-family:'Noto Serif JP',serif;font-size:200px;font-weight:300;color:rgba(255,255,255,0.025);position:absolute;line-height:1;user-select:none}
+.auth-quote{font-family:'Noto Serif JP',serif;font-size:20px;font-style:italic;color:rgba(255,255,255,0.6);line-height:1.6;position:relative;z-index:1;margin-bottom:1rem}
+.auth-quote-attr{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem}
+.auth-card{background:var(--graphite);border:1px solid var(--border);border-radius:4px;padding:2.5rem 2.75rem;width:100%;max-width:420px;position:relative}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--crimson);border-radius:4px 4px 0 0}
+.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:2rem}
+.auth-brand-icon{width:38px;height:38px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.auth-brand-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--white)}
+.auth-brand-name span{color:var(--crimson)}
+.auth-brand-tag{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+.auth-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--white);margin-bottom:0.25rem}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:1.5rem;font-weight:300}
+.form-group{margin-bottom:0.9rem}
+.form-label{display:block;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:0.35rem}
+.form-input{width:100%;padding:0.65rem 0.85rem;border:1px solid var(--border);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--white);background:var(--steel);outline:none;transition:border-color 0.2s}
+.form-input:focus{border-color:var(--crimson)}
+.form-input::placeholder{color:#555}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.btn-primary{width:100%;padding:0.8rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;transition:background 0.2s,transform 0.1s}
+.btn-primary:hover{background:var(--crimson-dark)}
+.btn-primary:active{transform:scale(0.99)}
+.btn-primary:disabled{background:#444;cursor:not-allowed;color:#777}
+.link-row{text-align:center;font-size:13px;color:var(--muted);margin-top:1.25rem;font-weight:300}
+.link-btn{background:none;border:none;color:var(--crimson);font-weight:500;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px}
+.alert{padding:0.7rem 0.9rem;border-radius:3px;font-size:13px;margin-bottom:1rem;font-weight:300}
+.alert-error{background:rgba(192,22,44,0.15);color:#ff6b7a;border-left:3px solid var(--crimson)}
+.alert-success{background:rgba(45,106,79,0.15);color:#6fcf97;border-left:3px solid var(--green)}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,0.2);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-    /* ── PEDIDOS ── */
-    .pedido-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--warm); }
-    .pedido-row:last-child { border-bottom: none; }
-    .pedido-left { display: flex; align-items: center; gap: 12px; }
-    .pedido-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--warm); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .pedido-name { font-size: 14px; color: var(--espresso); font-weight: 400; margin-bottom: 1px; }
-    .pedido-date { font-size: 11px; color: var(--muted); font-weight: 300; }
-    .pedido-price { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--espresso); }
-    .pedido-pts { font-size: 10px; color: var(--caramel); font-weight: 500; margin-top: 1px; text-align: right; }
+/* staff toggle */
+.staff-toggle{border:1px solid var(--border);border-radius:3px;padding:0.85rem 1rem;background:var(--steel);margin-bottom:0.9rem;transition:border-color 0.2s}
+.staff-toggle.active{border-color:var(--crimson);background:rgba(192,22,44,0.08)}
+.staff-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.staff-toggle-label{font-size:13px;color:var(--white);font-weight:400;display:flex;align-items:center;gap:8px}
+.staff-toggle-icon{font-size:16px}
+.toggle-switch{width:38px;height:20px;background:var(--border);border-radius:10px;position:relative;transition:background 0.2s;flex-shrink:0}
+.toggle-switch.on{background:var(--crimson)}
+.toggle-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--white);border-radius:50%;transition:transform 0.2s}
+.toggle-switch.on .toggle-knob{transform:translateX(18px)}
+.staff-code-wrap{margin-top:0.75rem;overflow:hidden}
 
-    /* ── PUNTOS ── */
-    .pts-body { padding: 1.5rem; }
-    .pts-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 300; }
-    .pts-bar { height: 8px; background: var(--warm); border-radius: 4px; overflow: hidden; margin-bottom: 0.75rem; }
-    .pts-fill { height: 100%; background: linear-gradient(90deg, var(--caramel), var(--roast)); border-radius: 4px; transition: width 1s ease; }
-    .pts-msg { font-size: 12px; color: var(--muted); text-align: center; font-weight: 300; }
-    .pts-msg strong { color: var(--caramel); font-weight: 500; }
-    .pts-rate { display: inline-flex; align-items: center; gap: 6px; background: var(--caramel-light); color: var(--roast); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; letter-spacing: 0.3px; margin-bottom: 1rem; }
+/* ════════════════════════════════════
+   APP SHELL (DASHBOARD)
+════════════════════════════════════ */
+.app-shell{display:flex;min-height:100vh;background:var(--linen)}
+.sidebar{width:230px;flex-shrink:0;background:var(--obsidian);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;height:100vh;z-index:20;border-right:1px solid var(--border)}
+.sb-brand{padding:1.5rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-brand-icon{width:34px;height:34px;background:var(--crimson);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.sb-brand-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:var(--white)}
+.sb-brand-name span{color:var(--crimson)}
+.sb-nav{flex:1;padding:1rem 0.75rem;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#444;padding:0.75rem 0.85rem 0.35rem;font-weight:500}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:0.6rem 0.85rem;border-radius:3px;font-size:13px;font-weight:400;color:rgba(255,255,255,0.45);cursor:pointer;transition:all 0.15s;border:none;background:none;font-family:'Inter',sans-serif;width:100%;text-align:left}
+.nav-btn:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}
+.nav-btn.active{background:rgba(192,22,44,0.15);color:var(--crimson)}
+.nav-btn .nb-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.sb-footer{padding:1rem;border-top:1px solid var(--border)}
+.sb-user-info{font-size:11px;color:#444;margin-bottom:8px;padding:0 0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-name{color:rgba(255,255,255,0.5);font-weight:500}
+.btn-signout{width:100%;padding:0.5rem;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:3px;color:rgba(255,255,255,0.35);font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px;transition:all 0.2s}
+.btn-signout:hover{border-color:var(--crimson);color:var(--crimson)}
+.main{margin-left:230px;flex:1;padding:2.5rem;min-height:100vh}
 
-    /* ── EMPTY STATE ── */
-    .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 13px; font-weight: 300; font-style: italic; }
+/* STAFF sidebar */
+.app-shell.staff-mode .sidebar{background:#0a0a0a;border-right-color:rgba(192,22,44,0.3)}
+.staff-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(192,22,44,0.15);border:1px solid rgba(192,22,44,0.3);border-radius:2px;padding:2px 8px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--crimson);margin-bottom:8px}
 
-    /* ══════════════════════════
-       MENÚ
-    ══════════════════════════ */
-    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; padding: 1.5rem; }
-    .menu-card {
-      border: 1px solid var(--border); border-radius: 10px;
-      overflow: hidden; background: var(--white);
-      transition: box-shadow 0.2s, transform 0.15s;
-    }
-    .menu-card:hover { box-shadow: 0 4px 16px rgba(44,26,14,0.1); transform: translateY(-2px); }
-    .menu-emoji { background: var(--warm); height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-    .menu-body { padding: 0.85rem 1rem; }
-    .menu-name { font-size: 14px; font-weight: 500; color: var(--espresso); margin-bottom: 3px; }
-    .menu-desc { font-size: 11px; color: var(--muted); font-weight: 300; margin-bottom: 0.6rem; line-height: 1.4; }
-    .menu-footer { display: flex; align-items: center; justify-content: space-between; }
-    .menu-price { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--espresso); }
-    .menu-pts-hint { font-size: 10px; color: var(--caramel); font-weight: 500; }
-    .btn-add {
-      background: var(--espresso); color: var(--white);
-      border: none; border-radius: 6px; padding: 0.4rem 0.85rem;
-      font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-add:hover { background: var(--roast); }
-    .category-tabs { display: flex; gap: 8px; padding: 1rem 1.5rem 0; flex-wrap: wrap; }
-    .cat-tab {
-      padding: 0.4rem 1rem; border-radius: 20px; font-size: 12px; font-weight: 500;
-      border: 1.5px solid var(--border); background: none; color: var(--muted);
-      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-    }
-    .cat-tab.active { background: var(--espresso); color: var(--white); border-color: var(--espresso); }
+/* page headers */
+.page-hd{margin-bottom:2rem}
+.page-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--ink);line-height:1}
+.page-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:4px}
+.page-title.light{color:var(--white)}
+.page-sub.light{color:var(--muted)}
 
-    /* carrito flotante */
-    .cart-bar {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      background: var(--espresso); color: var(--white);
-      border-radius: 50px; padding: 0.85rem 2rem;
-      display: flex; align-items: center; gap: 1rem;
-      box-shadow: 0 8px 30px rgba(44,26,14,0.35);
-      z-index: 100; min-width: 320px; justify-content: space-between;
-      animation: slideUp 0.3s ease;
-    }
-    @keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
-    .cart-info { font-size: 13px; }
-    .cart-info strong { color: var(--caramel); }
-    .btn-cart-checkout {
-      background: var(--caramel); color: var(--white);
-      border: none; border-radius: 25px; padding: 0.5rem 1.25rem;
-      font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn-cart-checkout:hover { background: #a86d2e; }
+/* cards/panels */
+.panel{background:var(--white);border:1px solid var(--border-light);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
+.panel-dark{background:var(--graphite);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
+.panel-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.02)}
+.panel-hd-dark{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.panel-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--ink)}
+.panel-title-light{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--white)}
+.badge{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:2px;font-weight:600}
+.badge-red{background:rgba(192,22,44,0.12);color:var(--crimson)}
+.badge-green{background:rgba(45,106,79,0.12);color:var(--green)}
+.badge-gold{background:rgba(184,149,42,0.12);color:var(--gold)}
+.badge-muted{background:rgba(0,0,0,0.06);color:var(--muted)}
 
-    /* modal confirmación pedido */
-    .modal-overlay {
-      position: fixed; inset: 0; background: rgba(44,26,14,0.5);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 200; padding: 1rem;
-    }
-    .modal {
-      background: var(--white); border-radius: 14px;
-      padding: 2rem; width: 100%; max-width: 400px;
-      box-shadow: 0 20px 60px rgba(44,26,14,0.2);
-    }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--espresso); margin-bottom: 0.25rem; }
-    .modal-sub { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 1.25rem; }
-    .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--warm); font-size: 13px; }
-    .cart-item-row:last-of-type { border-bottom: none; }
-    .cart-total { display: flex; justify-content: space-between; padding: 0.75rem 0 1.25rem; font-weight: 500; font-size: 15px; color: var(--espresso); border-top: 1.5px solid var(--border); margin-top: 4px; }
-    .cart-pts-earn { text-align: center; background: var(--caramel-light); border-radius: 8px; padding: 0.6rem; font-size: 12px; color: var(--roast); font-weight: 500; margin-bottom: 1rem; }
-    .modal-btns { display: flex; gap: 0.75rem; }
-    .btn-secondary { flex: 1; padding: 0.7rem; background: none; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer; }
-    .btn-secondary:hover { border-color: var(--espresso); color: var(--espresso); }
-    .btn-confirm { flex: 2; padding: 0.7rem; background: var(--espresso); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-    .btn-confirm:hover { background: var(--roast); }
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.stat-box{background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:1.25rem 1.5rem;position:relative;overflow:hidden}
+.stat-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.stat-box.s1::after{background:var(--crimson)}
+.stat-box.s2::after{background:var(--green)}
+.stat-box.s3::after{background:var(--gold)}
+.stat-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:8px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--ink);line-height:1}
+.stat-val.accent{color:var(--crimson)}
+.stat-hint{font-size:11px;color:var(--muted);font-weight:300;margin-top:6px}
 
-    /* ══════════════════════════
-       RESERVAS
-    ══════════════════════════ */
-    .zonas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; padding: 1.5rem; }
-    .zona-card { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--white); }
-    .zona-header { padding: 0.9rem 1.1rem; background: var(--warm); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
-    .zona-icon { font-size: 20px; }
-    .zona-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 400; color: var(--espresso); }
-    .zona-desc { font-size: 11px; color: var(--muted); font-weight: 300; }
-    .mesas-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 1rem; }
-    .mesa-btn {
-      border-radius: 8px; padding: 0.6rem 0.5rem; text-align: center;
-      border: 1.5px solid; cursor: pointer; font-family: 'DM Sans', sans-serif;
-      transition: all 0.15s; font-size: 11px; font-weight: 500;
-    }
-    .mesa-btn.libre { border-color: var(--green); background: var(--green-light); color: var(--green); }
-    .mesa-btn.libre:hover { background: var(--green); color: var(--white); }
-    .mesa-btn.ocupada { border-color: var(--border); background: var(--warm); color: var(--muted); cursor: not-allowed; opacity: 0.6; }
-    .mesa-btn.seleccionada { border-color: var(--caramel); background: var(--caramel); color: var(--white); }
-    .mesa-cap { font-size: 10px; font-weight: 300; margin-top: 2px; opacity: 0.8; }
-    .reserva-form { padding: 1.5rem; border-top: 1px solid var(--border); background: var(--cream); }
-    .reserva-form-title { font-size: 13px; font-weight: 500; color: var(--espresso); margin-bottom: 1rem; }
-    .res-selected-info { background: var(--caramel-light); border-radius: 8px; padding: 0.7rem 1rem; font-size: 13px; color: var(--roast); margin-bottom: 1rem; font-weight: 400; }
-    .btn-reservar { width: 100%; padding: 0.75rem; background: var(--espresso); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
-    .btn-reservar:hover { background: var(--roast); }
-    .btn-reservar:disabled { background: #ccc; cursor: not-allowed; }
+/* belt indicator */
+.belt-indicator{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--border-light);border-radius:4px;padding:0.85rem 1.25rem;margin-bottom:1.5rem}
+.belt-color-dot{width:18px;height:18px;border-radius:50%;flex-shrink:0}
+.belt-info{flex:1}
+.belt-rank{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--ink)}
+.belt-progress-wrap{margin-top:4px}
+.belt-bar{height:4px;background:var(--bone);border-radius:2px;overflow:hidden}
+.belt-fill{height:100%;border-radius:2px;transition:width 1s ease}
+.belt-pts-txt{font-size:11px;color:var(--muted);margin-top:3px}
 
-    /* toast */
-    .toast {
-      position: fixed; bottom: 2rem; right: 2rem;
-      background: var(--espresso); color: var(--white);
-      padding: 0.85rem 1.5rem; border-radius: 10px;
-      font-size: 13px; z-index: 300;
-      box-shadow: 0 8px 24px rgba(44,26,14,0.25);
-      animation: fadeInUp 0.3s ease;
-    }
-    .toast.success { border-left: 4px solid var(--caramel); }
-    @keyframes fadeInUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+/* reservas dashboard */
+.reserva-row{display:flex;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid rgba(0,0,0,0.05);gap:1rem}
+.reserva-row:last-child{border-bottom:none}
+.res-date{text-align:center;min-width:46px}
+.res-day{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--crimson);line-height:1}
+.res-mon{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.res-sep{width:1px;height:34px;background:var(--border-light)}
+.res-info{flex:1}
+.res-name{font-size:14px;color:var(--ink);font-weight:500;margin-bottom:2px}
+.res-detail{font-size:12px;color:var(--muted);font-weight:300}
+.res-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:2px;font-weight:600}
+.rs-confirmada{background:rgba(45,106,79,0.1);color:var(--green)}
+.rs-pendiente{background:rgba(184,149,42,0.1);color:var(--gold)}
 
-    .confirm-screen { text-align: center; }
-    .confirm-icon { font-size: 44px; margin-bottom: 1rem; }
-  </style>
+/* pedido row */
+.pedido-row{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.5rem;border-bottom:1px solid rgba(0,0,0,0.05)}
+.pedido-row:last-child{border-bottom:none}
+.ped-left{display:flex;align-items:center;gap:12px}
+.ped-icon{width:36px;height:36px;border-radius:50%;background:var(--bone);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ped-name{font-size:14px;color:var(--ink);font-weight:500;margin-bottom:1px}
+.ped-date{font-size:11px;color:var(--muted);font-weight:300}
+.ped-right{text-align:right}
+.ped-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink)}
+.ped-pts{font-size:10px;color:var(--crimson);font-weight:600;margin-top:1px}
+
+/* puntos */
+.pts-body{padding:1.5rem}
+.pts-rate-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(192,22,44,0.08);color:var(--crimson);padding:4px 12px;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:0.5px;margin-bottom:1rem;border:1px solid rgba(192,22,44,0.2)}
+.pts-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:300}
+.pts-bar{height:8px;background:var(--bone);border-radius:4px;overflow:hidden;margin-bottom:0.75rem}
+.pts-fill{height:100%;background:linear-gradient(90deg,var(--crimson),var(--crimson-dark));border-radius:4px;transition:width 1s ease}
+.pts-msg{font-size:12px;color:var(--muted);text-align:center;font-weight:300}
+.pts-msg strong{color:var(--crimson);font-weight:600}
+
+/* menú */
+.cat-tabs{display:flex;gap:8px;padding:1rem 1.5rem 0;flex-wrap:wrap}
+.cat-tab{padding:0.4rem 1rem;border-radius:2px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;border:1.5px solid var(--border-light);background:none;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
+.cat-tab.active{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;padding:1.5rem}
+.menu-card{border:1px solid var(--border-light);border-radius:4px;overflow:hidden;background:var(--white);transition:box-shadow 0.2s,transform 0.15s}
+.menu-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);transform:translateY(-2px)}
+.menu-emoji{background:var(--bone);height:80px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.menu-body{padding:0.85rem 1rem}
+.menu-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.menu-desc{font-size:11px;color:var(--muted);font-weight:300;margin-bottom:0.6rem;line-height:1.4}
+.menu-footer{display:flex;align-items:center;justify-content:space-between}
+.menu-price-wrap{}
+.menu-price{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--ink)}
+.menu-pts-hint{font-size:10px;color:var(--crimson);font-weight:600}
+.btn-add{background:var(--ink);color:var(--white);border:none;border-radius:2px;padding:0.4rem 0.85rem;font-size:11px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.5px;cursor:pointer;transition:background 0.15s}
+.btn-add:hover{background:var(--crimson)}
+
+/* carrito lateral */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;animation:fadeIn 0.2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.cart-drawer{position:fixed;top:0;right:0;width:380px;height:100vh;background:var(--white);z-index:101;display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(0,0,0,0.15);animation:slideLeft 0.3s ease}
+@keyframes slideLeft{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.cart-hd{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between}
+.cart-hd-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--ink)}
+.btn-close-cart{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:4px}
+.btn-close-cart:hover{color:var(--ink)}
+.cart-items{flex:1;overflow-y:auto;padding:1rem 1.5rem}
+.cart-item{display:flex;align-items:center;gap:12px;padding:0.75rem 0;border-bottom:1px solid var(--border-light)}
+.cart-item:last-child{border-bottom:none}
+.ci-emoji{font-size:24px;flex-shrink:0}
+.ci-info{flex:1}
+.ci-name{font-size:14px;font-weight:500;color:var(--ink)}
+.ci-price{font-size:12px;color:var(--muted);font-weight:300}
+.ci-qty{display:flex;align-items:center;gap:8px}
+.qty-btn{width:26px;height:26px;border:1px solid var(--border-light);border-radius:2px;background:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all 0.15s;font-family:'Inter',sans-serif}
+.qty-btn:hover{border-color:var(--crimson);color:var(--crimson)}
+.qty-num{font-size:14px;font-weight:600;min-width:20px;text-align:center;color:var(--ink)}
+.btn-remove{background:none;border:none;font-size:14px;cursor:pointer;color:var(--muted);padding:4px;transition:color 0.15s}
+.btn-remove:hover{color:var(--crimson)}
+.cart-empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px;font-weight:300}
+.cart-empty-icon{font-size:48px;margin-bottom:1rem;opacity:0.4}
+.cart-footer{padding:1.5rem;border-top:1px solid var(--border-light)}
+.cart-totals{margin-bottom:1rem}
+.cart-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:3px 0;font-weight:300}
+.cart-total-line{display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:var(--ink);padding:8px 0;border-top:1px solid var(--border-light);margin-top:4px}
+.cart-pts-earn{background:rgba(192,22,44,0.07);border:1px solid rgba(192,22,44,0.15);border-radius:3px;padding:0.6rem 1rem;font-size:12px;color:var(--crimson);font-weight:600;text-align:center;margin-bottom:1rem}
+.btn-checkout{width:100%;padding:0.85rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.btn-checkout:hover{background:var(--crimson-dark)}
+.btn-checkout:disabled{background:#ccc;cursor:not-allowed}
+
+/* carrito FAB */
+.cart-fab{position:fixed;bottom:2rem;right:2rem;background:var(--ink);color:var(--white);border:none;border-radius:50px;padding:0.85rem 1.75rem;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;z-index:50;box-shadow:0 8px 30px rgba(0,0,0,0.25);display:flex;align-items:center;gap:10px;transition:background 0.2s;letter-spacing:0.3px}
+.cart-fab:hover{background:var(--crimson)}
+.cart-fab-count{background:var(--crimson);color:var(--white);border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+/* checkout / pago */
+.checkout-steps{display:flex;gap:1rem;margin-bottom:2rem}
+.step-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);flex-shrink:0}
+.step-dot.active{border-color:var(--crimson);background:var(--crimson);color:var(--white)}
+.step-dot.done{border-color:var(--green);background:var(--green);color:var(--white)}
+.step-label{font-size:12px;font-weight:500;color:var(--muted);margin-top:5px;letter-spacing:0.5px}
+.step-connector{flex:1;height:2px;background:var(--border-light);margin-top:14px}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem}
+.pay-method-btn{border:2px solid var(--border-light);border-radius:4px;padding:1.25rem;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--white)}
+.pay-method-btn:hover{border-color:var(--ink)}
+.pay-method-btn.selected{border-color:var(--crimson);background:rgba(192,22,44,0.04)}
+.pay-method-icon{font-size:28px;margin-bottom:8px}
+.pay-method-name{font-size:13px;font-weight:600;color:var(--ink)}
+.pay-method-desc{font-size:11px;color:var(--muted);margin-top:3px;font-weight:300}
+/* card form */
+.card-number-input{letter-spacing:3px;font-family:'Inter',monospace}
+.card-expiry-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+/* transfer */
+.bank-info-box{background:var(--bone);border:1px solid var(--border-light);border-radius:4px;padding:1.25rem;margin-bottom:1.25rem}
+.bank-row{display:flex;justify-content:space-between;padding:0.4rem 0;font-size:13px}
+.bank-label{color:var(--muted);font-weight:300}
+.bank-value{color:var(--ink);font-weight:500}
+.drop-zone{border:2px dashed var(--border-light);border-radius:4px;padding:2rem;text-align:center;cursor:pointer;transition:border-color 0.2s;background:var(--white)}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--crimson)}
+.drop-icon{font-size:32px;margin-bottom:8px;opacity:0.5}
+.drop-text{font-size:13px;color:var(--muted);font-weight:300}
+.drop-uploaded{border-color:var(--green);background:rgba(45,106,79,0.05)}
+.drop-uploaded .drop-icon{opacity:1}
+.btn-pay-confirm{width:100%;padding:0.85rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:1.25rem;transition:background 0.2s}
+.btn-pay-confirm:hover{background:var(--crimson-dark)}
+
+/* reservas page */
+.zonas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem;padding:1.5rem}
+.zona-card{border:1px solid var(--border-light);border-radius:4px;overflow:hidden;background:var(--white)}
+.zona-hd{padding:0.9rem 1.1rem;background:var(--bone);display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border-light)}
+.zona-icon{font-size:20px}
+.zona-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--ink)}
+.zona-desc{font-size:11px;color:var(--muted);font-weight:300}
+.mesas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:1rem}
+.mesa-btn{border-radius:3px;padding:0.6rem 0.4rem;text-align:center;border:1.5px solid;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;font-size:11px;font-weight:600;letter-spacing:0.5px}
+.mesa-btn.libre{border-color:#2d6a4f;background:rgba(45,106,79,0.08);color:var(--green)}
+.mesa-btn.libre:hover{background:var(--green);color:var(--white)}
+.mesa-btn.ocupada{border-color:var(--border-light);background:var(--bone);color:var(--muted);cursor:not-allowed;opacity:0.5}
+.mesa-btn.seleccionada{border-color:var(--crimson);background:var(--crimson);color:var(--white)}
+.mesa-cap{font-size:10px;font-weight:300;margin-top:2px;opacity:0.75}
+.reserva-form-panel{padding:1.5rem;background:var(--bone);border-top:1px solid var(--border-light)}
+.res-sel-info{background:rgba(192,22,44,0.08);border:1px solid rgba(192,22,44,0.2);border-radius:3px;padding:0.7rem 1rem;font-size:13px;color:var(--crimson);font-weight:500;margin-bottom:1rem}
+.btn-reservar{width:100%;padding:0.75rem;background:var(--ink);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.btn-reservar:hover{background:var(--crimson)}
+.btn-reservar:disabled{background:#ccc;cursor:not-allowed}
+
+/* ══ STAFF DASHBOARD ══ */
+.staff-main{background:var(--ink);min-height:100vh}
+.staff-panel{background:var(--graphite);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:1.5rem}
+.staff-panel-hd{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.2)}
+
+/* KDS */
+.kds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;padding:1.5rem}
+.kds-card{border:1px solid var(--border);border-radius:4px;background:var(--steel);overflow:hidden}
+.kds-card.recibido{border-color:#555}
+.kds-card.preparacion{border-color:var(--gold)}
+.kds-card.listo{border-color:var(--green)}
+.kds-card-hd{padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.kds-id{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;color:var(--white)}
+.kds-status{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;font-weight:700}
+.ks-recibido{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5)}
+.ks-preparacion{background:rgba(184,149,42,0.2);color:var(--gold)}
+.ks-listo{background:rgba(45,106,79,0.2);color:#6fcf97}
+.kds-body{padding:1rem}
+.kds-items{font-size:13px;color:rgba(255,255,255,0.7);font-weight:300;margin-bottom:0.75rem;line-height:1.6}
+.kds-meta{font-size:11px;color:#555;margin-bottom:0.75rem}
+.btn-kds{width:100%;padding:0.6rem;border:none;border-radius:2px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+.btn-kds-next{background:var(--crimson);color:var(--white)}
+.btn-kds-next:hover{background:var(--crimson-dark)}
+.btn-kds-done{background:rgba(45,106,79,0.3);color:#6fcf97;cursor:default}
+
+/* staff reservas */
+.staff-res-table{width:100%;border-collapse:collapse}
+.staff-res-table th{padding:0.75rem 1.5rem;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;font-weight:500;text-align:left;border-bottom:1px solid var(--border)}
+.staff-res-table td{padding:0.85rem 1.5rem;font-size:13px;color:rgba(255,255,255,0.7);border-bottom:1px solid rgba(255,255,255,0.04)}
+.staff-res-table tr:last-child td{border-bottom:none}
+.btn-status{padding:0.35rem 0.85rem;border-radius:2px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s}
+.bs-aceptar{background:rgba(45,106,79,0.2);color:#6fcf97;border:1px solid rgba(45,106,79,0.3)}
+.bs-aceptar:hover{background:rgba(45,106,79,0.4)}
+.bs-curso{background:rgba(184,149,42,0.2);color:var(--gold);border:1px solid rgba(184,149,42,0.3)}
+.bs-finalizar{background:rgba(255,255,255,0.06);color:#555;border:1px solid #333;cursor:default}
+
+/* control clientes */
+.search-bar{display:flex;gap:0.75rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)}
+.search-input{flex:1;padding:0.6rem 0.85rem;background:var(--steel);border:1px solid var(--border);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none}
+.search-input:focus{border-color:var(--crimson)}
+.search-input::placeholder{color:#555}
+.btn-search{padding:0.6rem 1.25rem;background:var(--crimson);color:var(--white);border:none;border-radius:3px;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
+.client-result{padding:1.25rem 1.5rem}
+.client-card{background:var(--steel);border:1px solid var(--border);border-radius:4px;padding:1.25rem;margin-bottom:1rem}
+.client-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--white);margin-bottom:4px}
+.client-meta{font-size:12px;color:#555;margin-bottom:1rem}
+.client-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem}
+.client-stat{background:var(--graphite);border-radius:3px;padding:0.75rem;text-align:center}
+.cs-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--white)}
+.cs-val.red{color:var(--crimson)}
+.cs-lbl{font-size:10px;color:#555;letter-spacing:1px;text-transform:uppercase;font-weight:500}
+.pts-adjust-row{display:flex;gap:0.75rem;margin-top:1rem}
+.pts-adjust-input{flex:1;padding:0.6rem 0.85rem;background:var(--graphite);border:1px solid var(--border);border-radius:3px;font-size:13px;font-family:'Inter',sans-serif;color:var(--white);outline:none}
+.pts-adjust-input:focus{border-color:var(--crimson)}
+.btn-pts-add{padding:0.6rem 1rem;background:rgba(45,106,79,0.2);color:#6fcf97;border:1px solid rgba(45,106,79,0.3);border-radius:3px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
+.btn-pts-sub{padding:0.6rem 1rem;background:rgba(192,22,44,0.2);color:var(--crimson);border:1px solid rgba(192,22,44,0.3);border-radius:3px;font-size:11px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:0.5px}
+
+/* TOAST */
+.toast-container{position:fixed;top:1.5rem;right:1.5rem;z-index:500;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:var(--ink);color:var(--white);padding:0.85rem 1.25rem;border-radius:4px;font-size:13px;font-weight:400;box-shadow:0 8px 30px rgba(0,0,0,0.3);animation:toastIn 0.3s ease;display:flex;align-items:center;gap:10px;min-width:280px;max-width:360px;pointer-events:all}
+.toast.t-success{border-left:3px solid var(--green)}
+.toast.t-crimson{border-left:3px solid var(--crimson)}
+.toast.t-gold{border-left:3px solid var(--gold)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast-icon{font-size:18px;flex-shrink:0}
+.toast-msg{flex:1;line-height:1.4}
+
+/* confirm screen */
+.confirm-screen{text-align:center}
+.confirm-icon{font-size:52px;margin-bottom:1rem}
+
+.empty{padding:2rem;text-align:center;color:var(--muted);font-size:13px;font-weight:300;font-style:italic}
+.select-input{width:100%;padding:0.65rem 0.85rem;border:1px solid var(--border-light);border-radius:3px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--ink);background:var(--linen);outline:none;transition:border-color 0.2s}
+.select-input:focus{border-color:var(--crimson)}
+</style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useCallback } = React;
+const { useState, useEffect, useRef } = React;
 const { createClient } = supabase;
-
 const sb = createClient(
   "https://skllslblccxvduaqejfs.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbGxzbGJsY2N4dmR1YXFlamZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDQ3OTAsImV4cCI6MjA5NjUyMDc5MH0.ztGkc572MXH8qQK0hruAUXN64hXMuU4maPgSi2Dg6WQ"
 );
 
-// ── DATOS ──────────────────────────────────────────────────────────────────
+// ── CONSTANTES ───────────────────────────────────────────────────────────
+const STAFF_CODE = "KOFFEE-001";
+const PTS_POR_DOLAR = 100;
+const IVA = 0.12;
+
+const BELTS = [
+  { nombre:"Cinturón Blanco",  color:"#e0e0e0", min:0,    max:2000,  reward:"10% dto en tu próximo pedido" },
+  { nombre:"Cinturón Amarillo",color:"#f0c040", min:2000,  max:6000,  reward:"Bebida gratis mensual" },
+  { nombre:"Cinturón Naranja", color:"#e07820", min:6000,  max:12000, reward:"Acceso a degustaciones" },
+  { nombre:"Cinturón Verde",   color:"#2d6a4f", min:12000, max:22000, reward:"Reserva prioritaria" },
+  { nombre:"Cinturón Azul",    color:"#1a4a8a", min:22000, max:36000, reward:"Menú especial mensual" },
+  { nombre:"Cinturón Marrón",  color:"#5c3317", min:36000, max:55000, reward:"Evento privado anual" },
+  { nombre:"Cinturón Negro",   color:"#1a1a1a", min:55000, max:Infinity, reward:"Acceso VIP & experiencias" },
+];
+
+function getBelt(pts) {
+  return BELTS.find(b => pts >= b.min && pts < b.max) || BELTS[BELTS.length-1];
+}
+
 const MENU = [
-  { id:1, cat:"Café", emoji:"☕", nombre:"Espresso", desc:"Shot doble de origen etíope", precio:3.50 },
-  { id:2, cat:"Café", emoji:"🥛", nombre:"Latte de Vainilla", desc:"Espresso, leche vaporizada y vainilla natural", precio:5.00 },
-  { id:3, cat:"Café", emoji:"🧊", nombre:"Cold Brew", desc:"12h de extracción en frío, servido con hielo", precio:5.50 },
-  { id:4, cat:"Café", emoji:"🍫", nombre:"Mocha", desc:"Espresso, chocolate belga y leche vaporizada", precio:5.50 },
-  { id:5, cat:"Café", emoji:"🌿", nombre:"Matcha Latte", desc:"Matcha ceremonial japonés con leche de avena", precio:5.80 },
-  { id:6, cat:"Comida", emoji:"🥐", nombre:"Croissant de mantequilla", desc:"Horneado fresco cada mañana", precio:3.80 },
-  { id:7, cat:"Comida", emoji:"🥑", nombre:"Tostada de aguacate", desc:"Pan de masa madre, aguacate, semillas y limón", precio:7.50 },
-  { id:8, cat:"Comida", emoji:"🧇", nombre:"Bowl de granola", desc:"Granola artesanal, yogur griego y frutas del día", precio:6.50 },
-  { id:9, cat:"Comida", emoji:"🥪", nombre:"Sandwich Caprese", desc:"Mozzarella, tomate heirloom, albahaca fresca", precio:8.00 },
-  { id:10, cat:"Especiales", emoji:"🍮", nombre:"Affogato", desc:"Helado de vainilla con shot de espresso caliente", precio:6.00 },
-  { id:11, cat:"Especiales", emoji:"🧁", nombre:"Banana Bread", desc:"Horneado en casa con nueces y chips de chocolate", precio:4.50 },
-  { id:12, cat:"Especiales", emoji:"🍰", nombre:"Cheesecake de temporada", desc:"Receta semanal con ingredientes de estación", precio:6.50 },
+  {id:1,cat:"Café",emoji:"☕",nombre:"Espresso Doble",desc:"Origen Etiopía Yirgacheffe, tostado oscuro",precio:3.50},
+  {id:2,cat:"Café",emoji:"🥛",nombre:"Latte Signature",desc:"Espresso, leche de avena vaporizada y arte latte",precio:5.20},
+  {id:3,cat:"Café",emoji:"🧊",nombre:"Cold Brew Nitro",desc:"18h extracción, servido con nitrógeno en grifo",precio:6.00},
+  {id:4,cat:"Café",emoji:"🌿",nombre:"Matcha Ceremonial",desc:"Matcha de primera cosecha, leche de macadamia",precio:5.80},
+  {id:5,cat:"Café",emoji:"🍫",nombre:"Mocha Obsidiana",desc:"Espresso, chocolate 70% y leche vaporizada",precio:5.50},
+  {id:6,cat:"Comida",emoji:"🥐",nombre:"Croissant Mantequilla",desc:"Horneado al momento, masa laminada 72h",precio:3.80},
+  {id:7,cat:"Comida",emoji:"🥑",nombre:"Tostada Aguacate",desc:"Masa madre, aguacate, huevo poché y semillas",precio:8.50},
+  {id:8,cat:"Comida",emoji:"🥣",nombre:"Bowl de Granola",desc:"Granola artesanal, yogur griego, frutos rojos",precio:7.00},
+  {id:9,cat:"Comida",emoji:"🥪",nombre:"Sandwich Black Dojo",desc:"Prosciutto, mozzarella y pesto en pan negro",precio:9.00},
+  {id:10,cat:"Especiales",emoji:"🍮",nombre:"Affogato KO",desc:"Helado de vainilla Bourbon + espresso caliente",precio:6.50},
+  {id:11,cat:"Especiales",emoji:"🧁",nombre:"Banana Bread Ninja",desc:"Nueces, chips de chocolate 70% y cardamomo",precio:4.80},
+  {id:12,cat:"Especiales",emoji:"☯️",nombre:"Cheesecake Dojo",desc:"Base de oreo, queso cremoso y té matcha",precio:7.00},
 ];
 
-const ZONAS = [
-  { id:"ventana", nombre:"Zona Ventana", icon:"🪟", desc:"Luz natural, ideal para trabajar", mesas:[
-    { num:1, cap:2, libre:true }, { num:2, cap:2, libre:false }, { num:3, cap:4, libre:true },
-  ]},
-  { id:"terraza", nombre:"Terraza", icon:"🌿", desc:"Aire libre, plantas y música suave", mesas:[
-    { num:4, cap:2, libre:true }, { num:5, cap:4, libre:true }, { num:6, cap:6, libre:false },
-  ]},
-  { id:"interior", nombre:"Rincón Interior", icon:"🛋️", desc:"Sofás, luz cálida y ambiente íntimo", mesas:[
-    { num:7, cap:2, libre:false }, { num:8, cap:2, libre:true }, { num:9, cap:4, libre:true },
-  ]},
-  { id:"barra", nombre:"Barra", icon:"☕", desc:"Frente a los baristas, para los amantes del café", mesas:[
-    { num:10, cap:1, libre:true }, { num:11, cap:1, libre:true }, { num:12, cap:2, libre:false },
-  ]},
+const ZONAS_DATA = [
+  {id:"ventana",nombre:"Zona Ventana",icon:"🪟",desc:"Luz natural, ideal para trabajar",
+   mesas:[{num:1,cap:2,libre:true},{num:2,cap:2,libre:false},{num:3,cap:4,libre:true}]},
+  {id:"terraza",nombre:"Terraza",icon:"🌿",desc:"Jardín cubierto, brisa y música",
+   mesas:[{num:4,cap:2,libre:true},{num:5,cap:4,libre:true},{num:6,cap:6,libre:false}]},
+  {id:"interior",nombre:"Rincón Dojo",icon:"⛩️",desc:"Sofás, luz cálida, ambiente íntimo",
+   mesas:[{num:7,cap:2,libre:false},{num:8,cap:2,libre:true},{num:9,cap:4,libre:true}]},
+  {id:"barra",nombre:"Barra del Maestro",icon:"☕",desc:"Frente a los baristas",
+   mesas:[{num:10,cap:1,libre:true},{num:11,cap:1,libre:true},{num:12,cap:2,libre:false}]},
 ];
 
-const PUNTOS_POR_DOLAR = 100;
-const PUNTOS_SIGUIENTE = 5000;
+// ── TOAST SYSTEM ─────────────────────────────────────────────────────────
+function ToastContainer({ toasts }) {
+  return (
+    <div className="toast-container">
+      {toasts.map(t => (
+        <div key={t.id} className={"toast t-"+t.type}>
+          <span className="toast-icon">{t.icon}</span>
+          <span className="toast-msg">{t.msg}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-// ── MARCA ──────────────────────────────────────────────────────────────────
-const Brand = ({ small }) => (
-  <div className="brand" style={small ? { marginBottom: 0 } : {}}>
-    <div className="brand-icon" style={small ? { width:34, height:34, fontSize:17 } : {}}>☕</div>
-    <div className="brand-text">
-      <div className="brand-name" style={small ? { fontSize:17 } : {}}>KO-ffee</div>
-      <div className="brand-tagline">Specialty Coffee & Food</div>
+function useToasts() {
+  const [toasts, setToasts] = useState([]);
+  const add = (msg, type="success", icon="✓") => {
+    const id = Date.now();
+    setToasts(t => [...t, {id,msg,type,icon}]);
+    setTimeout(() => setToasts(t => t.filter(x => x.id !== id)), 4000);
+  };
+  return [toasts, add];
+}
+
+// ── AUTH BRAND ────────────────────────────────────────────────────────────
+const AuthBrand = () => (
+  <div className="auth-brand">
+    <div className="auth-brand-icon">☕</div>
+    <div>
+      <div className="auth-brand-name">KO<span>-ffee</span></div>
+      <div className="auth-brand-tag">Specialty Coffee & Dojo</div>
     </div>
   </div>
 );
 
-// ── TOAST ──────────────────────────────────────────────────────────────────
-function Toast({ msg, onClose }) {
-  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
-  return <div className="toast success">{msg}</div>;
+// ── LANDING PAGE ──────────────────────────────────────────────────────────
+function LandingPage({ onGoLogin }) {
+  return (
+    <div className="landing">
+      {/* NAV */}
+      <nav className="land-nav">
+        <div className="land-nav-brand">KO<span style={{color:"var(--crimson)"}}>-ffee</span></div>
+        <div className="land-nav-links">
+          <a onClick={() => document.getElementById('concept')?.scrollIntoView({behavior:'smooth'})}>Concepto</a>
+          <a onClick={() => document.getElementById('levels')?.scrollIntoView({behavior:'smooth'})}>Niveles</a>
+          <a onClick={() => document.getElementById('info')?.scrollIntoView({behavior:'smooth'})}>Visítanos</a>
+        </div>
+        <button className="btn-nav-login" onClick={onGoLogin}>Acceder →</button>
+      </nav>
+
+      {/* HERO */}
+      <section className="hero" style={{paddingTop:"80px"}}>
+        <div className="hero-kanji">武道</div>
+        <div className="hero-badge">☕ Est. 2023 · Quito, Ecuador</div>
+        <div className="hero-title">KO<span>-ffee</span></div>
+        <div className="hero-sub">Specialty Coffee · Martial Arts Philosophy</div>
+        <p style={{fontSize:15,color:"rgba(255,255,255,0.45)",maxWidth:480,marginBottom:"2.5rem",fontWeight:300,lineHeight:1.8}}>
+          Donde la disciplina del dojo se encuentra con el ritual del café de especialidad. Cada taza, una práctica. Cada visita, un entrenamiento para los sentidos.
+        </p>
+        <div className="hero-cta">
+          <button className="btn-hero btn-hero-primary" onClick={onGoLogin}>Crear cuenta gratis</button>
+          <button className="btn-hero btn-hero-outline" onClick={() => document.getElementById('concept')?.scrollIntoView({behavior:'smooth'})}>Descubrir →</button>
+        </div>
+      </section>
+
+      <hr className="land-divider"/>
+
+      {/* CONCEPTO */}
+      <section className="land-section" id="concept">
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4rem",alignItems:"center"}}>
+          <div>
+            <div className="section-eyebrow">✦ Nuestra filosofía</div>
+            <div className="section-title">EL CAFÉ<br/>COMO<br/>ARTE<br/>MARCIAL</div>
+          </div>
+          <div>
+            <p className="section-body" style={{marginBottom:"1.5rem"}}>
+              En KO-ffee creemos que preparar un espresso perfecto requiere la misma concentración que un kata. La precisión, la repetición y la maestría son los pilares de nuestra barra.
+            </p>
+            <p className="section-body">
+              Cada cliente que avanza en su camino con nosotros obtiene un cinturón que refleja su dedicación. Desde el Cinturón Blanco hasta el Cinturón Negro, cada nivel desbloquea experiencias únicas.
+            </p>
+            <div style={{marginTop:"2rem",display:"grid",gridTemplateColumns:"1fr 1fr",gap:"1rem"}}>
+              {[["☕","Granos de especialidad","Origen único, trazabilidad total"],["🏯","Ambiente dojo","Diseño inspirado en la arquitectura japonesa"],["⚖️","Precisión barista","Cada extracción pesada al gramo"],["🎯","Comunidad","Eventos, catas y talleres mensuales"]].map(([i,t,d])=>(
+                <div key={t} style={{padding:"1rem",border:"1px solid var(--border)",borderRadius:4}}>
+                  <div style={{fontSize:24,marginBottom:8}}>{i}</div>
+                  <div style={{fontSize:13,fontWeight:600,color:"var(--white)",marginBottom:4}}>{t}</div>
+                  <div style={{fontSize:11,color:"var(--muted)",fontWeight:300}}>{d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr className="land-divider"/>
+
+      {/* NIVELES */}
+      <section className="land-section" id="levels">
+        <div className="section-eyebrow">✦ Sistema de rangos</div>
+        <div className="section-title">TU CAMINO<br/>AL CINTURÓN<br/>NEGRO</div>
+        <p className="section-body" style={{marginBottom:"2.5rem"}}>Acumula 100 puntos por cada $1 gastado y avanza en tu rango. Cada cinturón desbloquea beneficios exclusivos.</p>
+        <div className="belts-grid">
+          {BELTS.map(b => (
+            <div className="belt-card" key={b.nombre}>
+              <div className="belt-icon" style={{fontSize:28}}>🥋</div>
+              <div style={{width:32,height:4,borderRadius:2,background:b.color,margin:"8px auto"}}></div>
+              <div className="belt-name">{b.nombre.replace("Cinturón ","")}</div>
+              <div className="belt-pts">{b.min === 0 ? "0" : b.min.toLocaleString()}+ pts</div>
+              <div className="belt-reward">{b.reward}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className="land-divider"/>
+
+      {/* INFO */}
+      <section className="land-section" id="info">
+        <div className="section-eyebrow">✦ Encuéntranos</div>
+        <div className="section-title">EL DOJO<br/>TE ESPERA</div>
+        <div className="info-grid" style={{marginTop:"2.5rem"}}>
+          <div>
+            <div className="info-block">
+              <div className="info-block-label">Dirección</div>
+              <div className="info-block-value">Av. República de El Salvador N34-183<br/>y Suecia, Sector La Carolina<br/>Quito, Pichincha — Ecuador</div>
+            </div>
+            <div className="info-block">
+              <div className="info-block-label">Horarios</div>
+              {[["Lun — Vie","07:00 — 21:00"],["Sábado","08:00 — 22:00"],["Domingo","09:00 — 18:00"]].map(([d,h])=>(
+                <div className="hours-row" key={d}><span className="hours-day">{d}</span><span className="hours-time">{h}</span></div>
+              ))}
+            </div>
+            <div className="info-block">
+              <div className="info-block-label">Contacto</div>
+              <div className="info-block-value">+593 2 345 6789<br/>hola@ko-ffee.ec</div>
+            </div>
+            <div className="social-links">
+              {[["📸","Instagram"],["🐦","Twitter / X"],["📘","Facebook"],["🎵","TikTok"]].map(([i,n])=>(
+                <div key={n} className="social-btn" title={n}>{i}</div>
+              ))}
+            </div>
+          </div>
+          <div>
+            <div className="map-placeholder">
+              <div className="map-ph-icon">📍</div>
+              <div className="map-ph-text">Av. República de El Salvador, Quito</div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:4,fontWeight:300}}>Google Maps · La Carolina, Quito EC</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <div style={{borderTop:"1px solid var(--border)",padding:"2rem 3rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
+        <div style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:20,letterSpacing:2,color:"var(--white)"}}>KO<span style={{color:"var(--crimson)"}}>-ffee</span></div>
+        <div style={{fontSize:12,color:"var(--muted)",fontWeight:300}}>© 2025 KO-ffee Specialty Coffee & Dojo · Quito, Ecuador</div>
+        <button className="btn-hero btn-hero-primary" style={{padding:"0.6rem 1.5rem",fontSize:11}} onClick={onGoLogin}>Acceder al portal →</button>
+      </div>
+    </div>
+  );
 }
 
-// ── LOGIN ──────────────────────────────────────────────────────────────────
+// ── LOGIN ─────────────────────────────────────────────────────────────────
 function LoginForm({ onSwitch }) {
   const [email, setEmail] = useState(""); const [pass, setPass] = useState("");
+  const [staffOn, setStaffOn] = useState(false); const [staffCode, setStaffCode] = useState("");
   const [loading, setLoading] = useState(false); const [error, setError] = useState("");
+
   const submit = async e => {
     e.preventDefault(); setError(""); setLoading(true);
-    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
-    if (error) setError("Correo o contraseña incorrectos.");
+    if (staffOn && staffCode !== STAFF_CODE) {
+      setError("Código de Staff inválido. Acceso denegado."); setLoading(false); return;
+    }
+    const { data, error: err } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (err) { setError("Correo o contraseña incorrectos."); setLoading(false); return; }
+    if (staffOn) {
+      await sb.auth.updateUser({ data: { is_staff: true } });
+    }
     setLoading(false);
   };
+
   return (
     <div className="auth-page">
       <div className="auth-left">
-        <div className="auth-left-quote">"El café perfecto no es solo una bebida. Es un momento."</div>
-        <div className="auth-left-sub">KO-ffee · Specialty Coffee</div>
-        <div className="auth-left-beans">☕</div>
+        <div className="auth-bg-kanji">武</div>
+        <div className="auth-quote">"La disciplina es el puente entre las metas y los logros."</div>
+        <div className="auth-quote-attr" style={{marginTop:8}}>— Filosofía KO-ffee</div>
       </div>
       <div className="auth-right">
-        <div className="card">
-          <Brand />
-          <h2 className="card-title">Bienvenido de vuelta</h2>
-          <p className="card-subtitle">Accede para gestionar tus pedidos y reservas</p>
+        <div className="auth-card">
+          <AuthBrand/>
+          <div className="auth-title">Acceso al Dojo</div>
+          <div className="auth-sub">Ingresa tus credenciales para continuar</div>
           {error && <div className="alert alert-error">{error}</div>}
           <form onSubmit={submit}>
             <div className="form-group"><label className="form-label">Correo</label>
-              <input className="form-input" type="email" placeholder="tu@correo.com" value={email} onChange={e=>setEmail(e.target.value)} required /></div>
+              <input className="form-input" type="email" placeholder="maestro@ko-ffee.ec" value={email} onChange={e=>setEmail(e.target.value)} required/></div>
             <div className="form-group"><label className="form-label">Contraseña</label>
-              <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required /></div>
+              <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required/></div>
+
+            {/* Staff toggle */}
+            <div className={"staff-toggle"+(staffOn?" active":"")}>
+              <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
+                <span className="staff-toggle-label"><span className="staff-toggle-icon">🔐</span> ¿Posees código de Staff?</span>
+                <div className={"toggle-switch"+(staffOn?" on":"")}>
+                  <div className="toggle-knob"/>
+                </div>
+              </div>
+              {staffOn && (
+                <div className="staff-code-wrap">
+                  <div style={{height:10}}/>
+                  <div className="form-group" style={{marginBottom:0}}>
+                    <label className="form-label">Código de validación (9 caracteres)</label>
+                    <input className="form-input" type="text" placeholder="KOFFEE-000" maxLength={9} value={staffCode} onChange={e=>setStaffCode(e.target.value.toUpperCase())}/>
+                  </div>
+                </div>
+              )}
+            </div>
             <button className="btn-primary" type="submit" disabled={loading}>
-              {loading && <span className="spinner"/>}{loading ? "Entrando..." : "Iniciar sesión"}</button>
+              {loading && <span className="spinner"/>}{loading ? "Verificando…" : staffOn ? "Acceder como Staff →" : "Entrar al Dojo →"}</button>
           </form>
-          <div className="link-row">¿Sin cuenta aún? <button className="link-btn" onClick={onSwitch}>Regístrate gratis</button></div>
+          <div className="link-row">¿Sin cuenta? <button className="link-btn" onClick={onSwitch}>Regístrate gratis</button></div>
         </div>
       </div>
     </div>
   );
 }
 
-// ── REGISTRO ───────────────────────────────────────────────────────────────
+// ── REGISTRO ──────────────────────────────────────────────────────────────
 function RegisterForm({ onSwitch }) {
-  const [form, setForm] = useState({ nombre:"", email:"", telefono:"", nacimiento:"", pass:"" });
+  const [form, setForm] = useState({nombre:"",email:"",tel:"",nac:"",pass:""});
   const [loading, setLoading] = useState(false); const [error, setError] = useState(""); const [done, setDone] = useState(false);
-  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+  const set = k => e => setForm(f=>({...f,[k]:e.target.value}));
   const submit = async e => {
     e.preventDefault(); setError(""); setLoading(true);
-    const { error } = await sb.auth.signUp({ email: form.email, password: form.pass,
-      options: { data: { nombre_completo: form.nombre, telefono: form.telefono, fecha_nacimiento: form.nacimiento, puntos: 0 }}});
-    if (error) setError(error.message); else setDone(true);
+    const {error:err} = await sb.auth.signUp({email:form.email,password:form.pass,
+      options:{data:{nombre_completo:form.nombre,telefono:form.tel,fecha_nacimiento:form.nac,puntos:0,is_staff:false}}});
+    if(err) setError(err.message); else setDone(true);
     setLoading(false);
   };
-  if (done) return (
-    <div className="auth-page"><div className="auth-right"><div className="card confirm-screen">
-      <Brand/><div className="confirm-icon">✉️</div>
-      <h2 className="card-title">¡Revisa tu correo!</h2>
-      <p className="card-subtitle" style={{marginBottom:"1.5rem"}}>
-        Enviamos confirmación a <strong>{form.email}</strong>.<br/>Activa tu cuenta para empezar a acumular puntos.</p>
-      <button className="link-btn" onClick={onSwitch}>Ir al inicio de sesión</button>
+  if(done) return (
+    <div className="auth-page"><div className="auth-right"><div className="auth-card confirm-screen">
+      <AuthBrand/><div className="confirm-icon">📬</div>
+      <div className="auth-title">¡Bienvenido al Dojo!</div>
+      <div className="auth-sub" style={{marginBottom:"1.5rem"}}>Confirmación enviada a <strong style={{color:"var(--crimson)"}}>{form.email}</strong>.<br/>Activa tu cuenta para empezar a acumular puntos.</div>
+      <button className="link-btn" onClick={onSwitch}>Ir al login →</button>
     </div></div></div>
   );
   return (
     <div className="auth-page">
       <div className="auth-left">
-        <div className="auth-left-quote">"Cada taza cuenta una historia. Empieza la tuya hoy."</div>
-        <div className="auth-left-sub">KO-ffee · Specialty Coffee</div>
-        <div className="auth-left-beans">☕</div>
+        <div className="auth-bg-kanji">道</div>
+        <div className="auth-quote">"Un viaje de mil millas comienza con un solo paso."</div>
+        <div className="auth-quote-attr" style={{marginTop:8}}>— Lao Tzu</div>
       </div>
       <div className="auth-right">
-        <div className="card">
-          <Brand/>
-          <h2 className="card-title">Crear cuenta</h2>
-          <p className="card-subtitle">Únete y gana <strong>100 puntos</strong> por cada $1 de compra</p>
+        <div className="auth-card">
+          <AuthBrand/>
+          <div className="auth-title">Iniciar el Camino</div>
+          <div className="auth-sub">Crea tu cuenta y gana <strong style={{color:"var(--crimson)"}}>100 pts</strong> por cada $1</div>
           {error && <div className="alert alert-error">{error}</div>}
           <form onSubmit={submit}>
             <div className="form-group"><label className="form-label">Nombre completo</label>
-              <input className="form-input" type="text" placeholder="Ana García" value={form.nombre} onChange={set("nombre")} required/></div>
+              <input className="form-input" type="text" placeholder="Kenji García" value={form.nombre} onChange={set("nombre")} required/></div>
             <div className="form-row">
               <div className="form-group"><label className="form-label">Teléfono</label>
-                <input className="form-input" type="tel" placeholder="+593 99…" value={form.telefono} onChange={set("telefono")}/></div>
-              <div className="form-group"><label className="form-label">Fecha de nacimiento</label>
-                <input className="form-input" type="date" value={form.nacimiento} onChange={set("nacimiento")}/></div>
+                <input className="form-input" type="tel" placeholder="+593 99…" value={form.tel} onChange={set("tel")}/></div>
+              <div className="form-group"><label className="form-label">Fecha nac.</label>
+                <input className="form-input" type="date" value={form.nac} onChange={set("nac")}/></div>
             </div>
             <div className="form-group"><label className="form-label">Correo</label>
               <input className="form-input" type="email" placeholder="tu@correo.com" value={form.email} onChange={set("email")} required/></div>
             <div className="form-group"><label className="form-label">Contraseña</label>
               <input className="form-input" type="password" placeholder="Mínimo 6 caracteres" value={form.pass} onChange={set("pass")} minLength={6} required/></div>
             <button className="btn-primary" type="submit" disabled={loading}>
-              {loading && <span className="spinner"/>}{loading ? "Creando…" : "Crear mi cuenta"}</button>
+              {loading && <span className="spinner"/>}{loading ? "Creando…" : "Comenzar entrenamiento →"}</button>
           </form>
           <div className="link-row">¿Ya tienes cuenta? <button className="link-btn" onClick={onSwitch}>Inicia sesión</button></div>
         </div>
@@ -480,118 +771,251 @@ function RegisterForm({ onSwitch }) {
   );
 }
 
-// ── PANEL GENERAL ──────────────────────────────────────────────────────────
-function PanelGeneral({ pedidos, reservas, puntos }) {
-  const pct = Math.min(100, Math.round((puntos / PUNTOS_SIGUIENTE) * 100));
+// ── CARRITO LATERAL ───────────────────────────────────────────────────────
+function CartDrawer({ carrito, onClose, onUpdate, onRemove, onCheckout }) {
+  const subtotal = carrito.reduce((s,x)=>s+x.precio*x.qty,0);
+  const impuesto = subtotal * IVA;
+  const total = subtotal + impuesto;
+  const pts = Math.round(total * PTS_POR_DOLAR);
   return (
-    <div>
-      <div className="page-title">Mi panel</div>
-      <div className="page-subtitle">Resumen de tu actividad en KO-ffee</div>
-      <div className="stats-grid">
-        <div className="stat-box s1">
-          <div className="stat-label">Puntos acumulados</div>
-          <div className="stat-val accent">{puntos.toLocaleString()}</div>
-          <div className="stat-hint">Siguiente nivel: {PUNTOS_SIGUIENTE.toLocaleString()} pts</div>
+    <>
+      <div className="cart-overlay" onClick={onClose}/>
+      <div className="cart-drawer">
+        <div className="cart-hd">
+          <div className="cart-hd-title">🛒 Mi Pedido</div>
+          <button className="btn-close-cart" onClick={onClose}>✕</button>
         </div>
-        <div className="stat-box s2">
-          <div className="stat-label">Reservas activas</div>
-          <div className="stat-val">{reservas.length}</div>
-          <div className="stat-hint">{reservas.length > 0 ? `Próxima: ${reservas[0].fecha}` : "Sin reservas"}</div>
+        <div className="cart-items">
+          {carrito.length === 0
+            ? <div className="cart-empty"><div className="cart-empty-icon">☕</div><div>Tu carrito está vacío.<br/>Explora el menú y añade tus favoritos.</div></div>
+            : carrito.map(x=>(
+              <div className="cart-item" key={x.id}>
+                <div className="ci-emoji">{x.emoji}</div>
+                <div className="ci-info">
+                  <div className="ci-name">{x.nombre}</div>
+                  <div className="ci-price">${(x.precio*x.qty).toFixed(2)}</div>
+                </div>
+                <div className="ci-qty">
+                  <button className="qty-btn" onClick={()=>onUpdate(x.id,-1)}>−</button>
+                  <span className="qty-num">{x.qty}</span>
+                  <button className="qty-btn" onClick={()=>onUpdate(x.id,1)}>+</button>
+                  <button className="btn-remove" onClick={()=>onRemove(x.id)}>🗑</button>
+                </div>
+              </div>
+            ))
+          }
         </div>
-        <div className="stat-box s3">
-          <div className="stat-label">Pedidos realizados</div>
-          <div className="stat-val">{pedidos.length}</div>
-          <div className="stat-hint">{pedidos.length > 0 ? `Último: ${pedidos[pedidos.length-1].fecha}` : "Sin pedidos"}</div>
+        {carrito.length > 0 && (
+          <div className="cart-footer">
+            <div className="cart-totals">
+              <div className="cart-line"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+              <div className="cart-line"><span>IVA (12%)</span><span>${impuesto.toFixed(2)}</span></div>
+              <div className="cart-total-line"><span>Total</span><span>${total.toFixed(2)}</span></div>
+            </div>
+            <div className="cart-pts-earn">🥋 Ganarás <strong>+{pts.toLocaleString()} puntos</strong> con este pedido</div>
+            <button className="btn-checkout" onClick={()=>onCheckout({subtotal,impuesto,total,pts})}>Proceder al Pago →</button>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ── CHECKOUT / PAGO ───────────────────────────────────────────────────────
+function CheckoutPage({ resumen, carrito, onConfirm, onBack }) {
+  const [method, setMethod] = useState(null);
+  const [cardNum, setCardNum] = useState(""); const [cardExp, setCardExp] = useState(""); const [cardCVV, setCardCVV] = useState(""); const [cardName, setCardName] = useState("");
+  const [file, setFile] = useState(null); const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef();
+
+  const formatCard = v => v.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();
+  const formatExp = v => { const c = v.replace(/\D/g,"").slice(0,4); return c.length > 2 ? c.slice(0,2)+"/"+c.slice(2) : c; };
+
+  const canPay = method==="card" ? cardNum.replace(/\s/g,"").length===16 && cardExp.length===5 && cardCVV.length===3 && cardName.length > 2
+               : method==="transfer" ? !!file : false;
+
+  return (
+    <div style={{maxWidth:560,margin:"0 auto"}}>
+      <div className="page-hd">
+        <div className="page-title">Finalizar Pago</div>
+        <div className="page-sub">Elige tu método de pago</div>
+      </div>
+      {/* resumen */}
+      <div className="panel" style={{marginBottom:"1.5rem"}}>
+        <div className="panel-hd"><span className="panel-title">Resumen del pedido</span><span className="badge badge-red">${resumen.total.toFixed(2)}</span></div>
+        <div style={{padding:"1rem 1.5rem"}}>
+          {carrito.map(x=>(
+            <div key={x.id} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"4px 0",color:"var(--muted)"}}>
+              <span>{x.emoji} {x.nombre}{x.qty>1?` ×${x.qty}`:""}</span>
+              <span>${(x.precio*x.qty).toFixed(2)}</span>
+            </div>
+          ))}
+          <div style={{borderTop:"1px solid var(--border-light)",marginTop:8,paddingTop:8,display:"flex",justifyContent:"space-between",fontSize:13,color:"var(--muted)"}}>
+            <span>IVA 12%</span><span>${resumen.impuesto.toFixed(2)}</span>
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",fontSize:16,fontWeight:700,color:"var(--ink)",marginTop:8}}>
+            <span>Total</span><span>${resumen.total.toFixed(2)}</span>
+          </div>
+          <div style={{background:"rgba(192,22,44,0.07)",border:"1px solid rgba(192,22,44,0.15)",borderRadius:3,padding:"6px 12px",fontSize:12,color:"var(--crimson)",fontWeight:600,marginTop:"0.75rem",textAlign:"center"}}>
+            🥋 +{resumen.pts.toLocaleString()} puntos al confirmar
+          </div>
         </div>
       </div>
 
-      {/* Próximas reservas */}
-      <div className="panel">
-        <div className="panel-header">
-          <span className="panel-title">Próximas reservas</span>
-          <span className="badge badge-caramel">{reservas.length} activas</span>
+      {/* métodos */}
+      <div className="pay-methods">
+        <div className={"pay-method-btn"+(method==="card"?" selected":"")} onClick={()=>setMethod("card")}>
+          <div className="pay-method-icon">💳</div>
+          <div className="pay-method-name">Tarjeta</div>
+          <div className="pay-method-desc">Crédito o débito</div>
         </div>
-        {reservas.length === 0
-          ? <div className="empty">No tienes reservas aún — ¡reserva tu mesa favorita!</div>
-          : reservas.map((r,i) => (
+        <div className={"pay-method-btn"+(method==="transfer"?" selected":"")} onClick={()=>setMethod("transfer")}>
+          <div className="pay-method-icon">🏦</div>
+          <div className="pay-method-name">Transferencia</div>
+          <div className="pay-method-desc">Sube tu comprobante</div>
+        </div>
+      </div>
+
+      {/* form tarjeta */}
+      {method==="card" && (
+        <div className="panel">
+          <div className="panel-hd"><span className="panel-title">Datos de tarjeta</span><span style={{fontSize:18}}>🔒</span></div>
+          <div style={{padding:"1.5rem"}}>
+            <div className="form-group"><label className="form-label">Número de tarjeta</label>
+              <input className="select-input card-number-input" placeholder="0000 0000 0000 0000" value={cardNum} onChange={e=>setCardNum(formatCard(e.target.value))} maxLength={19}/></div>
+            <div className="form-group"><label className="form-label">Nombre en tarjeta</label>
+              <input className="select-input" placeholder="NOMBRE APELLIDO" value={cardName} onChange={e=>setCardName(e.target.value.toUpperCase())}/></div>
+            <div className="card-expiry-row">
+              <div className="form-group"><label className="form-label">Vencimiento</label>
+                <input className="select-input" placeholder="MM/AA" value={cardExp} onChange={e=>setCardExp(formatExp(e.target.value))} maxLength={5}/></div>
+              <div className="form-group"><label className="form-label">CVV</label>
+                <input className="select-input" placeholder="•••" type="password" value={cardCVV} onChange={e=>setCardCVV(e.target.value.replace(/\D/g,"").slice(0,3))} maxLength={3}/></div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* transferencia */}
+      {method==="transfer" && (
+        <div className="panel">
+          <div className="panel-hd"><span className="panel-title">Datos bancarios</span></div>
+          <div style={{padding:"1.5rem"}}>
+            <div className="bank-info-box">
+              {[["Banco","Banco Pichincha"],["Tipo de cuenta","Cuenta Corriente"],["Número","2200-4891-7730"],["Titular","KO-ffee S.A."],["RUC","1791823456001"],["Monto exacto",`$${resumen.total.toFixed(2)}`]].map(([l,v])=>(
+                <div className="bank-row" key={l}><span className="bank-label">{l}</span><span className="bank-value">{v}</span></div>
+              ))}
+            </div>
+            <div className={"drop-zone"+(dragOver?" drag-over":"")+(file?" drop-uploaded":"")}
+              onClick={()=>fileRef.current.click()}
+              onDragOver={e=>{e.preventDefault();setDragOver(true)}}
+              onDragLeave={()=>setDragOver(false)}
+              onDrop={e=>{e.preventDefault();setDragOver(false);setFile(e.dataTransfer.files[0])}}>
+              <input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>setFile(e.target.files[0])}/>
+              <div className="drop-icon">{file?"✅":"📎"}</div>
+              <div className="drop-text">{file ? file.name : "Arrastra aquí tu comprobante o haz click para seleccionar"}</div>
+              <div style={{fontSize:11,color:"var(--muted)",marginTop:4,fontWeight:300}}>PNG, JPG o PDF · Máx. 5MB</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{display:"flex",gap:"0.75rem",marginTop:"0.5rem"}}>
+        <button style={{flex:1,padding:"0.75rem",background:"none",border:"1.5px solid var(--border-light)",borderRadius:3,fontSize:13,fontFamily:"'Inter',sans-serif",color:"var(--muted)",cursor:"pointer"}} onClick={onBack}>← Volver</button>
+        <button className="btn-pay-confirm" style={{flex:2,marginTop:0}} disabled={!canPay} onClick={onConfirm}>Confirmar Pago →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── PANEL GENERAL ─────────────────────────────────────────────────────────
+function PanelGeneral({ pedidos, reservas, puntos }) {
+  const belt = getBelt(puntos);
+  const nextBelt = BELTS.find(b=>b.min > puntos) || belt;
+  const pct = nextBelt.min === Infinity ? 100 : Math.min(100,Math.round(((puntos-belt.min)/(nextBelt.min-belt.min))*100));
+  return (
+    <div>
+      <div className="page-hd"><div className="page-title">Mi Panel</div><div className="page-sub">Resumen de tu actividad en KO-ffee</div></div>
+      <div className="stats-grid">
+        <div className="stat-box s1"><div className="stat-lbl">Puntos acumulados</div><div className="stat-val accent">{puntos.toLocaleString()}</div><div className="stat-hint">Sistema: 100 pts / $1</div></div>
+        <div className="stat-box s2"><div className="stat-lbl">Reservas activas</div><div className="stat-val">{reservas.length}</div><div className="stat-hint">{reservas.length>0?`Próxima: ${reservas[0].fecha}`:"Sin reservas"}</div></div>
+        <div className="stat-box s3"><div className="stat-lbl">Pedidos realizados</div><div className="stat-val">{pedidos.length}</div><div className="stat-hint">{pedidos.length>0?`Último: ${pedidos[pedidos.length-1].fecha}`:"Sin pedidos"}</div></div>
+      </div>
+      {/* cinturón */}
+      <div className="belt-indicator">
+        <div className="belt-color-dot" style={{background:belt.color}}/>
+        <div className="belt-info">
+          <div className="belt-rank">🥋 {belt.nombre} — {belt.reward}</div>
+          <div className="belt-progress-wrap">
+            <div className="belt-bar"><div className="belt-fill" style={{width:pct+"%",background:belt.color}}/></div>
+            <div className="belt-pts-txt">{puntos.toLocaleString()} pts · {nextBelt.min===Infinity?"Nivel máximo alcanzado":`Próximo nivel a los ${nextBelt.min.toLocaleString()} pts`}</div>
+          </div>
+        </div>
+      </div>
+      {/* reservas */}
+      <div className="panel">
+        <div className="panel-hd"><span className="panel-title">Próximas Reservas</span><span className="badge badge-red">{reservas.length} activas</span></div>
+        {reservas.length===0 ? <div className="empty">Sin reservas — ¡reserva tu mesa en el dojo!</div>
+          : reservas.map((r,i)=>(
             <div className="reserva-row" key={i}>
               <div className="res-date"><div className="res-day">{r.dia}</div><div className="res-mon">{r.mes}</div></div>
               <div className="res-sep"/>
               <div className="res-info"><div className="res-name">{r.zona} · Mesa {r.mesa}</div><div className="res-detail">{r.hora} · {r.personas} persona{r.personas>1?"s":""}</div></div>
-              <span className="res-status s-confirmada">Confirmada</span>
+              <span className={"res-status rs-"+(r.estado||"confirmada")}>{r.estado==="aceptada"?"Aceptada ✓":r.estado==="en_curso"?"En curso":"Confirmada"}</span>
             </div>
           ))
         }
       </div>
-
-      {/* Historial pedidos */}
+      {/* pedidos */}
       <div className="panel">
-        <div className="panel-header">
-          <span className="panel-title">Historial de pedidos</span>
-          <span className="badge badge-green">{pedidos.length} pedidos</span>
-        </div>
-        {pedidos.length === 0
-          ? <div className="empty">Aún no has hecho pedidos — ¡explora el menú!</div>
-          : [...pedidos].reverse().map((p,i) => (
+        <div className="panel-hd"><span className="panel-title">Historial de Pedidos</span><span className="badge badge-green">{pedidos.length} pedidos</span></div>
+        {pedidos.length===0 ? <div className="empty">Sin pedidos — ¡explora el menú!</div>
+          : [...pedidos].reverse().map((p,i)=>(
             <div className="pedido-row" key={i}>
-              <div className="pedido-left">
-                <div className="pedido-icon">🛍️</div>
-                <div><div className="pedido-name">{p.items.join(", ")}</div><div className="pedido-date">{p.fecha}</div></div>
+              <div className="ped-left"><div className="ped-icon">🛍️</div>
+                <div><div className="ped-name">{p.items.join(", ")}</div><div className="ped-date">{p.fecha}</div></div>
               </div>
-              <div style={{textAlign:"right"}}>
-                <div className="pedido-price">${p.total.toFixed(2)}</div>
-                <div className="pedido-pts">+{p.pts.toLocaleString()} pts</div>
-              </div>
+              <div className="ped-right"><div className="ped-price">${p.total.toFixed(2)}</div><div className="ped-pts">+{p.pts.toLocaleString()} pts</div></div>
             </div>
           ))
         }
       </div>
-
-      {/* Puntos */}
+      {/* puntos */}
       <div className="panel">
-        <div className="panel-header">
-          <span className="panel-title">Mis puntos</span>
-          <span className="badge badge-caramel">Nivel Brew</span>
-        </div>
+        <div className="panel-hd"><span className="panel-title">Sistema de Puntos</span><span className="badge badge-gold">{belt.nombre}</span></div>
         <div className="pts-body">
-          <div style={{marginBottom:"0.75rem"}}>
-            <span className="pts-rate">☕ 100 puntos por cada $1 de compra</span>
-          </div>
-          <div className="pts-bar-labels"><span>{puntos.toLocaleString()} pts</span><span>{PUNTOS_SIGUIENTE.toLocaleString()} pts → Nivel Reserve</span></div>
-          <div className="pts-bar"><div className="pts-fill" style={{width: pct+"%"}}/></div>
-          <div className="pts-msg">Te faltan <strong>{(PUNTOS_SIGUIENTE - puntos).toLocaleString()} puntos</strong> para desbloquear el nivel Reserve y obtener una bebida gratis cada mes ☕</div>
+          <div className="pts-rate-tag">🥋 100 puntos por cada $1 de compra</div>
+          <div className="pts-bar-labels"><span>{puntos.toLocaleString()} pts actuales</span><span>{nextBelt.min===Infinity?"Nivel máximo":nextBelt.min.toLocaleString()+" pts → "+nextBelt.nombre}</span></div>
+          <div className="pts-bar"><div className="pts-fill" style={{width:pct+"%"}}/></div>
+          <div className="pts-msg">{nextBelt.min===Infinity?"¡Has alcanzado el nivel máximo! Eres un Maestro del Dojo 🏆":(<>Te faltan <strong>{(nextBelt.min-puntos).toLocaleString()} puntos</strong> para el {nextBelt.nombre} · Beneficio: {nextBelt.reward}</>)}</div>
         </div>
       </div>
     </div>
   );
 }
 
-// ── MENÚ ───────────────────────────────────────────────────────────────────
-function MenuPage({ onAddToCart }) {
-  const cats = ["Todos", "Café", "Comida", "Especiales"];
+// ── MENÚ ──────────────────────────────────────────────────────────────────
+function MenuPage({ onAdd }) {
+  const cats = ["Todos","Café","Comida","Especiales"];
   const [cat, setCat] = useState("Todos");
-  const filtered = cat === "Todos" ? MENU : MENU.filter(m => m.cat === cat);
+  const filtered = cat==="Todos" ? MENU : MENU.filter(m=>m.cat===cat);
   return (
     <div>
-      <div className="page-title">Menú</div>
-      <div className="page-subtitle">Specialty coffee & cocina artesanal · <span style={{color:"var(--caramel)",fontWeight:500}}>100 pts por cada $1</span></div>
+      <div className="page-hd"><div className="page-title">Menú del Dojo</div><div className="page-sub">Specialty coffee & cocina artesanal · <span style={{color:"var(--crimson)",fontWeight:600}}>100 pts por $1</span></div></div>
       <div className="panel">
-        <div className="category-tabs">
-          {cats.map(c => <button key={c} className={"cat-tab"+(cat===c?" active":"")} onClick={()=>setCat(c)}>{c}</button>)}
-        </div>
+        <div className="cat-tabs">{cats.map(c=><button key={c} className={"cat-tab"+(cat===c?" active":"")} onClick={()=>setCat(c)}>{c}</button>)}</div>
         <div className="menu-grid">
-          {filtered.map(item => (
+          {filtered.map(item=>(
             <div className="menu-card" key={item.id}>
               <div className="menu-emoji">{item.emoji}</div>
               <div className="menu-body">
                 <div className="menu-name">{item.nombre}</div>
                 <div className="menu-desc">{item.desc}</div>
                 <div className="menu-footer">
-                  <div>
+                  <div className="menu-price-wrap">
                     <div className="menu-price">${item.precio.toFixed(2)}</div>
-                    <div className="menu-pts-hint">+{Math.round(item.precio * PUNTOS_POR_DOLAR)} pts</div>
+                    <div className="menu-pts-hint">+{Math.round(item.precio*PTS_POR_DOLAR*(1+IVA))} pts</div>
                   </div>
-                  <button className="btn-add" onClick={() => onAddToCart(item)}>+ Añadir</button>
+                  <button className="btn-add" onClick={()=>onAdd(item)}>+ Añadir</button>
                 </div>
               </div>
             </div>
@@ -602,67 +1026,52 @@ function MenuPage({ onAddToCart }) {
   );
 }
 
-// ── RESERVAS ───────────────────────────────────────────────────────────────
+// ── RESERVAS ──────────────────────────────────────────────────────────────
 function ReservasPage({ onReserva }) {
-  const [selMesa, setSelMesa] = useState(null);
+  const [sel, setSel] = useState(null);
   const [fecha, setFecha] = useState(""); const [hora, setHora] = useState(""); const [personas, setPersonas] = useState("2");
-  const [toast, setToast] = useState("");
   const today = new Date().toISOString().split("T")[0];
-
-  const handleReserva = () => {
-    if (!selMesa || !fecha || !hora) return;
-    const d = new Date(fecha + "T12:00:00");
-    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    onReserva({ dia: String(d.getDate()).padStart(2,"0"), mes: meses[d.getMonth()], zona: selMesa.zona, mesa: selMesa.num, hora, personas: parseInt(personas), fecha: `${d.getDate()} ${meses[d.getMonth()]}` });
-    setToast(`¡Reserva confirmada! ${selMesa.zona} · Mesa ${selMesa.num} · ${fecha} ${hora}`);
-    setSelMesa(null); setFecha(""); setHora(""); setPersonas("2");
+  const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const handle = () => {
+    if(!sel||!fecha||!hora) return;
+    const d = new Date(fecha+"T12:00:00");
+    onReserva({dia:String(d.getDate()).padStart(2,"0"),mes:meses[d.getMonth()],zona:sel.zona,mesa:sel.num,hora,personas:parseInt(personas),fecha:`${d.getDate()} ${meses[d.getMonth()]}`,estado:"confirmada"});
+    setSel(null); setFecha(""); setHora(""); setPersonas("2");
   };
-
   return (
     <div>
-      {toast && <Toast msg={toast} onClose={()=>setToast("")}/>}
-      <div className="page-title">Reservar mesa</div>
-      <div className="page-subtitle">Elige tu zona y mesa favorita</div>
+      <div className="page-hd"><div className="page-title">Reservar Mesa</div><div className="page-sub">Elige tu zona favorita del Dojo</div></div>
       <div className="zonas-grid">
-        {ZONAS.map(zona => (
+        {ZONAS_DATA.map(zona=>(
           <div className="zona-card" key={zona.id}>
-            <div className="zona-header">
-              <span className="zona-icon">{zona.icon}</span>
+            <div className="zona-hd"><span className="zona-icon">{zona.icon}</span>
               <div><div className="zona-name">{zona.nombre}</div><div className="zona-desc">{zona.desc}</div></div>
             </div>
             <div className="mesas-grid">
-              {zona.mesas.map(m => {
-                const isSel = selMesa && selMesa.zona === zona.nombre && selMesa.num === m.num;
-                return (
-                  <button key={m.num}
-                    className={"mesa-btn " + (isSel ? "seleccionada" : m.libre ? "libre" : "ocupada")}
-                    disabled={!m.libre}
-                    onClick={() => setSelMesa({ zona: zona.nombre, num: m.num, cap: m.cap })}>
-                    Mesa {m.num}
-                    <div className="mesa-cap">{m.cap} {m.cap===1?"persona":"personas"}</div>
-                  </button>
-                );
+              {zona.mesas.map(m=>{
+                const isSel = sel && sel.zona===zona.nombre && sel.num===m.num;
+                return <button key={m.num} className={"mesa-btn "+(isSel?"seleccionada":m.libre?"libre":"ocupada")} disabled={!m.libre} onClick={()=>setSel({zona:zona.nombre,num:m.num,cap:m.cap})}>
+                  Mesa {m.num}<div className="mesa-cap">{m.cap}p</div></button>;
               })}
             </div>
           </div>
         ))}
       </div>
-      {selMesa && (
+      {sel && (
         <div className="panel">
-          <div className="panel-header"><span className="panel-title">Confirmar reserva</span></div>
-          <div className="reserva-form">
-            <div className="res-selected-info">☕ {selMesa.zona} · Mesa {selMesa.num} · hasta {selMesa.cap} persona{selMesa.cap>1?"s":""}</div>
+          <div className="panel-hd"><span className="panel-title">Confirmar Reserva</span></div>
+          <div className="reserva-form-panel">
+            <div className="res-sel-info">⛩️ {sel.zona} · Mesa {sel.num} · hasta {sel.cap} persona{sel.cap>1?"s":""}</div>
             <div className="form-row" style={{marginBottom:"0.9rem"}}>
               <div className="form-group"><label className="form-label">Fecha</label>
-                <input className="form-input" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
+                <input className="select-input" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
               <div className="form-group"><label className="form-label">Hora</label>
-                <input className="form-input" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
+                <input className="select-input" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
             </div>
             <div className="form-group" style={{marginBottom:"1rem"}}><label className="form-label">Personas</label>
-              <select className="form-input" value={personas} onChange={e=>setPersonas(e.target.value)}>
-                {[...Array(selMesa.cap)].map((_,i)=><option key={i+1} value={i+1}>{i+1}</option>)}
-              </select></div>
-            <button className="btn-reservar" onClick={handleReserva} disabled={!fecha||!hora}>Confirmar reserva</button>
+              <select className="select-input" value={personas} onChange={e=>setPersonas(e.target.value)}>
+                {[...Array(sel.cap)].map((_,i)=><option key={i+1} value={i+1}>{i+1}</option>)}</select></div>
+            <button className="btn-reservar" onClick={handle} disabled={!fecha||!hora}>Confirmar Reserva</button>
           </div>
         </div>
       )}
@@ -670,8 +1079,148 @@ function ReservasPage({ onReserva }) {
   );
 }
 
-// ── APP SHELL ──────────────────────────────────────────────────────────────
-function Dashboard({ user }) {
+// ── STAFF DASHBOARD ───────────────────────────────────────────────────────
+function StaffDashboard({ onSignOut, addToast, globalReservas, globalPedidos, onUpdateReserva, onUpdatePedido }) {
+  const [vista, setVista] = useState("kds");
+  const [search, setSearch] = useState(""); const [foundClient, setFoundClient] = useState(null);
+  const [ptsAdj, setPtsAdj] = useState("");
+
+  const mockClients = [
+    {nombre:"María Fernanda López",email:"maria@ko-ffee.ec",puntos:8400,pedidos:12,reservas:3},
+    {nombre:"Carlos Andrade",email:"carlos@ko-ffee.ec",puntos:2100,pedidos:5,reservas:1},
+  ];
+
+  const searchClient = () => {
+    const q = search.toLowerCase();
+    const found = mockClients.find(c=>c.nombre.toLowerCase().includes(q)||c.email.toLowerCase().includes(q));
+    setFoundClient(found || null);
+  };
+
+  const kdsNav = [{id:"kds",icon:"🖥️",label:"KDS — Pedidos"},{id:"reservas",icon:"📋",label:"Gestión Reservas"},{id:"clientes",icon:"👥",label:"Control Clientes"}];
+
+  const getKdsLabel = s => s==="preparacion"?"En Preparación":s==="listo"?"Listo ✓":"Recibido";
+  const nextStatus = s => s==="recibido"?"preparacion":s==="preparacion"?"listo":"listo";
+
+  return (
+    <div className="app-shell staff-mode">
+      <aside className="sidebar">
+        <div className="sb-brand">
+          <div className="sb-brand-icon">⚔️</div>
+          <div>
+            <div className="sb-brand-name">KO<span>-ffee</span></div>
+            <div style={{fontSize:9,letterSpacing:"1.5px",textTransform:"uppercase",color:"var(--crimson)",marginTop:2}}>Staff Panel</div>
+          </div>
+        </div>
+        <nav className="sb-nav">
+          <div className="sb-section-label">Control del Dojo</div>
+          {kdsNav.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}><span className="nb-icon">{n.icon}</span>{n.label}</button>)}
+        </nav>
+        <div className="sb-footer">
+          <div className="staff-badge">⚔️ Staff</div>
+          <div className="sb-user-info">Panel de Administración</div>
+          <button className="btn-signout" onClick={onSignOut}>Cerrar sesión</button>
+        </div>
+      </aside>
+      <main className="main staff-main" style={{color:"var(--white)"}}>
+        {/* KDS */}
+        {vista==="kds" && (
+          <div>
+            <div className="page-hd"><div className="page-title light">Sistema KDS</div><div className="page-sub light">Kitchen Display System — Pedidos en tiempo real</div></div>
+            {globalPedidos.length===0
+              ? <div style={{padding:"3rem",textAlign:"center",color:"#444",fontStyle:"italic"}}>Sin pedidos activos en este momento</div>
+              : <div className="kds-grid">
+                {globalPedidos.map((p,i)=>(
+                  <div key={i} className={"kds-card "+(p.kdsStatus||"recibido")}>
+                    <div className="kds-card-hd">
+                      <span className="kds-id">PED-{String(i+1).padStart(3,"0")}</span>
+                      <span className={"kds-status ks-"+(p.kdsStatus||"recibido")}>{getKdsLabel(p.kdsStatus||"recibido")}</span>
+                    </div>
+                    <div className="kds-body">
+                      <div className="kds-items">{p.items.join("\n")}</div>
+                      <div className="kds-meta">{p.fecha} · ${p.total.toFixed(2)}</div>
+                      {(p.kdsStatus||"recibido")!=="listo"
+                        ? <button className="btn-kds btn-kds-next" onClick={()=>{ onUpdatePedido(i,nextStatus(p.kdsStatus||"recibido")); addToast(nextStatus(p.kdsStatus||"recibido")==="listo"?"✅ Pedido listo para retirar":"🔥 Pedido en preparación","gold","⚡"); }}>
+                            {(p.kdsStatus||"recibido")==="recibido"?"→ Iniciar Preparación":"→ Marcar como Listo"}</button>
+                        : <button className="btn-kds btn-kds-done" disabled>✓ Listo para retirar</button>
+                      }
+                    </div>
+                  </div>
+                ))}
+              </div>
+            }
+          </div>
+        )}
+        {/* RESERVAS STAFF */}
+        {vista==="reservas" && (
+          <div>
+            <div className="page-hd"><div className="page-title light">Dojo Manager</div><div className="page-sub light">Gestión de reservas en tiempo real</div></div>
+            <div className="staff-panel">
+              <div className="staff-panel-hd"><span className="panel-title-light">Reservas Activas</span><span className="badge badge-red">{globalReservas.length}</span></div>
+              {globalReservas.length===0
+                ? <div className="empty" style={{color:"#444"}}>Sin reservas activas</div>
+                : <table className="staff-res-table">
+                  <thead><tr><th>Mesa</th><th>Zona</th><th>Fecha</th><th>Hora</th><th>Personas</th><th>Estado</th><th>Acción</th></tr></thead>
+                  <tbody>
+                    {globalReservas.map((r,i)=>(
+                      <tr key={i}>
+                        <td style={{color:"var(--white)",fontWeight:600}}>Mesa {r.mesa}</td>
+                        <td>{r.zona}</td>
+                        <td>{r.dia} {r.mes}</td>
+                        <td>{r.hora}</td>
+                        <td>{r.personas}p</td>
+                        <td><span className={"res-status "+(r.estado==="aceptada"?"rs-confirmada":r.estado==="en_curso"?"s-pendiente":"rs-pendiente")}>{r.estado==="aceptada"?"Aceptada":r.estado==="en_curso"?"En Curso":"Pendiente"}</span></td>
+                        <td style={{display:"flex",gap:"6px",flexWrap:"wrap"}}>
+                          {r.estado!=="aceptada" && <button className="btn-status bs-aceptar" onClick={()=>{onUpdateReserva(i,"aceptada");addToast("Reserva aceptada — el cliente será notificado","success","📅");}}>Aceptar</button>}
+                          {r.estado==="aceptada" && <button className="btn-status bs-curso" onClick={()=>{onUpdateReserva(i,"en_curso");addToast("Reserva marcada como En Curso","gold","⏱️");}}>En Curso</button>}
+                          {r.estado==="en_curso" && <button className="btn-status bs-finalizar">Finalizada</button>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              }
+            </div>
+          </div>
+        )}
+        {/* CLIENTES */}
+        {vista==="clientes" && (
+          <div>
+            <div className="page-hd"><div className="page-title light">Control de Clientes</div><div className="page-sub light">Busca, verifica y ajusta puntos de clientes</div></div>
+            <div className="staff-panel">
+              <div className="staff-panel-hd"><span className="panel-title-light">Buscador de Usuarios</span></div>
+              <div className="search-bar">
+                <input className="search-input" placeholder="Buscar por nombre o correo…" value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==="Enter"&&searchClient()}/>
+                <button className="btn-search" onClick={searchClient}>Buscar</button>
+              </div>
+              <div className="client-result">
+                {search && !foundClient && <div style={{color:"#555",fontSize:13,fontStyle:"italic",padding:"1rem 0"}}>No se encontró ningún cliente con ese criterio.</div>}
+                {foundClient && (
+                  <div className="client-card">
+                    <div className="client-name">{foundClient.nombre}</div>
+                    <div className="client-meta">{foundClient.email} · {getBelt(foundClient.puntos).nombre}</div>
+                    <div className="client-stats">
+                      <div className="client-stat"><div className="cs-val red">{foundClient.puntos.toLocaleString()}</div><div className="cs-lbl">Puntos</div></div>
+                      <div className="client-stat"><div className="cs-val">{foundClient.pedidos}</div><div className="cs-lbl">Pedidos</div></div>
+                      <div className="client-stat"><div className="cs-val">{foundClient.reservas}</div><div className="cs-lbl">Reservas</div></div>
+                    </div>
+                    <div className="pts-adjust-row">
+                      <input className="pts-adjust-input" type="number" placeholder="Cantidad de puntos…" value={ptsAdj} onChange={e=>setPtsAdj(e.target.value)}/>
+                      <button className="btn-pts-add" onClick={()=>{if(ptsAdj){addToast(`+${parseInt(ptsAdj).toLocaleString()} pts añadidos a ${foundClient.nombre.split(" ")[0]}`,"success","✓");setPtsAdj("")}}}>+ Añadir</button>
+                      <button className="btn-pts-sub" onClick={()=>{if(ptsAdj){addToast(`-${parseInt(ptsAdj).toLocaleString()} pts descontados de ${foundClient.nombre.split(" ")[0]}`,"crimson","−");setPtsAdj("")}}}>− Quitar</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+// ── CLIENT DASHBOARD ──────────────────────────────────────────────────────
+function ClientDashboard({ user, addToast }) {
   const meta = user.user_metadata || {};
   const nombre = meta.nombre_completo || user.email;
   const primerNombre = nombre.split(" ")[0];
@@ -682,122 +1231,115 @@ function Dashboard({ user }) {
   const [puntos, setPuntos] = useState(0);
   const [carrito, setCarrito] = useState([]);
   const [showCart, setShowCart] = useState(false);
-  const [toast, setToast] = useState("");
+  const [checkout, setCheckout] = useState(null);
 
-  const showToast = msg => { setToast(msg); setTimeout(()=>setToast(""),3000); };
+  const addToCart = item => setCarrito(c=>{ const ex=c.find(x=>x.id===item.id); return ex?c.map(x=>x.id===item.id?{...x,qty:x.qty+1}:x):[...c,{...item,qty:1}]; });
+  const updateQty = (id,d) => setCarrito(c=>c.map(x=>x.id===id?{...x,qty:Math.max(1,x.qty+d)}:x));
+  const removeItem = id => setCarrito(c=>c.filter(x=>x.id!==id));
 
-  const addToCart = item => {
-    setCarrito(c => {
-      const ex = c.find(x => x.id === item.id);
-      return ex ? c.map(x => x.id===item.id ? {...x, qty: x.qty+1} : x) : [...c, {...item, qty:1}];
-    });
-  };
+  const handleCheckout = resumen => { setShowCart(false); setCheckout(resumen); setVista("checkout"); };
 
-  const cartTotal = carrito.reduce((s,x) => s + x.precio * x.qty, 0);
-  const cartCount = carrito.reduce((s,x) => s + x.qty, 0);
-  const cartPts   = Math.round(cartTotal * PUNTOS_POR_DOLAR);
-
-  const confirmarPedido = () => {
+  const confirmPay = () => {
     const now = new Date();
-    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-    const fecha = `${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
-    const nuevoPedido = { items: carrito.map(x => x.qty>1 ? `${x.nombre} x${x.qty}` : x.nombre), total: cartTotal, pts: cartPts, fecha };
-    setPedidos(p => [...p, nuevoPedido]);
-    setPuntos(p => p + cartPts);
-    setCarrito([]);
-    setShowCart(false);
-    showToast(`¡Pedido confirmado! Ganaste +${cartPts.toLocaleString()} puntos ☕`);
+    const meses=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const fecha=`${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
+    setPedidos(p=>[...p,{items:carrito.map(x=>x.qty>1?`${x.nombre} ×${x.qty}`:x.nombre),total:checkout.total,pts:checkout.pts,fecha,kdsStatus:"recibido"}]);
+    setPuntos(p=>p+checkout.pts);
+    setCarrito([]); setCheckout(null); setVista("panel");
+    addToast(`¡Pedido confirmado! +${checkout.pts.toLocaleString()} puntos acreditados 🥋`,"success","☕");
+    setTimeout(()=>addToast("Tu pedido ha sido recibido por cocina","gold","🔥"),1500);
   };
 
-  const agregarReserva = r => setReservas(prev => [...prev, r]);
+  const addReserva = r => {
+    setReservas(prev=>[...prev,r]);
+    addToast("¡Reserva enviada! El staff la confirmará pronto 📅","success","📅");
+  };
+
+  const cartCount = carrito.reduce((s,x)=>s+x.qty,0);
 
   const nav = [
-    { id:"panel",   icon:"🏠", label:"Mi panel" },
-    { id:"menu",    icon:"☕", label:"Menú" },
-    { id:"reservas",icon:"📅", label:"Reservar mesa" },
+    {id:"panel",icon:"🏠",label:"Mi Panel"},
+    {id:"menu",icon:"☕",label:"Menú"},
+    {id:"reservas",icon:"📅",label:"Reservar Mesa"},
   ];
 
   return (
     <div className="app-shell">
-      {toast && <Toast msg={toast} onClose={()=>setToast("")}/>}
-
-      {/* Sidebar */}
       <aside className="sidebar">
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">☕</div>
-          <div className="sidebar-brand-name">KO-ffee</div>
+        <div className="sb-brand">
+          <div className="sb-brand-icon">☕</div>
+          <div><div className="sb-brand-name">KO<span>-ffee</span></div><div style={{fontSize:9,letterSpacing:"1.5px",textTransform:"uppercase",color:"var(--muted)",marginTop:2}}>Specialty Coffee</div></div>
         </div>
-        <nav className="sidebar-nav">
-          {nav.map(n => (
-            <button key={n.id} className={"nav-item"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}>
-              <span className="nav-icon">{n.icon}</span>{n.label}
-            </button>
-          ))}
+        <nav className="sb-nav">
+          <div className="sb-section-label">Mi Cuenta</div>
+          {nav.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id&&vista!=="checkout"?" active":"")} onClick={()=>{setVista(n.id);setCheckout(null)}}><span className="nb-icon">{n.icon}</span>{n.label}</button>)}
         </nav>
-        <div className="sidebar-footer">
-          <div className="sidebar-user">👤 {primerNombre} · {puntos.toLocaleString()} pts</div>
+        <div className="sb-footer">
+          <div className="sb-user-info">👤 <span className="sb-user-name">{primerNombre}</span> · {puntos.toLocaleString()} pts</div>
           <button className="btn-signout" onClick={()=>sb.auth.signOut()}>Cerrar sesión</button>
         </div>
       </aside>
-
-      {/* Contenido */}
-      <main className="main-content">
-        {vista === "panel"    && <PanelGeneral pedidos={pedidos} reservas={reservas} puntos={puntos}/>}
-        {vista === "menu"     && <MenuPage onAddToCart={addToCart}/>}
-        {vista === "reservas" && <ReservasPage onReserva={agregarReserva}/>}
+      <main className="main">
+        {vista==="panel"    && <PanelGeneral pedidos={pedidos} reservas={reservas} puntos={puntos}/>}
+        {vista==="menu"     && <MenuPage onAdd={addToCart}/>}
+        {vista==="reservas" && <ReservasPage onReserva={addReserva}/>}
+        {vista==="checkout" && checkout && <CheckoutPage resumen={checkout} carrito={carrito} onConfirm={confirmPay} onBack={()=>{setVista("menu");setCheckout(null)}}/>}
       </main>
-
-      {/* Carrito flotante */}
-      {carrito.length > 0 && !showCart && (
-        <div className="cart-bar">
-          <div className="cart-info"><strong>{cartCount}</strong> producto{cartCount>1?"s":""} · <strong>${cartTotal.toFixed(2)}</strong></div>
-          <div style={{fontSize:11,color:"var(--latte)"}}>+{cartPts.toLocaleString()} pts</div>
-          <button className="btn-cart-checkout" onClick={()=>setShowCart(true)}>Ver pedido →</button>
-        </div>
+      {/* FAB carrito */}
+      {carrito.length>0 && vista!=="checkout" && (
+        <button className="cart-fab" onClick={()=>setShowCart(true)}>
+          <span>🛒 Ver pedido</span>
+          <span className="cart-fab-count">{cartCount}</span>
+          <span style={{color:"rgba(255,255,255,0.5)",fontSize:11}}>${carrito.reduce((s,x)=>s+x.precio*x.qty,0).toFixed(2)}</span>
+        </button>
       )}
-
-      {/* Modal carrito */}
-      {showCart && (
-        <div className="modal-overlay" onClick={()=>setShowCart(false)}>
-          <div className="modal" onClick={e=>e.stopPropagation()}>
-            <div className="modal-title">Tu pedido</div>
-            <div className="modal-sub">Revisa antes de confirmar</div>
-            {carrito.map((x,i) => (
-              <div className="cart-item-row" key={i}>
-                <span>{x.emoji} {x.nombre}{x.qty>1 ? ` x${x.qty}`:""}</span>
-                <span style={{color:"var(--muted)"}}>$ {(x.precio*x.qty).toFixed(2)}</span>
-              </div>
-            ))}
-            <div className="cart-total"><span>Total</span><span>${cartTotal.toFixed(2)}</span></div>
-            <div className="cart-pts-earn">☕ Ganarás <strong>+{cartPts.toLocaleString()} puntos</strong> con este pedido</div>
-            <div className="modal-btns">
-              <button className="btn-secondary" onClick={()=>setShowCart(false)}>Cancelar</button>
-              <button className="btn-confirm" onClick={confirmarPedido}>Confirmar pedido</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {showCart && <CartDrawer carrito={carrito} onClose={()=>setShowCart(false)} onUpdate={updateQty} onRemove={removeItem} onCheckout={handleCheckout}/>}
     </div>
   );
 }
 
-// ── ROOT ───────────────────────────────────────────────────────────────────
+// ── APP ROOT ──────────────────────────────────────────────────────────────
 function App() {
+  const [screen, setScreen] = useState("landing"); // landing | login | register | app
   const [session, setSession] = useState(null);
-  const [view, setView] = useState("login");
   const [loading, setLoading] = useState(true);
+  const [isStaff, setIsStaff] = useState(false);
+  const [toasts, addToast] = useToasts();
+
+  // estado global compartido entre client y staff
+  const [globalPedidos, setGlobalPedidos] = useState([]);
+  const [globalReservas, setGlobalReservas] = useState([]);
 
   useEffect(() => {
-    sb.auth.getSession().then(({ data: { session } }) => { setSession(session); setLoading(false); });
-    const { data: { subscription } } = sb.auth.onAuthStateChange((_e, session) => setSession(session));
-    return () => subscription.unsubscribe();
-  }, []);
+    sb.auth.getSession().then(({data:{session}})=>{ setSession(session); if(session) setScreen("app"); setLoading(false); });
+    const {data:{subscription}} = sb.auth.onAuthStateChange((_e,session)=>{
+      setSession(session);
+      if(session){ setIsStaff(session.user?.user_metadata?.is_staff||false); setScreen("app"); }
+      else setScreen("landing");
+    });
+    return ()=>subscription.unsubscribe();
+  },[]);
 
-  if (loading) return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--cream)",color:"#aaa",fontSize:13}}>Cargando…</div>;
-  if (session) return <Dashboard user={session.user}/>;
-  return view === "login"
-    ? <LoginForm onSwitch={()=>setView("register")}/>
-    : <RegisterForm onSwitch={()=>setView("login")}/>;
+  const addGlobalPedido = p => setGlobalPedidos(prev=>[...prev,p]);
+  const addGlobalReserva = r => setGlobalReservas(prev=>[...prev,r]);
+  const updateReserva = (i,estado) => setGlobalReservas(prev=>prev.map((r,idx)=>idx===i?{...r,estado}:r));
+  const updatePedido = (i,status) => setGlobalPedidos(prev=>prev.map((p,idx)=>idx===i?{...p,kdsStatus:status}:p));
+
+  if(loading) return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--obsidian)",color:"#444",fontSize:13}}>Cargando…</div>;
+
+  return (
+    <>
+      <ToastContainer toasts={toasts}/>
+      {screen==="landing" && <LandingPage onGoLogin={()=>setScreen("login")}/>}
+      {screen==="login"   && <LoginForm onSwitch={()=>setScreen("register")}/>}
+      {screen==="register"&& <RegisterForm onSwitch={()=>setScreen("login")}/>}
+      {screen==="app" && session && (
+        isStaff || session.user?.user_metadata?.is_staff
+          ? <StaffDashboard onSignOut={()=>sb.auth.signOut()} addToast={addToast} globalReservas={globalReservas} globalPedidos={globalPedidos} onUpdateReserva={updateReserva} onUpdatePedido={updatePedido}/>
+          : <ClientDashboard user={session.user} addToast={(msg,type,icon)=>{ addToast(msg,type,icon); const p=globalPedidos[globalPedidos.length-1]; if(p) addGlobalPedido(p); }} globalReservas={globalReservas} onAddReserva={r=>{addGlobalReserva(r);}} />
+      )}
+    </>
+  );
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
