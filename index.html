@@ -687,24 +687,31 @@ function LoginForm({ onSwitch }) {
             <div className="form-group"><label className="form-label">Contraseña</label>
               <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required/></div>
 
-            {/* Staff toggle */}
-            <div className={"staff-toggle"+(staffOn?" active":"")}>
-              <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
-                <span className="staff-toggle-label"><span className="staff-toggle-icon">🔐</span> ¿Posees código de Staff?</span>
-                <div className={"toggle-switch"+(staffOn?" on":"")}>
-                  <div className="toggle-knob"/>
-                </div>
-              </div>
-              {staffOn && (
-                <div className="staff-code-wrap">
-                  <div style={{height:10}}/>
-                  <div className="form-group" style={{marginBottom:0}}>
-                    <label className="form-label">Código de validación (9 caracteres)</label>
-                    <input className="form-input" type="text" placeholder="KOFFEE-000" maxLength={9} value={staffCode} onChange={e=>setStaffCode(e.target.value.toUpperCase())}/>
-                  </div>
-                </div>
-              )}
-            </div>
+        {/* Staff toggle */}
+<div className={"staff-toggle"+(staffOn?" active":"")}>
+  <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
+    <span className="staff-toggle-label"><span className="staff-toggle-icon">🔐</span> ¿Posees código de Staff?</span>
+    <div className={"toggle-switch"+(staffOn?" on":"")}>
+      <div className="toggle-knob"/>
+    </div>
+  </div>
+  {staffOn && (
+    <div className="staff-code-wrap">
+      <div style={{height:10}}/>
+      <div className="form-group" style={{marginBottom:0}}>
+        <label className="form-label">Código de validación (10 caracteres)</label>
+        <input 
+          className="form-input" 
+          type="text" 
+          placeholder="KOFFEE-000" 
+          maxLength={10} 
+          value={staffCode} 
+          onChange={e=>setStaffCode(e.target.value.toUpperCase())}
+        />
+      </div>
+    </div>
+  )}
+</div>
             <button className="btn-primary" type="submit" disabled={loading}>
               {loading && <span className="spinner"/>}{loading ? "Verificando…" : staffOn ? "Acceder como Staff →" : "Entrar al Dojo →"}</button>
           </form>
