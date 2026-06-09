@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KO-ffee — Mi cuenta</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --espresso: #2c1a0e;
+      --roast:    #5c3317;
+      --caramel:  #c47f3a;
+      --caramel-light: #f5e6d0;
+      --cream:    #faf6f0;
+      --warm:     #f0e8d8;
+      --latte:    #d4b896;
+      --border:   #e0d0bc;
+      --muted:    #8a7060;
+      --white:    #ffffff;
+      --green:    #4a7c59;
+      --green-light: #e0ede4;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; }
+
+    /* ── AUTH PAGES ── */
+    .auth-page {
+      min-height: 100vh; display: flex;
+      background: var(--cream);
+      background-image: radial-gradient(ellipse at 85% 15%, rgba(196,127,58,0.12) 0%, transparent 55%),
+                        radial-gradient(ellipse at 10% 85%, rgba(92,51,23,0.08) 0%, transparent 50%);
+    }
+    .auth-left {
+      display: none;
+      width: 42%;
+      background: var(--espresso);
+      background-image: radial-gradient(ellipse at 30% 70%, rgba(196,127,58,0.25) 0%, transparent 60%);
+      flex-direction: column; justify-content: center; align-items: center;
+      padding: 3rem; text-align: center; position: relative; overflow: hidden;
+    }
+    @media(min-width:860px){ .auth-left { display: flex; } }
+    .auth-left-quote {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px; font-style: italic; font-weight: 400;
+      color: var(--caramel-light); line-height: 1.45; margin-bottom: 1.5rem;
+    }
+    .auth-left-sub { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--latte); opacity: 0.7; }
+    .auth-left-beans {
+      position: absolute; font-size: 120px; opacity: 0.04;
+      bottom: -20px; right: -20px; line-height: 1;
+    }
+    .auth-right {
+      flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem 1.5rem;
+    }
+    .card {
+      background: var(--white); border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 2.5rem 2.75rem;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 4px 24px rgba(44,26,14,0.07);
+    }
+
+    /* ── BRAND ── */
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 2rem; }
+    .brand-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: var(--espresso);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .brand-text {}
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 600; color: var(--espresso);
+      letter-spacing: -0.3px; line-height: 1;
+    }
+    .brand-tagline { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 1px; }
+
+    /* ── FORM ── */
+    .card-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 400; color: var(--espresso); margin-bottom: 0.25rem; }
+    .card-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; font-weight: 300; }
+    .form-group { margin-bottom: 0.9rem; }
+    .form-label { display: block; font-size: 10px; font-weight: 500; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.35rem; }
+    .form-input {
+      width: 100%; padding: 0.65rem 0.85rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 300;
+      color: var(--espresso); background: var(--cream); outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .form-input:focus { border-color: var(--caramel); background: var(--white); }
+    .form-input::placeholder { color: #c0b0a0; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .btn-primary {
+      width: 100%; padding: 0.8rem;
+      background: var(--espresso); color: var(--white);
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.5px; cursor: pointer; margin-top: 0.5rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { background: var(--roast); }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+    .link-row { text-align: center; font-size: 13px; color: var(--muted); margin-top: 1.25rem; font-weight: 300; }
+    .link-btn { background: none; border: none; color: var(--caramel); font-weight: 500; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; text-decoration: underline; text-underline-offset: 2px; }
+    .alert { padding: 0.7rem 0.9rem; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; font-weight: 300; }
+    .alert-error { background: #fef2f2; color: #c0392b; border-left: 3px solid #e74c3c; }
+    .spinner { display: inline-block; width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── DASHBOARD LAYOUT ── */
+    .app-shell { display: flex; min-height: 100vh; background: var(--cream); }
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--espresso);
+      display: flex; flex-direction: column;
+      padding: 1.5rem 0;
+      position: fixed; top: 0; left: 0; height: 100vh;
+      z-index: 10;
+    }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 0 1.25rem 1.75rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-brand-icon { width: 34px; height: 34px; border-radius: 8px; background: var(--caramel); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+    .sidebar-brand-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--white); letter-spacing: -0.2px; }
+    .sidebar-nav { flex: 1; padding: 1.25rem 0.75rem; display: flex; flex-direction: column; gap: 2px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.6rem 0.85rem; border-radius: 8px;
+      font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.55);
+      cursor: pointer; transition: all 0.15s; border: none; background: none;
+      font-family: 'DM Sans', sans-serif; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
+    .nav-item.active { background: rgba(196,127,58,0.18); color: var(--caramel); }
+    .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+    .sidebar-footer { padding: 1rem 1rem 0; border-top: 1px solid rgba(255,255,255,0.08); }
+    .sidebar-user { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 0.25rem; }
+    .btn-signout { width: 100%; padding: 0.55rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 7px; color: rgba(255,255,255,0.5); font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; }
+    .btn-signout:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); }
+    .main-content { margin-left: 220px; flex: 1; padding: 2rem 2.5rem; min-height: 100vh; }
+
+    /* ── SECTION HEADERS ── */
+    .page-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 400; color: var(--espresso); margin-bottom: 0.3rem; }
+    .page-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 2rem; }
+
+    /* ── CARDS ── */
+    .panel { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; }
+    .panel-header { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--cream); display: flex; align-items: center; justify-content: space-between; }
+    .panel-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 400; color: var(--espresso); }
+    .badge { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .badge-caramel { background: var(--caramel-light); color: var(--roast); }
+    .badge-green { background: var(--green-light); color: var(--green); }
+    .badge-muted { background: var(--warm); color: var(--muted); }
+
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-box { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem; position: relative; overflow: hidden; }
+    .stat-box::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; }
+    .stat-box.s1::after { background: var(--caramel); }
+    .stat-box.s2::after { background: var(--green); }
+    .stat-box.s3::after { background: var(--roast); }
+    .stat-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-weight: 500; margin-bottom: 8px; }
+    .stat-val { font-family: 'Playfair Display', serif; font-size: 34px; font-weight: 400; color: var(--espresso); line-height: 1; }
+    .stat-val.accent { color: var(--caramel); }
+    .stat-hint { font-size: 11px; color: var(--muted); font-weight: 300; margin-top: 6px; }
+
+    /* ── RESERVAS ── */
+    .reserva-row { display: flex; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--warm); gap: 1rem; }
+    .reserva-row:last-child { border-bottom: none; }
+    .res-date { text-align: center; min-width: 46px; }
+    .res-day { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 400; color: var(--caramel); line-height: 1; }
+    .res-mon { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 500; }
+    .res-sep { width: 1px; height: 34px; background: var(--border); }
+    .res-info { flex: 1; }
+    .res-name { font-size: 14px; color: var(--espresso); font-weight: 400; margin-bottom: 2px; }
+    .res-detail { font-size: 12px; color: var(--muted); font-weight: 300; }
+    .res-status { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+    .s-confirmada { background: var(--green-light); color: var(--green); }
+    .s-pendiente { background: #fef9ec; color: #b8923a; }
+
+    /* ── PEDIDOS ── */
+    .pedido-row { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; border-bottom: 1px solid var(--warm); }
+    .pedido-row:last-child { border-bottom: none; }
+    .pedido-left { display: flex; align-items: center; gap: 12px; }
+    .pedido-icon { width: 36px; height: 36px; border-radius: 50%; background: var(--warm); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .pedido-name { font-size: 14px; color: var(--espresso); font-weight: 400; margin-bottom: 1px; }
+    .pedido-date { font-size: 11px; color: var(--muted); font-weight: 300; }
+    .pedido-price { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--espresso); }
+    .pedido-pts { font-size: 10px; color: var(--caramel); font-weight: 500; margin-top: 1px; text-align: right; }
+
+    /* ── PUNTOS ── */
+    .pts-body { padding: 1.5rem; }
+    .pts-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 300; }
+    .pts-bar { height: 8px; background: var(--warm); border-radius: 4px; overflow: hidden; margin-bottom: 0.75rem; }
+    .pts-fill { height: 100%; background: linear-gradient(90deg, var(--caramel), var(--roast)); border-radius: 4px; transition: width 1s ease; }
+    .pts-msg { font-size: 12px; color: var(--muted); text-align: center; font-weight: 300; }
+    .pts-msg strong { color: var(--caramel); font-weight: 500; }
+    .pts-rate { display: inline-flex; align-items: center; gap: 6px; background: var(--caramel-light); color: var(--roast); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; letter-spacing: 0.3px; margin-bottom: 1rem; }
+
+    /* ── EMPTY STATE ── */
+    .empty { padding: 2rem; text-align: center; color: var(--muted); font-size: 13px; font-weight: 300; font-style: italic; }
+
+    /* ══════════════════════════
+       MENÚ
+    ══════════════════════════ */
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 1rem; padding: 1.5rem; }
+    .menu-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      overflow: hidden; background: var(--white);
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .menu-card:hover { box-shadow: 0 4px 16px rgba(44,26,14,0.1); transform: translateY(-2px); }
+    .menu-emoji { background: var(--warm); height: 80px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .menu-body { padding: 0.85rem 1rem; }
+    .menu-name { font-size: 14px; font-weight: 500; color: var(--espresso); margin-bottom: 3px; }
+    .menu-desc { font-size: 11px; color: var(--muted); font-weight: 300; margin-bottom: 0.6rem; line-height: 1.4; }
+    .menu-footer { display: flex; align-items: center; justify-content: space-between; }
+    .menu-price { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--espresso); }
+    .menu-pts-hint { font-size: 10px; color: var(--caramel); font-weight: 500; }
+    .btn-add {
+      background: var(--espresso); color: var(--white);
+      border: none; border-radius: 6px; padding: 0.4rem 0.85rem;
+      font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-add:hover { background: var(--roast); }
+    .category-tabs { display: flex; gap: 8px; padding: 1rem 1.5rem 0; flex-wrap: wrap; }
+    .cat-tab {
+      padding: 0.4rem 1rem; border-radius: 20px; font-size: 12px; font-weight: 500;
+      border: 1.5px solid var(--border); background: none; color: var(--muted);
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+    }
+    .cat-tab.active { background: var(--espresso); color: var(--white); border-color: var(--espresso); }
+
+    /* carrito flotante */
+    .cart-bar {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: var(--espresso); color: var(--white);
+      border-radius: 50px; padding: 0.85rem 2rem;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: 0 8px 30px rgba(44,26,14,0.35);
+      z-index: 100; min-width: 320px; justify-content: space-between;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(20px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+    .cart-info { font-size: 13px; }
+    .cart-info strong { color: var(--caramel); }
+    .btn-cart-checkout {
+      background: var(--caramel); color: var(--white);
+      border: none; border-radius: 25px; padding: 0.5rem 1.25rem;
+      font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .btn-cart-checkout:hover { background: #a86d2e; }
+
+    /* modal confirmación pedido */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(44,26,14,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 1rem;
+    }
+    .modal {
+      background: var(--white); border-radius: 14px;
+      padding: 2rem; width: 100%; max-width: 400px;
+      box-shadow: 0 20px 60px rgba(44,26,14,0.2);
+    }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 400; color: var(--espresso); margin-bottom: 0.25rem; }
+    .modal-sub { font-size: 13px; color: var(--muted); font-weight: 300; margin-bottom: 1.25rem; }
+    .cart-item-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--warm); font-size: 13px; }
+    .cart-item-row:last-of-type { border-bottom: none; }
+    .cart-total { display: flex; justify-content: space-between; padding: 0.75rem 0 1.25rem; font-weight: 500; font-size: 15px; color: var(--espresso); border-top: 1.5px solid var(--border); margin-top: 4px; }
+    .cart-pts-earn { text-align: center; background: var(--caramel-light); border-radius: 8px; padding: 0.6rem; font-size: 12px; color: var(--roast); font-weight: 500; margin-bottom: 1rem; }
+    .modal-btns { display: flex; gap: 0.75rem; }
+    .btn-secondary { flex: 1; padding: 0.7rem; background: none; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--muted); cursor: pointer; }
+    .btn-secondary:hover { border-color: var(--espresso); color: var(--espresso); }
+    .btn-confirm { flex: 2; padding: 0.7rem; background: var(--espresso); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .btn-confirm:hover { background: var(--roast); }
+
+    /* ══════════════════════════
+       RESERVAS
+    ══════════════════════════ */
+    .zonas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 1rem; padding: 1.5rem; }
+    .zona-card { border: 1.5px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--white); }
+    .zona-header { padding: 0.9rem 1.1rem; background: var(--warm); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+    .zona-icon { font-size: 20px; }
+    .zona-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 400; color: var(--espresso); }
+    .zona-desc { font-size: 11px; color: var(--muted); font-weight: 300; }
+    .mesas-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; padding: 1rem; }
+    .mesa-btn {
+      border-radius: 8px; padding: 0.6rem 0.5rem; text-align: center;
+      border: 1.5px solid; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all 0.15s; font-size: 11px; font-weight: 500;
+    }
+    .mesa-btn.libre { border-color: var(--green); background: var(--green-light); color: var(--green); }
+    .mesa-btn.libre:hover { background: var(--green); color: var(--white); }
+    .mesa-btn.ocupada { border-color: var(--border); background: var(--warm); color: var(--muted); cursor: not-allowed; opacity: 0.6; }
+    .mesa-btn.seleccionada { border-color: var(--caramel); background: var(--caramel); color: var(--white); }
+    .mesa-cap { font-size: 10px; font-weight: 300; margin-top: 2px; opacity: 0.8; }
+    .reserva-form { padding: 1.5rem; border-top: 1px solid var(--border); background: var(--cream); }
+    .reserva-form-title { font-size: 13px; font-weight: 500; color: var(--espresso); margin-bottom: 1rem; }
+    .res-selected-info { background: var(--caramel-light); border-radius: 8px; padding: 0.7rem 1rem; font-size: 13px; color: var(--roast); margin-bottom: 1rem; font-weight: 400; }
+    .btn-reservar { width: 100%; padding: 0.75rem; background: var(--espresso); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .btn-reservar:hover { background: var(--roast); }
+    .btn-reservar:disabled { background: #ccc; cursor: not-allowed; }
+
+    /* toast */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--espresso); color: var(--white);
+      padding: 0.85rem 1.5rem; border-radius: 10px;
+      font-size: 13px; z-index: 300;
+      box-shadow: 0 8px 24px rgba(44,26,14,0.25);
+      animation: fadeInUp 0.3s ease;
+    }
+    .toast.success { border-left: 4px solid var(--caramel); }
+    @keyframes fadeInUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+    .confirm-screen { text-align: center; }
+    .confirm-icon { font-size: 44px; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+const { createClient } = supabase;
+
+const sb = createClient(
+  "https://skllslblccxvduaqejfs.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbGxzbGJsY2N4dmR1YXFlamZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDQ3OTAsImV4cCI6MjA5NjUyMDc5MH0.ztGkc572MXH8qQK0hruAUXN64hXMuU4maPgSi2Dg6WQ"
+);
+
+// ── DATOS ──────────────────────────────────────────────────────────────────
+const MENU = [
+  { id:1, cat:"Café", emoji:"☕", nombre:"Espresso", desc:"Shot doble de origen etíope", precio:3.50 },
+  { id:2, cat:"Café", emoji:"🥛", nombre:"Latte de Vainilla", desc:"Espresso, leche vaporizada y vainilla natural", precio:5.00 },
+  { id:3, cat:"Café", emoji:"🧊", nombre:"Cold Brew", desc:"12h de extracción en frío, servido con hielo", precio:5.50 },
+  { id:4, cat:"Café", emoji:"🍫", nombre:"Mocha", desc:"Espresso, chocolate belga y leche vaporizada", precio:5.50 },
+  { id:5, cat:"Café", emoji:"🌿", nombre:"Matcha Latte", desc:"Matcha ceremonial japonés con leche de avena", precio:5.80 },
+  { id:6, cat:"Comida", emoji:"🥐", nombre:"Croissant de mantequilla", desc:"Horneado fresco cada mañana", precio:3.80 },
+  { id:7, cat:"Comida", emoji:"🥑", nombre:"Tostada de aguacate", desc:"Pan de masa madre, aguacate, semillas y limón", precio:7.50 },
+  { id:8, cat:"Comida", emoji:"🧇", nombre:"Bowl de granola", desc:"Granola artesanal, yogur griego y frutas del día", precio:6.50 },
+  { id:9, cat:"Comida", emoji:"🥪", nombre:"Sandwich Caprese", desc:"Mozzarella, tomate heirloom, albahaca fresca", precio:8.00 },
+  { id:10, cat:"Especiales", emoji:"🍮", nombre:"Affogato", desc:"Helado de vainilla con shot de espresso caliente", precio:6.00 },
+  { id:11, cat:"Especiales", emoji:"🧁", nombre:"Banana Bread", desc:"Horneado en casa con nueces y chips de chocolate", precio:4.50 },
+  { id:12, cat:"Especiales", emoji:"🍰", nombre:"Cheesecake de temporada", desc:"Receta semanal con ingredientes de estación", precio:6.50 },
+];
+
+const ZONAS = [
+  { id:"ventana", nombre:"Zona Ventana", icon:"🪟", desc:"Luz natural, ideal para trabajar", mesas:[
+    { num:1, cap:2, libre:true }, { num:2, cap:2, libre:false }, { num:3, cap:4, libre:true },
+  ]},
+  { id:"terraza", nombre:"Terraza", icon:"🌿", desc:"Aire libre, plantas y música suave", mesas:[
+    { num:4, cap:2, libre:true }, { num:5, cap:4, libre:true }, { num:6, cap:6, libre:false },
+  ]},
+  { id:"interior", nombre:"Rincón Interior", icon:"🛋️", desc:"Sofás, luz cálida y ambiente íntimo", mesas:[
+    { num:7, cap:2, libre:false }, { num:8, cap:2, libre:true }, { num:9, cap:4, libre:true },
+  ]},
+  { id:"barra", nombre:"Barra", icon:"☕", desc:"Frente a los baristas, para los amantes del café", mesas:[
+    { num:10, cap:1, libre:true }, { num:11, cap:1, libre:true }, { num:12, cap:2, libre:false },
+  ]},
+];
+
+const PUNTOS_POR_DOLAR = 100;
+const PUNTOS_SIGUIENTE = 5000;
+
+// ── MARCA ──────────────────────────────────────────────────────────────────
+const Brand = ({ small }) => (
+  <div className="brand" style={small ? { marginBottom: 0 } : {}}>
+    <div className="brand-icon" style={small ? { width:34, height:34, fontSize:17 } : {}}>☕</div>
+    <div className="brand-text">
+      <div className="brand-name" style={small ? { fontSize:17 } : {}}>KO-ffee</div>
+      <div className="brand-tagline">Specialty Coffee & Food</div>
+    </div>
+  </div>
+);
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function Toast({ msg, onClose }) {
+  useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t); }, []);
+  return <div className="toast success">{msg}</div>;
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────
+function LoginForm({ onSwitch }) {
+  const [email, setEmail] = useState(""); const [pass, setPass] = useState("");
+  const [loading, setLoading] = useState(false); const [error, setError] = useState("");
+  const submit = async e => {
+    e.preventDefault(); setError(""); setLoading(true);
+    const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+    if (error) setError("Correo o contraseña incorrectos.");
+    setLoading(false);
+  };
+  return (
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="auth-left-quote">"El café perfecto no es solo una bebida. Es un momento."</div>
+        <div className="auth-left-sub">KO-ffee · Specialty Coffee</div>
+        <div className="auth-left-beans">☕</div>
+      </div>
+      <div className="auth-right">
+        <div className="card">
+          <Brand />
+          <h2 className="card-title">Bienvenido de vuelta</h2>
+          <p className="card-subtitle">Accede para gestionar tus pedidos y reservas</p>
+          {error && <div className="alert alert-error">{error}</div>}
+          <form onSubmit={submit}>
+            <div className="form-group"><label className="form-label">Correo</label>
+              <input className="form-input" type="email" placeholder="tu@correo.com" value={email} onChange={e=>setEmail(e.target.value)} required /></div>
+            <div className="form-group"><label className="form-label">Contraseña</label>
+              <input className="form-input" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required /></div>
+            <button className="btn-primary" type="submit" disabled={loading}>
+              {loading && <span className="spinner"/>}{loading ? "Entrando..." : "Iniciar sesión"}</button>
+          </form>
+          <div className="link-row">¿Sin cuenta aún? <button className="link-btn" onClick={onSwitch}>Regístrate gratis</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── REGISTRO ───────────────────────────────────────────────────────────────
+function RegisterForm({ onSwitch }) {
+  const [form, setForm] = useState({ nombre:"", email:"", telefono:"", nacimiento:"", pass:"" });
+  const [loading, setLoading] = useState(false); const [error, setError] = useState(""); const [done, setDone] = useState(false);
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
+  const submit = async e => {
+    e.preventDefault(); setError(""); setLoading(true);
+    const { error } = await sb.auth.signUp({ email: form.email, password: form.pass,
+      options: { data: { nombre_completo: form.nombre, telefono: form.telefono, fecha_nacimiento: form.nacimiento, puntos: 0 }}});
+    if (error) setError(error.message); else setDone(true);
+    setLoading(false);
+  };
+  if (done) return (
+    <div className="auth-page"><div className="auth-right"><div className="card confirm-screen">
+      <Brand/><div className="confirm-icon">✉️</div>
+      <h2 className="card-title">¡Revisa tu correo!</h2>
+      <p className="card-subtitle" style={{marginBottom:"1.5rem"}}>
+        Enviamos confirmación a <strong>{form.email}</strong>.<br/>Activa tu cuenta para empezar a acumular puntos.</p>
+      <button className="link-btn" onClick={onSwitch}>Ir al inicio de sesión</button>
+    </div></div></div>
+  );
+  return (
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="auth-left-quote">"Cada taza cuenta una historia. Empieza la tuya hoy."</div>
+        <div className="auth-left-sub">KO-ffee · Specialty Coffee</div>
+        <div className="auth-left-beans">☕</div>
+      </div>
+      <div className="auth-right">
+        <div className="card">
+          <Brand/>
+          <h2 className="card-title">Crear cuenta</h2>
+          <p className="card-subtitle">Únete y gana <strong>100 puntos</strong> por cada $1 de compra</p>
+          {error && <div className="alert alert-error">{error}</div>}
+          <form onSubmit={submit}>
+            <div className="form-group"><label className="form-label">Nombre completo</label>
+              <input className="form-input" type="text" placeholder="Ana García" value={form.nombre} onChange={set("nombre")} required/></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Teléfono</label>
+                <input className="form-input" type="tel" placeholder="+593 99…" value={form.telefono} onChange={set("telefono")}/></div>
+              <div className="form-group"><label className="form-label">Fecha de nacimiento</label>
+                <input className="form-input" type="date" value={form.nacimiento} onChange={set("nacimiento")}/></div>
+            </div>
+            <div className="form-group"><label className="form-label">Correo</label>
+              <input className="form-input" type="email" placeholder="tu@correo.com" value={form.email} onChange={set("email")} required/></div>
+            <div className="form-group"><label className="form-label">Contraseña</label>
+              <input className="form-input" type="password" placeholder="Mínimo 6 caracteres" value={form.pass} onChange={set("pass")} minLength={6} required/></div>
+            <button className="btn-primary" type="submit" disabled={loading}>
+              {loading && <span className="spinner"/>}{loading ? "Creando…" : "Crear mi cuenta"}</button>
+          </form>
+          <div className="link-row">¿Ya tienes cuenta? <button className="link-btn" onClick={onSwitch}>Inicia sesión</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── PANEL GENERAL ──────────────────────────────────────────────────────────
+function PanelGeneral({ pedidos, reservas, puntos }) {
+  const pct = Math.min(100, Math.round((puntos / PUNTOS_SIGUIENTE) * 100));
+  return (
+    <div>
+      <div className="page-title">Mi panel</div>
+      <div className="page-subtitle">Resumen de tu actividad en KO-ffee</div>
+      <div className="stats-grid">
+        <div className="stat-box s1">
+          <div className="stat-label">Puntos acumulados</div>
+          <div className="stat-val accent">{puntos.toLocaleString()}</div>
+          <div className="stat-hint">Siguiente nivel: {PUNTOS_SIGUIENTE.toLocaleString()} pts</div>
+        </div>
+        <div className="stat-box s2">
+          <div className="stat-label">Reservas activas</div>
+          <div className="stat-val">{reservas.length}</div>
+          <div className="stat-hint">{reservas.length > 0 ? `Próxima: ${reservas[0].fecha}` : "Sin reservas"}</div>
+        </div>
+        <div className="stat-box s3">
+          <div className="stat-label">Pedidos realizados</div>
+          <div className="stat-val">{pedidos.length}</div>
+          <div className="stat-hint">{pedidos.length > 0 ? `Último: ${pedidos[pedidos.length-1].fecha}` : "Sin pedidos"}</div>
+        </div>
+      </div>
+
+      {/* Próximas reservas */}
+      <div className="panel">
+        <div className="panel-header">
+          <span className="panel-title">Próximas reservas</span>
+          <span className="badge badge-caramel">{reservas.length} activas</span>
+        </div>
+        {reservas.length === 0
+          ? <div className="empty">No tienes reservas aún — ¡reserva tu mesa favorita!</div>
+          : reservas.map((r,i) => (
+            <div className="reserva-row" key={i}>
+              <div className="res-date"><div className="res-day">{r.dia}</div><div className="res-mon">{r.mes}</div></div>
+              <div className="res-sep"/>
+              <div className="res-info"><div className="res-name">{r.zona} · Mesa {r.mesa}</div><div className="res-detail">{r.hora} · {r.personas} persona{r.personas>1?"s":""}</div></div>
+              <span className="res-status s-confirmada">Confirmada</span>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Historial pedidos */}
+      <div className="panel">
+        <div className="panel-header">
+          <span className="panel-title">Historial de pedidos</span>
+          <span className="badge badge-green">{pedidos.length} pedidos</span>
+        </div>
+        {pedidos.length === 0
+          ? <div className="empty">Aún no has hecho pedidos — ¡explora el menú!</div>
+          : [...pedidos].reverse().map((p,i) => (
+            <div className="pedido-row" key={i}>
+              <div className="pedido-left">
+                <div className="pedido-icon">🛍️</div>
+                <div><div className="pedido-name">{p.items.join(", ")}</div><div className="pedido-date">{p.fecha}</div></div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div className="pedido-price">${p.total.toFixed(2)}</div>
+                <div className="pedido-pts">+{p.pts.toLocaleString()} pts</div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* Puntos */}
+      <div className="panel">
+        <div className="panel-header">
+          <span className="panel-title">Mis puntos</span>
+          <span className="badge badge-caramel">Nivel Brew</span>
+        </div>
+        <div className="pts-body">
+          <div style={{marginBottom:"0.75rem"}}>
+            <span className="pts-rate">☕ 100 puntos por cada $1 de compra</span>
+          </div>
+          <div className="pts-bar-labels"><span>{puntos.toLocaleString()} pts</span><span>{PUNTOS_SIGUIENTE.toLocaleString()} pts → Nivel Reserve</span></div>
+          <div className="pts-bar"><div className="pts-fill" style={{width: pct+"%"}}/></div>
+          <div className="pts-msg">Te faltan <strong>{(PUNTOS_SIGUIENTE - puntos).toLocaleString()} puntos</strong> para desbloquear el nivel Reserve y obtener una bebida gratis cada mes ☕</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MENÚ ───────────────────────────────────────────────────────────────────
+function MenuPage({ onAddToCart }) {
+  const cats = ["Todos", "Café", "Comida", "Especiales"];
+  const [cat, setCat] = useState("Todos");
+  const filtered = cat === "Todos" ? MENU : MENU.filter(m => m.cat === cat);
+  return (
+    <div>
+      <div className="page-title">Menú</div>
+      <div className="page-subtitle">Specialty coffee & cocina artesanal · <span style={{color:"var(--caramel)",fontWeight:500}}>100 pts por cada $1</span></div>
+      <div className="panel">
+        <div className="category-tabs">
+          {cats.map(c => <button key={c} className={"cat-tab"+(cat===c?" active":"")} onClick={()=>setCat(c)}>{c}</button>)}
+        </div>
+        <div className="menu-grid">
+          {filtered.map(item => (
+            <div className="menu-card" key={item.id}>
+              <div className="menu-emoji">{item.emoji}</div>
+              <div className="menu-body">
+                <div className="menu-name">{item.nombre}</div>
+                <div className="menu-desc">{item.desc}</div>
+                <div className="menu-footer">
+                  <div>
+                    <div className="menu-price">${item.precio.toFixed(2)}</div>
+                    <div className="menu-pts-hint">+{Math.round(item.precio * PUNTOS_POR_DOLAR)} pts</div>
+                  </div>
+                  <button className="btn-add" onClick={() => onAddToCart(item)}>+ Añadir</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── RESERVAS ───────────────────────────────────────────────────────────────
+function ReservasPage({ onReserva }) {
+  const [selMesa, setSelMesa] = useState(null);
+  const [fecha, setFecha] = useState(""); const [hora, setHora] = useState(""); const [personas, setPersonas] = useState("2");
+  const [toast, setToast] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+
+  const handleReserva = () => {
+    if (!selMesa || !fecha || !hora) return;
+    const d = new Date(fecha + "T12:00:00");
+    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    onReserva({ dia: String(d.getDate()).padStart(2,"0"), mes: meses[d.getMonth()], zona: selMesa.zona, mesa: selMesa.num, hora, personas: parseInt(personas), fecha: `${d.getDate()} ${meses[d.getMonth()]}` });
+    setToast(`¡Reserva confirmada! ${selMesa.zona} · Mesa ${selMesa.num} · ${fecha} ${hora}`);
+    setSelMesa(null); setFecha(""); setHora(""); setPersonas("2");
+  };
+
+  return (
+    <div>
+      {toast && <Toast msg={toast} onClose={()=>setToast("")}/>}
+      <div className="page-title">Reservar mesa</div>
+      <div className="page-subtitle">Elige tu zona y mesa favorita</div>
+      <div className="zonas-grid">
+        {ZONAS.map(zona => (
+          <div className="zona-card" key={zona.id}>
+            <div className="zona-header">
+              <span className="zona-icon">{zona.icon}</span>
+              <div><div className="zona-name">{zona.nombre}</div><div className="zona-desc">{zona.desc}</div></div>
+            </div>
+            <div className="mesas-grid">
+              {zona.mesas.map(m => {
+                const isSel = selMesa && selMesa.zona === zona.nombre && selMesa.num === m.num;
+                return (
+                  <button key={m.num}
+                    className={"mesa-btn " + (isSel ? "seleccionada" : m.libre ? "libre" : "ocupada")}
+                    disabled={!m.libre}
+                    onClick={() => setSelMesa({ zona: zona.nombre, num: m.num, cap: m.cap })}>
+                    Mesa {m.num}
+                    <div className="mesa-cap">{m.cap} {m.cap===1?"persona":"personas"}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {selMesa && (
+        <div className="panel">
+          <div className="panel-header"><span className="panel-title">Confirmar reserva</span></div>
+          <div className="reserva-form">
+            <div className="res-selected-info">☕ {selMesa.zona} · Mesa {selMesa.num} · hasta {selMesa.cap} persona{selMesa.cap>1?"s":""}</div>
+            <div className="form-row" style={{marginBottom:"0.9rem"}}>
+              <div className="form-group"><label className="form-label">Fecha</label>
+                <input className="form-input" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
+              <div className="form-group"><label className="form-label">Hora</label>
+                <input className="form-input" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
+            </div>
+            <div className="form-group" style={{marginBottom:"1rem"}}><label className="form-label">Personas</label>
+              <select className="form-input" value={personas} onChange={e=>setPersonas(e.target.value)}>
+                {[...Array(selMesa.cap)].map((_,i)=><option key={i+1} value={i+1}>{i+1}</option>)}
+              </select></div>
+            <button className="btn-reservar" onClick={handleReserva} disabled={!fecha||!hora}>Confirmar reserva</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── APP SHELL ──────────────────────────────────────────────────────────────
+function Dashboard({ user }) {
+  const meta = user.user_metadata || {};
+  const nombre = meta.nombre_completo || user.email;
+  const primerNombre = nombre.split(" ")[0];
+
+  const [vista, setVista] = useState("panel");
+  const [pedidos, setPedidos] = useState([]);
+  const [reservas, setReservas] = useState([]);
+  const [puntos, setPuntos] = useState(0);
+  const [carrito, setCarrito] = useState([]);
+  const [showCart, setShowCart] = useState(false);
+  const [toast, setToast] = useState("");
+
+  const showToast = msg => { setToast(msg); setTimeout(()=>setToast(""),3000); };
+
+  const addToCart = item => {
+    setCarrito(c => {
+      const ex = c.find(x => x.id === item.id);
+      return ex ? c.map(x => x.id===item.id ? {...x, qty: x.qty+1} : x) : [...c, {...item, qty:1}];
+    });
+  };
+
+  const cartTotal = carrito.reduce((s,x) => s + x.precio * x.qty, 0);
+  const cartCount = carrito.reduce((s,x) => s + x.qty, 0);
+  const cartPts   = Math.round(cartTotal * PUNTOS_POR_DOLAR);
+
+  const confirmarPedido = () => {
+    const now = new Date();
+    const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const fecha = `${now.getDate()} ${meses[now.getMonth()]} ${now.getFullYear()}`;
+    const nuevoPedido = { items: carrito.map(x => x.qty>1 ? `${x.nombre} x${x.qty}` : x.nombre), total: cartTotal, pts: cartPts, fecha };
+    setPedidos(p => [...p, nuevoPedido]);
+    setPuntos(p => p + cartPts);
+    setCarrito([]);
+    setShowCart(false);
+    showToast(`¡Pedido confirmado! Ganaste +${cartPts.toLocaleString()} puntos ☕`);
+  };
+
+  const agregarReserva = r => setReservas(prev => [...prev, r]);
+
+  const nav = [
+    { id:"panel",   icon:"🏠", label:"Mi panel" },
+    { id:"menu",    icon:"☕", label:"Menú" },
+    { id:"reservas",icon:"📅", label:"Reservar mesa" },
+  ];
+
+  return (
+    <div className="app-shell">
+      {toast && <Toast msg={toast} onClose={()=>setToast("")}/>}
+
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="sidebar-brand-icon">☕</div>
+          <div className="sidebar-brand-name">KO-ffee</div>
+        </div>
+        <nav className="sidebar-nav">
+          {nav.map(n => (
+            <button key={n.id} className={"nav-item"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}>
+              <span className="nav-icon">{n.icon}</span>{n.label}
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <div className="sidebar-user">👤 {primerNombre} · {puntos.toLocaleString()} pts</div>
+          <button className="btn-signout" onClick={()=>sb.auth.signOut()}>Cerrar sesión</button>
+        </div>
+      </aside>
+
+      {/* Contenido */}
+      <main className="main-content">
+        {vista === "panel"    && <PanelGeneral pedidos={pedidos} reservas={reservas} puntos={puntos}/>}
+        {vista === "menu"     && <MenuPage onAddToCart={addToCart}/>}
+        {vista === "reservas" && <ReservasPage onReserva={agregarReserva}/>}
+      </main>
+
+      {/* Carrito flotante */}
+      {carrito.length > 0 && !showCart && (
+        <div className="cart-bar">
+          <div className="cart-info"><strong>{cartCount}</strong> producto{cartCount>1?"s":""} · <strong>${cartTotal.toFixed(2)}</strong></div>
+          <div style={{fontSize:11,color:"var(--latte)"}}>+{cartPts.toLocaleString()} pts</div>
+          <button className="btn-cart-checkout" onClick={()=>setShowCart(true)}>Ver pedido →</button>
+        </div>
+      )}
+
+      {/* Modal carrito */}
+      {showCart && (
+        <div className="modal-overlay" onClick={()=>setShowCart(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-title">Tu pedido</div>
+            <div className="modal-sub">Revisa antes de confirmar</div>
+            {carrito.map((x,i) => (
+              <div className="cart-item-row" key={i}>
+                <span>{x.emoji} {x.nombre}{x.qty>1 ? ` x${x.qty}`:""}</span>
+                <span style={{color:"var(--muted)"}}>$ {(x.precio*x.qty).toFixed(2)}</span>
+              </div>
+            ))}
+            <div className="cart-total"><span>Total</span><span>${cartTotal.toFixed(2)}</span></div>
+            <div className="cart-pts-earn">☕ Ganarás <strong>+{cartPts.toLocaleString()} puntos</strong> con este pedido</div>
+            <div className="modal-btns">
+              <button className="btn-secondary" onClick={()=>setShowCart(false)}>Cancelar</button>
+              <button className="btn-confirm" onClick={confirmarPedido}>Confirmar pedido</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── ROOT ───────────────────────────────────────────────────────────────────
+function App() {
+  const [session, setSession] = useState(null);
+  const [view, setView] = useState("login");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => { setSession(session); setLoading(false); });
+    const { data: { subscription } } = sb.auth.onAuthStateChange((_e, session) => setSession(session));
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) return <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--cream)",color:"#aaa",fontSize:13}}>Cargando…</div>;
+  if (session) return <Dashboard user={session.user}/>;
+  return view === "login"
+    ? <LoginForm onSwitch={()=>setView("register")}/>
+    : <RegisterForm onSwitch={()=>setView("login")}/>;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
