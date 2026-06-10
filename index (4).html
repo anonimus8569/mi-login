@@ -1,0 +1,1573 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KO-ffee 커피 — Specialty Coffee & Dojang</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Taegeukgi palette */
+  --yang:#CD2E3A;      /* Korean red/yang */
+  --yang-dark:#9a1e28;
+  --yang-glow:rgba(205,46,58,.14);
+  --eum:#003478;       /* Korean blue/eum */
+  --eum-light:#e8eef8;
+  --eum-glow:rgba(0,52,120,.12);
+  /* Dobok whites */
+  --dobok:#FAFAF8;     /* pure dobok white */
+  --ivory:#F5F2EC;     /* warm ivory */
+  --paper:#EDE9E0;     /* rice paper */
+  --linen:#E8E3D8;
+  /* Inks */
+  --ink:#1C1C1C;
+  --ink-soft:#2E2E2E;
+  --muted:#7A7468;
+  --muted-light:#A8A29A;
+  /* Borders */
+  --border:#DDD8CF;
+  --border-dark:#2A2A2A;
+  /* Staff dark */
+  --staff-bg:#0E0E0E;
+  --staff-card:#1A1A1A;
+  --staff-border:#272727;
+  /* Gold for black belt */
+  --gold:#C4962A;
+  --gold-light:#F5E8C0;
+  /* Status */
+  --ok:#1E7A45;
+  --ok-bg:rgba(30,122,69,.1);
+  --warn:#B07A1A;
+  --warn-bg:rgba(176,122,26,.1);
+}
+body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--ink);min-height:100vh}
+.hangul{font-family:'Noto Sans KR',sans-serif}
+.myeongjo{font-family:'Nanum Myeongjo',serif}
+
+/* ─── TAEGEUK SVG decorations ─── */
+.taegeuk-divider{display:flex;align-items:center;gap:1rem;margin:0 auto}
+.taegeuk-divider::before,.taegeuk-divider::after{content:'';flex:1;height:1px}
+.td-dark::before,.td-dark::after{background:rgba(255,255,255,.08)}
+.td-light::before,.td-light::after{background:var(--border)}
+
+/* trigram decorative chars */
+.trigram{font-size:22px;opacity:.35;user-select:none}
+
+/* ─── LANDING ─── */
+.landing{background:var(--ink);color:var(--dobok);min-height:100vh;overflow:hidden}
+.land-nav{position:fixed;top:0;left:0;right:0;z-index:50;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;background:rgba(14,14,14,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--staff-border)}
+.land-logo{display:flex;align-items:baseline;gap:8px}
+.land-logo-main{font-family:'Nanum Myeongjo',serif;font-size:22px;font-weight:800;color:var(--dobok);letter-spacing:2px}
+.land-logo-main span{color:var(--yang)}
+.land-logo-hangul{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:300;color:rgba(255,255,255,.28);letter-spacing:1px}
+.land-nav-links{display:flex;gap:2rem}
+.land-nav-links a{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.38);cursor:pointer;transition:color .2s;font-weight:500}
+.land-nav-links a:hover{color:var(--dobok)}
+.btn-nav-login{padding:.45rem 1.5rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+.btn-nav-login:hover{background:var(--yang-dark)}
+
+/* hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 4rem;position:relative;overflow:hidden}
+.hero-bg-taegeuk{position:absolute;width:600px;height:600px;border-radius:50%;background:conic-gradient(from 180deg at 50% 50%,var(--yang) 0deg,var(--yang) 180deg,var(--eum) 180deg,var(--eum) 360deg);opacity:.035;filter:blur(2px);pointer-events:none}
+.hero-trigrams{position:absolute;font-size:100px;opacity:.03;letter-spacing:20px;top:50%;left:50%;transform:translate(-50%,-50%);white-space:nowrap;font-family:'Noto Sans KR',sans-serif;pointer-events:none}
+.hero-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--yang);margin-bottom:1.25rem;display:flex;align-items:center;gap:10px}
+.hero-eyebrow::before,.hero-eyebrow::after{content:'';width:28px;height:1px;background:var(--yang);opacity:.5}
+.hero-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(72px,12vw,138px);font-weight:800;letter-spacing:3px;line-height:.88;margin-bottom:.5rem;position:relative;z-index:1}
+.hero-title span{color:var(--yang)}
+.hero-hangul-sub{font-family:'Noto Sans KR',sans-serif;font-size:clamp(16px,2.5vw,28px);font-weight:300;color:rgba(255,255,255,.22);letter-spacing:6px;margin-bottom:.85rem}
+.hero-sub{font-size:12px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:2.5rem;font-weight:400}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center}
+.btn-hero-yang{padding:.9rem 2.75rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background .2s}
+.btn-hero-yang:hover{background:var(--yang-dark)}
+.btn-hero-eum{padding:.9rem 2.75rem;background:transparent;color:var(--dobok);border:1.5px solid rgba(255,255,255,.18);border-radius:2px;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn-hero-eum:hover{border-color:var(--dobok);background:rgba(255,255,255,.05)}
+
+/* landing sections */
+.land-section{padding:5.5rem 3rem;max-width:1160px;margin:0 auto}
+.sec-eye{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--yang);margin-bottom:.75rem;font-weight:600}
+.sec-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(36px,4.5vw,62px);font-weight:800;letter-spacing:1px;line-height:.95;color:var(--dobok);margin-bottom:.75rem}
+.sec-hangul{font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:300;color:rgba(255,255,255,.18);letter-spacing:4px;margin-bottom:1.25rem}
+.sec-body{font-size:14px;color:rgba(255,255,255,.42);font-weight:300;line-height:1.9;max-width:520px}
+.land-hr{border:none;border-top:1px solid var(--staff-border);margin:0 3rem}
+
+/* belt cards landing */
+.belts-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:.85rem;margin-top:2rem}
+@media(max-width:960px){.belts-grid{grid-template-columns:repeat(3,1fr)}}
+.belt-card-land{border:1px solid rgba(255,255,255,.06);border-radius:3px;padding:1.1rem .85rem;background:rgba(255,255,255,.03);text-align:center;transition:border-color .2s,transform .15s;cursor:default}
+.belt-card-land:hover{transform:translateY(-3px)}
+.belt-stripe-wide{height:5px;border-radius:2px;margin:0 auto 10px;width:60%}
+.bc-name{font-family:'Nanum Myeongjo',serif;font-size:15px;font-weight:700;color:var(--dobok)}
+.bc-hangul{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:rgba(255,255,255,.25);margin-top:2px;letter-spacing:1px}
+.bc-pts{font-size:10px;color:rgba(255,255,255,.3);margin-top:4px;font-weight:300}
+.bc-reward{font-size:10px;color:var(--yang);margin-top:6px;font-weight:500}
+
+/* info section */
+.info-2col{display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:start}
+@media(max-width:768px){.info-2col{grid-template-columns:1fr}}
+.info-lbl{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--yang);margin-bottom:.4rem;font-weight:600}
+.info-val{font-size:14px;color:rgba(255,255,255,.5);font-weight:300;line-height:1.8;margin-bottom:1.5rem}
+.hours-row{display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--staff-border);font-size:13px}
+.hours-row:last-child{border-bottom:none}
+.h-day{color:rgba(255,255,255,.3);font-weight:300}
+.h-time{color:var(--dobok);font-weight:400}
+.map-ph{background:rgba(255,255,255,.03);border:1px solid var(--staff-border);border-radius:3px;height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:rgba(255,255,255,.2)}
+.map-ph-txt{font-size:12px;letter-spacing:.5px}
+.social-row{display:flex;gap:.75rem;margin-top:1.25rem}
+.social-btn{width:36px;height:36px;border:1px solid var(--staff-border);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:border-color .2s}
+.social-btn:hover{border-color:var(--yang)}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.85rem;margin-top:2rem}
+@media(max-width:880px){.feat-grid{grid-template-columns:repeat(2,1fr)}}
+.feat-card{border:1px solid rgba(255,255,255,.05);border-radius:3px;padding:1.2rem;background:rgba(255,255,255,.02)}
+.feat-icon{font-size:24px;margin-bottom:.65rem}
+.feat-nm{font-size:13px;font-weight:600;color:var(--dobok);margin-bottom:3px}
+.feat-desc{font-size:11px;color:rgba(255,255,255,.3);font-weight:300;line-height:1.55}
+
+/* ─── AUTH ─── */
+.auth-page{min-height:100vh;display:flex;background:var(--ink)}
+.auth-left{display:none;width:44%;flex-direction:column;justify-content:center;align-items:center;padding:3rem;text-align:center;position:relative;overflow:hidden;background:var(--staff-card);border-right:1px solid var(--staff-border)}
+@media(min-width:900px){.auth-left{display:flex}}
+.auth-bg-hangul{font-family:'Noto Sans KR',sans-serif;font-size:200px;font-weight:700;color:rgba(255,255,255,.022);position:absolute;line-height:1;user-select:none;pointer-events:none}
+.auth-quote{font-family:'Nanum Myeongjo',serif;font-size:18px;font-weight:400;color:rgba(255,255,255,.5);line-height:1.7;position:relative;z-index:1;font-style:italic}
+.auth-quote-sub{font-size:9.5px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.22);margin-top:.75rem;font-weight:500}
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem 1.5rem}
+.auth-card{background:var(--staff-card);border:1px solid var(--staff-border);border-radius:3px;padding:2.5rem 2.75rem;width:100%;max-width:420px;position:relative}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--yang),var(--eum));border-radius:3px 3px 0 0}
+.auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:1.75rem}
+.auth-brand-icon{width:38px;height:38px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:linear-gradient(135deg,var(--yang),var(--eum))}
+.auth-brand-text{}
+.auth-brand-name{font-family:'Nanum Myeongjo',serif;font-size:21px;font-weight:800;color:var(--dobok);letter-spacing:1px}
+.auth-brand-name span{color:var(--yang)}
+.auth-brand-hangul{font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:300;color:rgba(255,255,255,.25);letter-spacing:2px}
+.auth-title{font-family:'Nanum Myeongjo',serif;font-size:26px;font-weight:800;color:var(--dobok);margin-bottom:.2rem}
+.auth-sub{font-size:13px;color:rgba(255,255,255,.35);margin-bottom:1.5rem;font-weight:300}
+/* form elements */
+.fl{display:block;font-size:9.5px;font-weight:600;color:rgba(255,255,255,.32);letter-spacing:1.8px;text-transform:uppercase;margin-bottom:.32rem}
+.fi{width:100%;padding:.65rem .85rem;border:1px solid var(--staff-border);border-radius:2px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--dobok);background:rgba(255,255,255,.04);outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--yang)}
+.fi::placeholder{color:#3a3a3a}
+.fi-light{color:var(--ink);background:var(--dobok);border:1.5px solid var(--border)}
+.fi-light:focus{border-color:var(--yang)}
+.fi-light::placeholder{color:#bbb}
+.fg{margin-bottom:.85rem}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.btn-yang{width:100%;padding:.82rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:.5rem;transition:background .2s,transform .1s}
+.btn-yang:hover{background:var(--yang-dark)}
+.btn-yang:active{transform:scale(.99)}
+.btn-yang:disabled{background:#2a2a2a;color:#3a3a3a;cursor:not-allowed}
+.link-row{text-align:center;font-size:13px;color:rgba(255,255,255,.28);margin-top:1.25rem;font-weight:300}
+.link-btn{background:none;border:none;color:var(--yang);font-weight:600;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px}
+.alert-err{background:rgba(205,46,58,.13);color:#ff8088;border-left:2px solid var(--yang);padding:.65rem .9rem;border-radius:2px;font-size:13px;margin-bottom:.85rem;font-weight:300}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* staff toggle */
+.staff-box{border:1px solid var(--staff-border);border-radius:2px;padding:.85rem 1rem;background:rgba(255,255,255,.03);margin-bottom:.85rem;transition:border-color .2s}
+.staff-box.on{border-color:rgba(0,52,120,.5);background:rgba(0,52,120,.08)}
+.staff-toggle-row{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;gap:.75rem}
+.staff-lbl{font-size:13px;color:var(--dobok);display:flex;align-items:center;gap:8px;flex:1}
+.sw{width:38px;height:20px;background:rgba(255,255,255,.1);border-radius:10px;position:relative;transition:background .2s;flex-shrink:0}
+.sw.on{background:var(--eum)}
+.sw-knob{position:absolute;top:3px;left:3px;width:14px;height:14px;background:var(--dobok);border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw.on .sw-knob{transform:translateX(18px)}
+/* restricted badge */
+.restricted-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(0,52,120,.15);border:1px solid rgba(0,52,120,.3);border-radius:2px;padding:2px 9px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(130,160,220,.8);font-weight:600}
+
+/* ─── APP SHELL ─── */
+.app{display:flex;min-height:100vh}
+/* sidebar */
+.sidebar{width:228px;flex-shrink:0;background:var(--staff-bg);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:20;border-right:1px solid var(--staff-border)}
+.sb-top{padding:1.35rem 1.25rem;border-bottom:1px solid var(--staff-border);display:flex;align-items:center;gap:10px}
+.sb-icon-wrap{width:34px;height:34px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:linear-gradient(135deg,var(--yang),var(--eum))}
+.sb-brand-text{}
+.sb-brand-name{font-family:'Nanum Myeongjo',serif;font-size:18px;font-weight:800;color:var(--dobok);letter-spacing:1px}
+.sb-brand-name span{color:var(--yang)}
+.sb-brand-hangul{font-family:'Noto Sans KR',sans-serif;font-size:9px;font-weight:300;color:rgba(255,255,255,.2);letter-spacing:2px}
+.sb-nav{flex:1;padding:.85rem .7rem;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.sb-sec{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.18);padding:.65rem .8rem .3rem;font-weight:600}
+.nav-btn{display:flex;align-items:center;gap:9px;padding:.58rem .82rem;border-radius:2px;font-size:13px;font-weight:400;color:rgba(255,255,255,.32);cursor:pointer;transition:all .15s;border:none;background:none;font-family:'Inter',sans-serif;width:100%;text-align:left}
+.nav-btn:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7)}
+.nav-btn.active{background:var(--yang-glow);color:var(--yang);border-right:2px solid var(--yang)}
+.nav-btn .ni{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sb-foot{padding:1rem;border-top:1px solid var(--staff-border)}
+.sb-user-info{font-size:11px;color:rgba(255,255,255,.2);margin-bottom:7px;padding:0 .2rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sb-user-info strong{color:rgba(255,255,255,.42)}
+.btn-signout{width:100%;padding:.48rem;background:rgba(255,255,255,.03);border:1px solid var(--staff-border);border-radius:2px;color:rgba(255,255,255,.25);font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .2s;letter-spacing:.4px}
+.btn-signout:hover{border-color:var(--yang);color:var(--yang)}
+.main{margin-left:228px;flex:1;padding:2.5rem;min-height:100vh}
+.main-light{background:var(--ivory)}
+.main-dark{background:var(--ink)}
+
+/* page header */
+.page-hd{margin-bottom:1.75rem}
+.page-title-light{font-family:'Nanum Myeongjo',serif;font-size:32px;font-weight:800;color:var(--ink);letter-spacing:.5px;line-height:1}
+.page-title-dark{font-family:'Nanum Myeongjo',serif;font-size:32px;font-weight:800;color:var(--dobok);letter-spacing:.5px;line-height:1}
+.page-hangul{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:300;color:var(--muted-light);letter-spacing:3px;margin-top:2px}
+.page-sub{font-size:13px;color:var(--muted);font-weight:300;margin-top:3px}
+
+/* panels */
+.panel{background:var(--dobok);border:1px solid var(--border);border-radius:3px;overflow:hidden;margin-bottom:1.25rem}
+.panel-dark{background:var(--staff-card);border:1px solid var(--staff-border);border-radius:3px;overflow:hidden;margin-bottom:1.25rem}
+.ph{padding:.88rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,.02)}
+.ph-dark{padding:.88rem 1.4rem;border-bottom:1px solid var(--staff-border);display:flex;align-items:center;justify-content:space-between}
+.pt{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:.3px}
+.pt-w{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:700;color:var(--dobok);letter-spacing:.3px}
+.badge{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;padding:3px 9px;border-radius:2px;font-weight:700}
+.b-yang{background:var(--yang-glow);color:var(--yang)}
+.b-eum{background:var(--eum-glow);color:var(--eum)}
+.b-ok{background:var(--ok-bg);color:var(--ok)}
+.b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-muted{background:rgba(0,0,0,.05);color:var(--muted)}
+
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem}
+.stat-box{background:var(--dobok);border:1px solid var(--border);border-radius:3px;padding:1.1rem 1.35rem;position:relative;overflow:hidden}
+.stat-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.s1::after{background:var(--yang)}.s2::after{background:var(--ok)}.s3::after{background:var(--eum)}
+.sl{font-size:9.5px;letter-spacing:1.8px;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:7px}
+.sv{font-family:'Nanum Myeongjo',serif;font-size:38px;font-weight:800;color:var(--ink);line-height:1}
+.sv.yang{color:var(--yang)}
+.sh{font-size:11px;color:var(--muted);font-weight:300;margin-top:5px}
+
+/* belt indicator */
+.belt-ind{display:flex;align-items:center;gap:12px;background:var(--dobok);border:1px solid var(--border);border-radius:3px;padding:.82rem 1.2rem;margin-bottom:1.25rem}
+.belt-dot{width:20px;height:20px;border-radius:50%;flex-shrink:0}
+.belt-ind-info{flex:1}
+.belt-ind-name{font-family:'Nanum Myeongjo',serif;font-size:15px;font-weight:700;color:var(--ink)}
+.belt-ind-hangul{font-family:'Noto Sans KR',sans-serif;font-size:10px;color:var(--muted-light);letter-spacing:2px;margin-top:1px}
+.belt-bar{height:5px;background:var(--linen);border-radius:3px;overflow:hidden;margin-top:5px}
+.belt-fill{height:100%;border-radius:3px;transition:width 1.2s ease}
+.belt-pts-txt{font-size:10px;color:var(--muted);margin-top:3px;font-weight:300}
+
+/* reservas */
+.res-row{display:flex;align-items:center;padding:.88rem 1.4rem;border-bottom:1px solid rgba(0,0,0,.04);gap:1rem}
+.res-row:last-child{border-bottom:none}
+.res-date{text-align:center;min-width:42px}
+.res-day{font-family:'Nanum Myeongjo',serif;font-size:24px;font-weight:800;color:var(--yang);line-height:1}
+.res-mon{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.res-sep{width:1px;height:32px;background:var(--border)}
+.res-info{flex:1}
+.res-nm{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.res-dt{font-size:11px;color:var(--muted);font-weight:300}
+.res-st{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:2px;font-weight:700}
+.rs-ok{background:var(--ok-bg);color:var(--ok)}
+.rs-pend{background:var(--warn-bg);color:var(--warn)}
+
+/* pedidos */
+.ped-row{display:flex;align-items:center;justify-content:space-between;padding:.82rem 1.4rem;border-bottom:1px solid rgba(0,0,0,.04)}
+.ped-row:last-child{border-bottom:none}
+.ped-l{display:flex;align-items:center;gap:11px}
+.ped-ico{width:34px;height:34px;border-radius:50%;background:var(--paper);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.ped-nm{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:1px}
+.ped-dt{font-size:11px;color:var(--muted);font-weight:300}
+.ped-r{text-align:right}
+.ped-pr{font-family:'Nanum Myeongjo',serif;font-size:17px;font-weight:700;color:var(--ink)}
+.ped-pts{font-size:10px;color:var(--yang);font-weight:700}
+
+/* puntos */
+.pts-body{padding:1.35rem}
+.pts-rate-tag{display:inline-flex;align-items:center;gap:6px;background:var(--yang-glow);color:var(--yang);padding:4px 12px;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:.4px;margin-bottom:1rem;border:1px solid rgba(205,46,58,.2)}
+.pts-bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:300}
+.pts-bar{height:8px;background:var(--paper);border-radius:4px;overflow:hidden;margin-bottom:.75rem}
+.pts-fill{height:100%;border-radius:4px;transition:width 1.2s ease}
+.pts-msg{font-size:12px;color:var(--muted);text-align:center;font-weight:300;line-height:1.6}
+.pts-msg strong{color:var(--yang);font-weight:700}
+
+/* menú */
+.cat-tabs{display:flex;gap:7px;padding:1rem 1.4rem 0;flex-wrap:wrap}
+.cat-tab{padding:.38rem .95rem;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1.5px solid var(--border);background:none;color:var(--muted);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.cat-tab.active{background:var(--ink);color:var(--dobok);border-color:var(--ink)}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:1rem;padding:1.4rem}
+.mc{border:1px solid var(--border);border-radius:3px;overflow:hidden;background:var(--dobok);transition:box-shadow .2s,transform .15s}
+.mc:hover{box-shadow:0 4px 20px rgba(0,0,0,.09);transform:translateY(-2px)}
+.mc-emoji{background:var(--paper);height:76px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.mc-body{padding:.8rem .95rem}
+.mc-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px}
+.mc-desc{font-size:11px;color:var(--muted);font-weight:300;margin-bottom:.6rem;line-height:1.45}
+.mc-foot{display:flex;align-items:center;justify-content:space-between}
+.mc-price{font-family:'Nanum Myeongjo',serif;font-size:17px;font-weight:700;color:var(--ink)}
+.mc-pts{font-size:10px;color:var(--yang);font-weight:700}
+.btn-add{background:var(--ink);color:var(--dobok);border:none;border-radius:2px;padding:.38rem .82rem;font-size:11px;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:.4px;cursor:pointer;transition:background .15s}
+.btn-add:hover{background:var(--yang)}
+
+/* carrito lateral */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:100;animation:fIn .2s}
+@keyframes fIn{from{opacity:0}to{opacity:1}}
+.cart-drawer{position:fixed;top:0;right:0;width:372px;height:100vh;background:var(--dobok);z-index:101;display:flex;flex-direction:column;box-shadow:-6px 0 36px rgba(0,0,0,.16);animation:sIn .3s ease}
+@keyframes sIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.cart-hd{padding:1.1rem 1.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-title{font-family:'Nanum Myeongjo',serif;font-size:20px;font-weight:800;color:var(--ink)}
+.btn-close{background:none;border:none;font-size:19px;cursor:pointer;color:var(--muted);padding:3px;transition:color .15s}
+.btn-close:hover{color:var(--ink)}
+.cart-items{flex:1;overflow-y:auto;padding:1rem 1.4rem}
+.ci{display:flex;align-items:center;gap:11px;padding:.68rem 0;border-bottom:1px solid var(--border)}
+.ci:last-child{border-bottom:none}
+.ci-em{font-size:22px;flex-shrink:0}
+.ci-info{flex:1}
+.ci-nm{font-size:13px;font-weight:600;color:var(--ink)}
+.ci-pr{font-size:12px;color:var(--muted);font-weight:300}
+.ci-qty{display:flex;align-items:center;gap:7px}
+.qty-btn{width:25px;height:25px;border:1.5px solid var(--border);border-radius:2px;background:none;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);transition:all .15s}
+.qty-btn:hover{border-color:var(--yang);color:var(--yang)}
+.qty-n{font-size:13px;font-weight:700;min-width:18px;text-align:center;color:var(--ink)}
+.btn-rm{background:none;border:none;font-size:13px;cursor:pointer;color:var(--muted);padding:3px;transition:color .15s}
+.btn-rm:hover{color:var(--yang)}
+.cart-empty{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px;font-weight:300}
+.cart-foot{padding:1.35rem;border-top:1px solid var(--border)}
+.cart-line{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:3px 0;font-weight:300}
+.cart-total-line{display:flex;justify-content:space-between;font-size:15px;font-weight:700;color:var(--ink);padding:7px 0;border-top:1px solid var(--border);margin-top:3px}
+.cart-pts-earn{background:var(--yang-glow);border:1px solid rgba(205,46,58,.15);border-radius:2px;padding:.55rem .9rem;font-size:12px;color:var(--yang);font-weight:700;text-align:center;margin-bottom:.9rem}
+.btn-checkout{width:100%;padding:.82rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.btn-checkout:hover{background:var(--yang-dark)}
+.btn-checkout:disabled{background:#ccc;cursor:not-allowed}
+.cart-fab{position:fixed;bottom:1.75rem;right:1.75rem;background:var(--ink);color:var(--dobok);border:none;border-radius:50px;padding:.8rem 1.6rem;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;z-index:50;box-shadow:0 6px 28px rgba(0,0,0,.25);display:flex;align-items:center;gap:9px;transition:background .2s}
+.cart-fab:hover{background:var(--yang)}
+.cart-fab-n{background:var(--yang);color:var(--dobok);border-radius:50%;width:21px;height:21px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+
+/* checkout */
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.35rem}
+.pay-card{border:2px solid var(--border);border-radius:3px;padding:1.2rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--dobok)}
+.pay-card:hover{border-color:var(--ink)}
+.pay-card.sel{border-color:var(--yang);background:var(--yang-glow)}
+.pay-icon{font-size:28px;margin-bottom:8px}
+.pay-nm{font-size:13px;font-weight:700;color:var(--ink)}
+.pay-desc{font-size:11px;color:var(--muted);margin-top:3px;font-weight:300}
+.bank-box{background:var(--paper);border:1px solid var(--border);border-radius:3px;padding:1.1rem;margin-bottom:1.1rem}
+.bank-row{display:flex;justify-content:space-between;padding:.38rem 0;font-size:13px;border-bottom:1px solid var(--border)}
+.bank-row:last-child{border-bottom:none}
+.bank-lbl{color:var(--muted);font-weight:300}
+.bank-val{color:var(--ink);font-weight:600}
+.drop-z{border:2px dashed var(--border);border-radius:3px;padding:1.75rem;text-align:center;cursor:pointer;transition:border-color .2s;background:var(--dobok)}
+.drop-z:hover,.drop-z.drag{border-color:var(--yang)}
+.drop-z.uploaded{border-color:var(--ok);background:var(--ok-bg)}
+.drop-icon{font-size:30px;margin-bottom:7px;opacity:.45}
+.drop-txt{font-size:13px;color:var(--muted);font-weight:300}
+.efectivo-info{background:var(--warn-bg);border:1px solid rgba(176,122,26,.2);border-radius:3px;padding:.95rem;font-size:13px;color:var(--warn);line-height:1.65}
+.btn-pay{width:100%;padding:.82rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;margin-top:1.1rem;transition:background .2s}
+.btn-pay:hover{background:var(--yang-dark)}
+.btn-pay:disabled{background:#ccc;cursor:not-allowed}
+.btn-back{padding:.65rem 1.25rem;background:none;border:1.5px solid var(--border);border-radius:2px;font-size:12px;font-family:'Inter',sans-serif;color:var(--muted);cursor:pointer;transition:all .2s}
+.btn-back:hover{border-color:var(--ink);color:var(--ink)}
+.select-inp{width:100%;padding:.62rem .82rem;border:1.5px solid var(--border);border-radius:2px;font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);background:var(--dobok);outline:none;transition:border-color .2s}
+.select-inp:focus{border-color:var(--yang)}
+
+/* reservas page */
+.zonas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:1rem;padding:1.4rem}
+.zona-card{border:1px solid var(--border);border-radius:3px;overflow:hidden;background:var(--dobok)}
+.zona-hd{padding:.85rem 1.05rem;background:var(--paper);display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)}
+.zona-nm{font-family:'Nanum Myeongjo',serif;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.3px}
+.zona-desc{font-size:11px;color:var(--muted);font-weight:300}
+.mesas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:.95rem}
+.mesa{border-radius:2px;padding:.55rem .4rem;text-align:center;border:1.5px solid;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;font-size:11px;font-weight:700;letter-spacing:.3px}
+.mesa.libre{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.mesa.libre:hover{background:var(--ok);color:var(--dobok)}
+.mesa.ocupada{border-color:var(--border);background:var(--paper);color:var(--muted);cursor:not-allowed;opacity:.5}
+.mesa.sel{border-color:var(--yang);background:var(--yang);color:var(--dobok)}
+.mesa-cap{font-size:9px;font-weight:300;margin-top:2px;opacity:.75}
+.res-form-panel{padding:1.35rem;background:var(--paper);border-top:1px solid var(--border)}
+.res-sel-info{background:var(--yang-glow);border:1px solid rgba(205,46,58,.18);border-radius:2px;padding:.65rem .95rem;font-size:13px;color:var(--yang);font-weight:600;margin-bottom:1rem}
+.btn-res{width:100%;padding:.75rem;background:var(--ink);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.btn-res:hover{background:var(--yang)}
+.btn-res:disabled{background:#ccc;cursor:not-allowed}
+
+/* ─── STAFF DASHBOARD ─── */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+@media(max-width:1100px){.kanban{grid-template-columns:1fr}}
+.kboard{background:var(--staff-card);border:1px solid var(--staff-border);border-radius:3px;overflow:hidden}
+.kboard-hd{padding:.82rem 1.2rem;border-bottom:1px solid var(--staff-border);display:flex;align-items:center;justify-content:space-between}
+.kb-title{font-family:'Nanum Myeongjo',serif;font-size:14px;font-weight:700;color:var(--dobok);letter-spacing:.3px}
+.kb-count{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.kboard-items{padding:.75rem;display:flex;flex-direction:column;gap:.6rem;min-height:80px}
+.korder{background:rgba(255,255,255,.04);border:1px solid var(--staff-border);border-radius:2px;padding:.82rem;transition:border-color .2s}
+.korder.pendiente{border-color:rgba(176,122,26,.3)}
+.korder.espera{border-color:rgba(205,46,58,.25)}
+.korder.preparacion{border-color:rgba(176,122,26,.3)}
+.korder.listo{border-color:rgba(30,122,69,.3)}
+.ko-id{font-family:'Nanum Myeongjo',serif;font-size:13px;font-weight:700;color:var(--dobok);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between}
+.ko-pay-tag{font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;font-weight:700}
+.kpt-card{background:var(--ok-bg);color:rgba(100,210,140,.8)}
+.kpt-transfer{background:var(--warn-bg);color:var(--warn)}
+.kpt-efectivo{background:var(--warn-bg);color:var(--warn)}
+.ko-items{font-size:12px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.55;margin-bottom:.6rem}
+.ko-meta{font-size:10px;color:rgba(255,255,255,.22);margin-bottom:.65rem}
+.ko-btns{display:flex;flex-direction:column;gap:.38rem}
+.btn-ko{padding:.45rem .75rem;border:none;border-radius:2px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:background .15s}
+.btn-validate{background:rgba(176,122,26,.2);color:var(--warn);border:1px solid rgba(176,122,26,.3)}
+.btn-validate:hover{background:rgba(176,122,26,.35)}
+.btn-advance{background:var(--yang);color:var(--dobok)}
+.btn-advance:hover{background:var(--yang-dark)}
+.btn-done-ko{background:rgba(30,122,69,.2);color:rgba(100,200,140,.8);border:1px solid rgba(30,122,69,.3);cursor:default}
+/* staff table */
+.s-table{width:100%;border-collapse:collapse}
+.s-table th{padding:.62rem 1.2rem;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.22);font-weight:600;text-align:left;border-bottom:1px solid var(--staff-border)}
+.s-table td{padding:.72rem 1.2rem;font-size:12px;color:rgba(255,255,255,.5);border-bottom:1px solid rgba(255,255,255,.04)}
+.s-table tr:last-child td{border-bottom:none}
+.btn-s{padding:.3rem .8rem;border-radius:2px;font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+.bs-a{background:rgba(30,122,69,.18);color:rgba(100,200,140,.85);border:1px solid rgba(30,122,69,.28)}
+.bs-a:hover{background:rgba(30,122,69,.32)}
+.bs-f{background:rgba(255,255,255,.05);color:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.07);cursor:default}
+/* staff search */
+.search-bar{display:flex;gap:.75rem;padding:1.1rem 1.4rem;border-bottom:1px solid var(--staff-border)}
+.search-inp{flex:1;padding:.55rem .82rem;background:rgba(255,255,255,.04);border:1px solid var(--staff-border);border-radius:2px;font-size:13px;font-family:'Inter',sans-serif;color:var(--dobok);outline:none;transition:border-color .2s}
+.search-inp:focus{border-color:var(--yang)}
+.search-inp::placeholder{color:#383838}
+.btn-search{padding:.55rem 1.1rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+.client-card{background:rgba(255,255,255,.04);border:1px solid var(--staff-border);border-radius:3px;padding:1.1rem;margin-bottom:.85rem}
+.cc-name{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;color:var(--dobok);margin-bottom:3px}
+.cc-meta{font-size:11px;color:rgba(255,255,255,.28);margin-bottom:.85rem}
+.cc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:.85rem}
+.cc-stat{background:var(--staff-card);border-radius:2px;padding:.65rem;text-align:center;border:1px solid var(--staff-border)}
+.ccv{font-family:'Nanum Myeongjo',serif;font-size:22px;font-weight:800;color:var(--dobok)}
+.ccv.yang{color:var(--yang)}
+.ccl{font-size:9px;color:rgba(255,255,255,.22);letter-spacing:1.2px;text-transform:uppercase}
+.pts-adj{display:flex;gap:.65rem;margin-top:.85rem}
+.pts-adj-inp{flex:1;padding:.55rem .82rem;background:var(--staff-card);border:1px solid var(--staff-border);border-radius:2px;font-size:13px;font-family:'Inter',sans-serif;color:var(--dobok);outline:none}
+.pts-adj-inp:focus{border-color:var(--yang)}
+.btn-pts-a{padding:.55rem .9rem;background:rgba(30,122,69,.15);color:rgba(100,200,140,.8);border:1px solid rgba(30,122,69,.25);border-radius:2px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+.btn-pts-s{padding:.55rem .9rem;background:rgba(205,46,58,.12);color:var(--yang);border:1px solid rgba(205,46,58,.22);border-radius:2px;font-size:10px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer}
+
+/* ─── MURO ─── */
+.muro-wrap{max-width:680px;margin:0 auto}
+.comment-form-card{background:var(--dobok);border:1px solid var(--border);border-radius:3px;padding:1.35rem;margin-bottom:1.25rem}
+.cmt-author-row{display:flex;align-items:center;gap:10px;margin-bottom:.85rem}
+.cmt-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--dobok);font-weight:700;flex-shrink:0;font-family:'Nanum Myeongjo',serif}
+.cmt-author-name{font-size:13px;font-weight:700;color:var(--ink)}
+.cmt-author-belt{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;margin-top:1px}
+.cmt-textarea{width:100%;padding:.75rem .9rem;border:1.5px solid var(--border);border-radius:2px;font-size:14px;font-family:'Inter',sans-serif;font-weight:300;color:var(--ink);background:var(--ivory);outline:none;resize:vertical;min-height:88px;transition:border-color .2s;line-height:1.65}
+.cmt-textarea:focus{border-color:var(--yang);background:var(--dobok)}
+.cmt-textarea::placeholder{color:#bbb}
+.btn-cmt{padding:.65rem 1.5rem;background:var(--yang);color:var(--dobok);border:none;border-radius:2px;font-size:12px;font-weight:700;font-family:'Inter',sans-serif;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;margin-top:.75rem}
+.btn-cmt:hover{background:var(--yang-dark)}
+.btn-cmt:disabled{background:#ccc;cursor:not-allowed}
+.comment-card{background:var(--dobok);border:1px solid var(--border);border-radius:3px;padding:1.05rem 1.35rem;margin-bottom:.75rem;animation:cmtUp .3s ease}
+@keyframes cmtUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cmt-meta{display:flex;align-items:center;gap:10px;margin-bottom:.6rem;flex-wrap:wrap}
+.cmt-time{font-size:11px;color:var(--muted-light);font-weight:300;margin-left:auto}
+.cmt-text{font-size:14px;color:var(--ink);font-weight:300;line-height:1.75}
+
+/* ─── TOASTS ─── */
+.toast-wrap{position:fixed;top:1.35rem;right:1.35rem;z-index:600;display:flex;flex-direction:column;gap:9px;pointer-events:none}
+.toast{background:var(--ink);color:var(--dobok);padding:.82rem 1.2rem;border-radius:3px;font-size:13px;font-weight:300;box-shadow:0 6px 28px rgba(0,0,0,.32);animation:tIn .3s ease;display:flex;align-items:flex-start;gap:10px;min-width:272px;max-width:345px;pointer-events:all;line-height:1.55}
+.toast.t-yang{border-left:3px solid var(--yang)}
+.toast.t-eum{border-left:3px solid var(--eum)}
+.toast.t-ok{border-left:3px solid var(--ok)}
+.toast.t-warn{border-left:3px solid var(--warn)}
+@keyframes tIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+.t-icon{font-size:17px;flex-shrink:0;margin-top:1px}
+
+/* misc */
+.empty{padding:1.75rem;text-align:center;color:var(--muted-light);font-size:13px;font-weight:300;font-style:italic}
+.confirm-screen{text-align:center}
+.confirm-icon{font-size:50px;margin-bottom:1rem}
+.taegeuk-sym{display:inline-block;width:18px;height:18px;border-radius:50%;background:conic-gradient(from 0deg,var(--yang) 0deg 180deg,var(--eum) 180deg 360deg);vertical-align:middle;margin:0 4px;flex-shrink:0}
+</style>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const { createClient } = supabase;
+const sb = createClient(
+  "https://skllslblccxvduaqejfs.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrbGxzbGJsY2N4dmR1YXFlamZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NDQ3OTAsImV4cCI6MjA5NjUyMDc5MH0.ztGkc572MXH8qQK0hruAUXN64hXMuU4maPgSi2Dg6WQ"
+);
+
+/* ── CONSTANTS ── */
+const STAFF_CODE = "KOFFEE-001";
+const PTS_PER_DOLLAR = 100;
+const IVA = 0.12;
+const LS_KEY = "koffee_dojang_comments";
+
+/* ── BELTS WTF (Korean) ── */
+const BELTS = [
+  { en:"Blanco",  ko:"흰띠",  color:"#DCDCDC", text:"#555",   border:"#bbb",   min:0,     max:3000,  reward:"5% dto primera compra" },
+  { en:"Amarillo",ko:"노란띠", color:"#E8C830", text:"#7a5800",border:"#c4a020",min:3000,  max:9000,  reward:"Bebida gratis mensual" },
+  { en:"Verde",   ko:"초록띠", color:"#1E7A45", text:"#fff",   border:"#166038",min:9000,  max:18000, reward:"Catas privadas exclusivas" },
+  { en:"Azul",    ko:"파란띠", color:"#003478", text:"#fff",   border:"#002260",min:18000, max:30000, reward:"Reserva VIP prioritaria" },
+  { en:"Rojo",    ko:"빨간띠", color:"#CD2E3A", text:"#fff",   border:"#9a1e28",min:30000, max:50000, reward:"Menú Sabonim especial" },
+  { en:"Negro",   ko:"검은띠", color:"#1A1A1A", text:"#fff",   border:"#C4962A",min:50000, max:Infinity, reward:"Maestro — Acceso total" },
+];
+const getBelt = p => BELTS.find(b=>p>=b.min&&p<b.max)||BELTS[BELTS.length-1];
+const getNextBelt = p => BELTS.find(b=>b.min>p)||null;
+
+/* ── MENU ── */
+const MENU = [
+  {id:1,cat:"Café",emoji:"☕",nombre:"Espresso Doble",desc:"Origen Etiopía Yirgacheffe, tostado oscuro",precio:3.50},
+  {id:2,cat:"Café",emoji:"🥛",nombre:"Latte Signature",desc:"Espresso + leche de avena + arte latte",precio:5.20},
+  {id:3,cat:"Café",emoji:"🧊",nombre:"Cold Brew Nitro",desc:"18h de extracción, servido con nitrógeno",precio:6.00},
+  {id:4,cat:"Café",emoji:"🌿",nombre:"Matcha Ceremonial",desc:"Matcha primera cosecha + leche de macadamia",precio:5.80},
+  {id:5,cat:"Café",emoji:"🍫",nombre:"Mocha Dobok",desc:"Espresso + chocolate 70% + leche vaporizada",precio:5.50},
+  {id:6,cat:"Kyukpa",emoji:"🥐",nombre:"Croissant Mantequilla",desc:"Masa laminada 72h — horneado fresco",precio:3.80},
+  {id:7,cat:"Kyukpa",emoji:"🥑",nombre:"Tostada Poomsae",desc:"Masa madre, aguacate, huevo poché y semillas",precio:8.50},
+  {id:8,cat:"Kyukpa",emoji:"🥣",nombre:"Bowl Kyorugi",desc:"Granola artesanal, yogur griego, frutos rojos",precio:7.00},
+  {id:9,cat:"Kyukpa",emoji:"🥪",nombre:"Sandwich Sabonim",desc:"Prosciutto, mozzarella fresca, pesto en pan negro",precio:9.00},
+  {id:10,cat:"Especiales",emoji:"🍮",nombre:"Affogato Dobok",desc:"Helado vainilla Bourbon + espresso caliente",precio:6.50},
+  {id:11,cat:"Especiales",emoji:"🧁",nombre:"Banana Bread Poomsae",desc:"Nueces, chips chocolate 70%, cardamomo",precio:4.80},
+  {id:12,cat:"Especiales",emoji:"☯️",nombre:"Cheesecake Taegeuk",desc:"Base oreo, queso cremoso y té matcha verde",precio:7.00},
+];
+
+const ZONAS = [
+  {id:"ventana",nombre:"Ventana 창문",icon:"🪟",desc:"Luz natural",mesas:[{num:1,cap:2,libre:true},{num:2,cap:2,libre:false},{num:3,cap:4,libre:true}]},
+  {id:"terraza",nombre:"Terraza 테라스",icon:"🌿",desc:"Jardín cubierto",mesas:[{num:4,cap:2,libre:true},{num:5,cap:4,libre:true},{num:6,cap:6,libre:false}]},
+  {id:"dojang",nombre:"Rincón Dojang 도장",icon:"🥋",desc:"Sofás, luz cálida",mesas:[{num:7,cap:2,libre:false},{num:8,cap:2,libre:true},{num:9,cap:4,libre:true}]},
+  {id:"barra",nombre:"Barra Sabonim 사범님",icon:"☕",desc:"Frente al barista",mesas:[{num:10,cap:1,libre:true},{num:11,cap:1,libre:true},{num:12,cap:2,libre:false}]},
+];
+
+/* ── TOAST HOOK ── */
+function useToasts() {
+  const [toasts, setToasts] = useState([]);
+  const add = (msg, type="ok", icon="✓") => {
+    const id = Date.now()+Math.random();
+    setToasts(t=>[...t,{id,msg,type,icon}]);
+    setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),5500);
+  };
+  return [toasts,add];
+}
+function Toasts({toasts}){
+  return <div className="toast-wrap">{toasts.map(t=>(
+    <div key={t.id} className={"toast t-"+t.type}>
+      <span className="t-icon">{t.icon}</span><span>{t.msg}</span>
+    </div>))}</div>;
+}
+
+/* ── TAEGEUK SYMBOL ── */
+const TaegeukSymbol = ({size=20})=>(
+  <svg width={size} height={size} viewBox="0 0 40 40" style={{display:"inline-block",verticalAlign:"middle",flexShrink:0}}>
+    <circle cx="20" cy="20" r="19" fill="none" stroke="rgba(255,255,255,.15)" strokeWidth="1"/>
+    <path d="M20 1 A19 19 0 0 1 20 39 A9.5 9.5 0 0 1 20 20 A9.5 9.5 0 0 0 20 1Z" fill="#CD2E3A"/>
+    <path d="M20 1 A19 19 0 0 0 20 39 A9.5 9.5 0 0 0 20 20 A9.5 9.5 0 0 1 20 1Z" fill="#003478"/>
+    <circle cx="20" cy="10.5" r="4.75" fill="#CD2E3A"/>
+    <circle cx="20" cy="29.5" r="4.75" fill="#003478"/>
+  </svg>
+);
+
+/* ── AUTH BRAND ── */
+const AuthBrand = ()=>(
+  <div className="auth-brand">
+    <div className="auth-brand-icon"><TaegeukSymbol size={22}/></div>
+    <div className="auth-brand-text">
+      <div className="auth-brand-name">KO<span>-ffee</span></div>
+      <div className="auth-brand-hangul">커피 도장 — Specialty Coffee</div>
+    </div>
+  </div>
+);
+
+/* ══════════════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════════════ */
+function LandingPage({onLogin, onMuro}){
+  return(
+    <div className="landing">
+      <nav className="land-nav">
+        <div className="land-logo">
+          <span className="land-logo-main">KO<span>-ffee</span></span>
+          <span className="land-logo-hangul">커피</span>
+        </div>
+        <div className="land-nav-links">
+          <a onClick={()=>document.getElementById('concepto')?.scrollIntoView({behavior:'smooth'})}>Poomsaes</a>
+          <a onClick={()=>document.getElementById('cinturones')?.scrollIntoView({behavior:'smooth'})}>Rangos</a>
+          <a onClick={()=>document.getElementById('dojang')?.scrollIntoView({behavior:'smooth'})}>Dojang</a>
+          <a onClick={onMuro}>도장 Muro</a>
+        </div>
+        <button className="btn-nav-login" onClick={onLogin}>Acceder →</button>
+      </nav>
+
+      {/* HERO */}
+      <section className="hero">
+        <div className="hero-bg-taegeuk"/>
+        <div className="hero-trigrams">☰ ☷ ☵ ☲</div>
+        <div className="hero-eyebrow">Est. 2023 · Seúl × Quito</div>
+        <div className="hero-title">KO<span>-ffee</span></div>
+        <div className="hero-hangul-sub">커피 도장</div>
+        <div className="hero-sub">Specialty Coffee · Taekwondo WTF · Dojang Culture</div>
+        <p style={{fontSize:14,color:"rgba(255,255,255,.35)",maxWidth:500,marginBottom:"2.5rem",fontWeight:300,lineHeight:1.9,textAlign:"center"}}>
+          La disciplina del Dojang fusionada con el arte del café de especialidad. Cada poomsae del barista, una obra. Cada taza, una meditación.
+        </p>
+        <div className="hero-btns">
+          <button className="btn-hero-yang" onClick={onLogin}>Unirme al Dojang</button>
+          <button className="btn-hero-eum" onClick={onMuro}>도장 Muro del Dojang 💬</button>
+        </div>
+      </section>
+
+      <hr className="land-hr"/>
+
+      {/* CONCEPTO */}
+      <section className="land-section" id="concepto">
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"4rem",alignItems:"center"}}>
+          <div>
+            <div className="sec-eye">✦ Filosofía Poomsae</div>
+            <div className="sec-title">EL CAFÉ<br/>COMO<br/>KYORUGI</div>
+            <div className="sec-hangul">커피와 무도</div>
+          </div>
+          <div>
+            <p className="sec-body" style={{marginBottom:"1.5rem"}}>
+              Un espresso perfecto exige la misma concentración que un Poomsae de Taekwondo WTF. Precisión, repetición y espíritu: los pilares del Sabonim de barra.
+            </p>
+            <div className="feat-grid">
+              {[["☕","Granos single origin","Trazabilidad total — Origen Corea"],["🥋","Rangos Taekwondo WTF","6 cinturones: Blanco → Negro"],["⚖️","Precisión Kyukpa","Cada extracción pesada al gramo"],["🎯","Comunidad Dojang","Poomsaes, catas y Kyorugi mensual"]].map(([i,t,d])=>(
+                <div className="feat-card" key={t}>
+                  <div className="feat-icon">{i}</div>
+                  <div className="feat-nm">{t}</div>
+                  <div className="feat-desc">{d}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr className="land-hr"/>
+
+      {/* CINTURONES */}
+      <section className="land-section" id="cinturones">
+        <div className="sec-eye">✦ Sistema de Rangos — Taekwondo WTF</div>
+        <div className="sec-title">TU CAMINO AL<br/>CINTURÓN NEGRO</div>
+        <div className="sec-hangul">흰띠에서 검은띠까지</div>
+        <p className="sec-body" style={{marginBottom:"2.25rem"}}>100 puntos por cada $1 de compra. Avanza en tu rango y desbloquea privilegios exclusivos del Dojang.</p>
+        <div className="belts-grid">
+          {BELTS.map(b=>(
+            <div className="belt-card-land" key={b.en} style={{borderColor:b.border+"55"}}>
+              <div className="belt-stripe-wide" style={{background:b.en==="Negro"?`linear-gradient(90deg,${b.color},#C4962A,${b.color})`:b.color}}/>
+              <div className="bc-name">{b.en}</div>
+              <div className="bc-hangul">{b.ko}</div>
+              <div className="bc-pts">{b.min===0?"0":b.min.toLocaleString()}+ pts</div>
+              <div className="bc-reward">{b.reward}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <hr className="land-hr"/>
+
+      {/* DOJANG INFO */}
+      <section className="land-section" id="dojang">
+        <div className="sec-eye">✦ Visítanos · 방문</div>
+        <div className="sec-title">EL DOJANG<br/>TE ESPERA</div>
+        <div className="sec-hangul">도장에 오신 것을 환영합니다</div>
+        <div className="info-2col" style={{marginTop:"2rem"}}>
+          <div>
+            <div className="info-lbl">Dirección · 주소</div>
+            <div className="info-val">Av. República de El Salvador N34-183<br/>y Suecia, Sector La Carolina<br/>Quito, Pichincha — Ecuador</div>
+            <div className="info-lbl">Horarios · 시간</div>
+            {[["Lun — Vie","07:00 — 21:00"],["Sábado","08:00 — 22:00"],["Domingo","09:00 — 18:00"]].map(([d,h])=>(
+              <div className="hours-row" key={d}><span className="h-day">{d}</span><span className="h-time">{h}</span></div>
+            ))}
+            <div className="info-lbl" style={{marginTop:"1.25rem"}}>Contacto · 연락처</div>
+            <div className="info-val">+593 2 345 6789<br/>hola@ko-ffee.ec</div>
+            <div className="social-row">{["📸","🐦","📘","🎵"].map(i=><div key={i} className="social-btn">{i}</div>)}</div>
+          </div>
+          <div>
+            <div className="map-ph">
+              <div style={{fontSize:32,opacity:.3}}>📍</div>
+              <div className="map-ph-txt">Av. República de El Salvador, La Carolina</div>
+              <div style={{fontSize:11,color:"rgba(255,255,255,.18)",marginTop:4,fontWeight:300}}>Quito, Ecuador · 에콰도르</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style={{borderTop:"1px solid var(--staff-border)",padding:"1.75rem 3rem",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:"1rem"}}>
+        <div style={{display:"flex",alignItems:"center",gap:8}}><TaegeukSymbol size={18}/><span style={{fontFamily:"'Nanum Myeongjo',serif",fontSize:18,fontWeight:800,color:"var(--dobok)",letterSpacing:1}}>KO<span style={{color:"var(--yang)"}}>-ffee</span></span><span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:10,color:"rgba(255,255,255,.2)",letterSpacing:2}}>커피</span></div>
+        <div style={{fontSize:12,color:"rgba(255,255,255,.22)",fontWeight:300}}>© 2025 KO-ffee · Specialty Coffee & Dojang · Quito, Ecuador</div>
+        <button className="btn-nav-login" onClick={onLogin}>Acceder al Dojang →</button>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   LOGIN
+══════════════════════════════════════════ */
+function LoginForm({onSwitch}){
+  const [email,setEmail]=useState(""); const [pass,setPass]=useState("");
+  const [staffOn,setStaffOn]=useState(false); const [code,setCode]=useState("");
+  const [loading,setLoading]=useState(false); const [error,setError]=useState("");
+
+  const submit=async e=>{
+    e.preventDefault(); setError(""); setLoading(true);
+    if(staffOn&&code!==STAFF_CODE){setError("Código de acceso restringido inválido. Acceso denegado.");setLoading(false);return;}
+    const {error:err}=await sb.auth.signInWithPassword({email,password:pass});
+    if(err){setError("Credenciales incorrectas — intenta de nuevo.");setLoading(false);return;}
+    if(staffOn) await sb.auth.updateUser({data:{is_staff:true}});
+    else await sb.auth.updateUser({data:{is_staff:false}});
+    setLoading(false);
+  };
+
+  return(
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="auth-bg-hangul">도장</div>
+        <div style={{position:"relative",zIndex:1,marginBottom:"1.5rem"}}><TaegeukSymbol size={48}/></div>
+        <div className="auth-quote">"La disciplina es el puente entre las metas y el logro."</div>
+        <div className="auth-quote-sub" style={{marginTop:12}}>수련 — KO-ffee Dojang · Taekwondo WTF</div>
+      </div>
+      <div className="auth-right">
+        <div className="auth-card">
+          <AuthBrand/>
+          <div className="auth-title">Acceso al Dojang</div>
+          <div className="auth-sub">도장 입장 — Ingresa tus credenciales</div>
+          {error&&<div className="alert-err">{error}</div>}
+          <form onSubmit={submit}>
+            <div className="fg"><label className="fl">Correo · 이메일</label>
+              <input className="fi" type="email" placeholder="sabonim@ko-ffee.ec" value={email} onChange={e=>setEmail(e.target.value)} required/></div>
+            <div className="fg"><label className="fl">Contraseña · 비밀번호</label>
+              <input className="fi" type="password" placeholder="••••••••" value={pass} onChange={e=>setPass(e.target.value)} required/></div>
+            <div className={"staff-box"+(staffOn?" on":"")}>
+              <div className="staff-toggle-row" onClick={()=>setStaffOn(s=>!s)}>
+                <span className="staff-lbl">
+                  <span className="restricted-tag">🔐 Acceso Restringido</span>
+                  <span style={{fontSize:12,color:"rgba(255,255,255,.45)",marginLeft:4}}>¿Código de Sabonim?</span>
+                </span>
+                <div className={"sw"+(staffOn?" on":"")}><div className="sw-knob"/></div>
+              </div>
+              {staffOn&&(
+                <div style={{marginTop:10}}>
+                  <label className="fl">Código de validación (10 caracteres)</label>
+                  <input className="fi" type="text" placeholder="KOFFEE-000" maxLength={10}
+                    value={code} onChange={e=>setCode(e.target.value.toUpperCase())}/>
+                  <div style={{fontSize:10,color:"rgba(100,130,200,.5)",marginTop:4,letterSpacing:.5}}>Panel exclusivo de administración del Dojang</div>
+                </div>
+              )}
+            </div>
+            <button className="btn-yang" type="submit" disabled={loading}>
+              {loading&&<span className="spinner"/>}{loading?"Verificando…":staffOn?"Acceder — Panel Sabonim →":"Entrar al Dojang →"}</button>
+          </form>
+          <div className="link-row">¿Sin cuenta? <button className="link-btn" onClick={onSwitch}>Únete al Dojang</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   REGISTRO
+══════════════════════════════════════════ */
+function RegisterForm({onSwitch}){
+  const [f,setF]=useState({nombre:"",email:"",tel:"",nac:"",pass:""});
+  const [loading,setLoading]=useState(false); const [error,setError]=useState(""); const [done,setDone]=useState(false);
+  const set=k=>e=>setF(v=>({...v,[k]:e.target.value}));
+  const submit=async e=>{
+    e.preventDefault(); setError(""); setLoading(true);
+    const {error:err}=await sb.auth.signUp({email:f.email,password:f.pass,
+      options:{data:{nombre_completo:f.nombre,telefono:f.tel,fecha_nacimiento:f.nac,puntos:0,is_staff:false}}});
+    if(err) setError(err.message); else setDone(true);
+    setLoading(false);
+  };
+  if(done) return(
+    <div className="auth-page"><div className="auth-right"><div className="auth-card confirm-screen">
+      <AuthBrand/><div className="confirm-icon">📬</div>
+      <div className="auth-title">¡Bienvenido al Dojang!</div>
+      <div style={{fontSize:13,color:"rgba(255,255,255,.35)",marginBottom:"1.5rem",lineHeight:1.7}}>
+        Confirmación enviada a <strong style={{color:"var(--yang)"}}>{f.email}</strong>.<br/>Activa tu cuenta para comenzar tu camino al Cinturón Negro.
+      </div>
+      <button className="link-btn" onClick={onSwitch}>Ir al login →</button>
+    </div></div></div>
+  );
+  return(
+    <div className="auth-page">
+      <div className="auth-left">
+        <div className="auth-bg-hangul">수련</div>
+        <div style={{position:"relative",zIndex:1,marginBottom:"1.5rem"}}><TaegeukSymbol size={48}/></div>
+        <div className="auth-quote">"Un viaje de mil li comienza con un solo paso."</div>
+        <div className="auth-quote-sub" style={{marginTop:12}}>천리길도 한 걸음부터</div>
+      </div>
+      <div className="auth-right">
+        <div className="auth-card">
+          <AuthBrand/>
+          <div className="auth-title">Iniciar el Camino</div>
+          <div className="auth-sub">도장 가입 — <strong style={{color:"var(--yang)"}}>100 pts por cada $1</strong></div>
+          {error&&<div className="alert-err">{error}</div>}
+          <form onSubmit={submit}>
+            <div className="fg"><label className="fl">Nombre completo · 이름</label>
+              <input className="fi" type="text" placeholder="Kim Kyung-su" value={f.nombre} onChange={set("nombre")} required/></div>
+            <div className="frow">
+              <div className="fg"><label className="fl">Teléfono</label>
+                <input className="fi" type="tel" placeholder="+593 99…" value={f.tel} onChange={set("tel")}/></div>
+              <div className="fg"><label className="fl">Fecha nac.</label>
+                <input className="fi" type="date" value={f.nac} onChange={set("nac")}/></div>
+            </div>
+            <div className="fg"><label className="fl">Correo · 이메일</label>
+              <input className="fi" type="email" placeholder="tu@correo.com" value={f.email} onChange={set("email")} required/></div>
+            <div className="fg"><label className="fl">Contraseña · 비밀번호</label>
+              <input className="fi" type="password" placeholder="Mín. 6 caracteres" value={f.pass} onChange={set("pass")} minLength={6} required/></div>
+            <button className="btn-yang" type="submit" disabled={loading}>
+              {loading&&<span className="spinner"/>}{loading?"Creando…":"Comenzar Poomsae →"}</button>
+          </form>
+          <div className="link-row">¿Ya tienes cuenta? <button className="link-btn" onClick={onSwitch}>Iniciar sesión</button></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+/* ══════════════════════════════════════════
+   CARRITO LATERAL
+══════════════════════════════════════════ */
+function CartDrawer({carrito,onClose,onUpdate,onRemove,onCheckout}){
+  const sub=carrito.reduce((s,x)=>s+x.precio*x.qty,0);
+  const iva=sub*IVA; const total=sub+iva;
+  const pts=Math.round(total*PTS_PER_DOLLAR);
+  return(<>
+    <div className="cart-overlay" onClick={onClose}/>
+    <div className="cart-drawer">
+      <div className="cart-hd">
+        <div className="cart-title">🛒 Mi Pedido</div>
+        <button className="btn-close" onClick={onClose}>✕</button>
+      </div>
+      <div className="cart-items">
+        {carrito.length===0
+          ?<div className="cart-empty"><div style={{fontSize:44,marginBottom:12,opacity:.25}}>☕</div>Tu carrito está vacío.<br/>Explora el menú del Dojang.</div>
+          :carrito.map(x=>(
+            <div className="ci" key={x.id}>
+              <div className="ci-em">{x.emoji}</div>
+              <div className="ci-info"><div className="ci-nm">{x.nombre}</div><div className="ci-pr">${(x.precio*x.qty).toFixed(2)}</div></div>
+              <div className="ci-qty">
+                <button className="qty-btn" onClick={()=>onUpdate(x.id,-1)}>−</button>
+                <span className="qty-n">{x.qty}</span>
+                <button className="qty-btn" onClick={()=>onUpdate(x.id,1)}>+</button>
+                <button className="btn-rm" onClick={()=>onRemove(x.id)}>🗑</button>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      {carrito.length>0&&(
+        <div className="cart-foot">
+          <div>
+            <div className="cart-line"><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
+            <div className="cart-line"><span>IVA (12%)</span><span>${iva.toFixed(2)}</span></div>
+            <div className="cart-total-line"><span>Total</span><span>${total.toFixed(2)}</span></div>
+          </div>
+          <div className="cart-pts-earn" style={{marginTop:10}}>🥋 Ganarás <strong>+{pts.toLocaleString()} pts</strong> en este Poomsae</div>
+          <button className="btn-checkout" onClick={()=>onCheckout({sub,iva,total,pts})}>Proceder al Pago →</button>
+        </div>
+      )}
+    </div>
+  </>);
+}
+
+/* ══════════════════════════════════════════
+   CHECKOUT
+══════════════════════════════════════════ */
+function CheckoutPage({resumen,carrito,onConfirm,onBack}){
+  const [method,setMethod]=useState(null);
+  const [subM,setSubM]=useState("transferencia");
+  const [cNum,setCNum]=useState(""); const [cExp,setCExp]=useState("");
+  const [cCVV,setCCVV]=useState(""); const [cName,setCName]=useState("");
+  const [file,setFile]=useState(null); const [drag,setDrag]=useState(false);
+  const fileRef=useRef();
+
+  const fmtCard=v=>v.replace(/\D/g,"").slice(0,16).replace(/(.{4})/g,"$1 ").trim();
+  const fmtExp=v=>{const c=v.replace(/\D/g,"").slice(0,4);return c.length>2?c.slice(0,2)+"/"+c.slice(2):c;};
+
+  const canPay=method==="card"
+    ?cNum.replace(/\s/g,"").length===16&&cExp.length===5&&cCVV.length===3&&cName.length>2
+    :method==="manual"?(subM==="efectivo"||!!file):false;
+
+  return(
+    <div style={{maxWidth:540,margin:"0 auto"}}>
+      <div className="page-hd">
+        <div className="page-title-light">Finalizar Pago <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:16,fontWeight:300,color:"var(--muted-light)"}}>결제</span></div>
+        <div className="page-sub">Kyukpa — elige tu método de pago</div>
+      </div>
+      {/* resumen */}
+      <div className="panel" style={{marginBottom:"1.25rem"}}>
+        <div className="ph"><span className="pt">Resumen del pedido</span><span className="badge b-yang">${resumen.total.toFixed(2)}</span></div>
+        <div style={{padding:"1rem 1.4rem"}}>
+          {carrito.map(x=>(
+            <div key={x.id} style={{display:"flex",justifyContent:"space-between",fontSize:13,padding:"3px 0",color:"var(--muted)"}}>
+              <span>{x.emoji} {x.nombre}{x.qty>1?` ×${x.qty}`:""}</span><span>${(x.precio*x.qty).toFixed(2)}</span>
+            </div>
+          ))}
+          <div style={{borderTop:"1px solid var(--border)",marginTop:8,paddingTop:8,display:"flex",justifyContent:"space-between",fontSize:12,color:"var(--muted)"}}>
+            <span>IVA 12%</span><span>${resumen.iva.toFixed(2)}</span></div>
+          <div style={{display:"flex",justifyContent:"space-between",fontSize:15,fontWeight:700,color:"var(--ink)",marginTop:8}}>
+            <span>Total</span><span>${resumen.total.toFixed(2)}</span></div>
+          <div style={{background:"var(--yang-glow)",border:"1px solid rgba(205,46,58,.14)",borderRadius:2,padding:"5px 11px",fontSize:11,color:"var(--yang)",fontWeight:700,marginTop:10,textAlign:"center"}}>
+            🥋 +{resumen.pts.toLocaleString()} puntos al confirmar</div>
+        </div>
+      </div>
+      {/* métodos */}
+      <div className="pay-methods">
+        <div className={"pay-card"+(method==="card"?" sel":"")} onClick={()=>setMethod("card")}>
+          <div className="pay-icon">💳</div>
+          <div className="pay-nm">Tarjeta</div>
+          <div className="pay-desc">Crédito o Débito<br/><strong style={{color:"var(--ok)",fontSize:10}}>✓ Proceso inmediato</strong></div>
+        </div>
+        <div className={"pay-card"+(method==="manual"?" sel":"")} onClick={()=>setMethod("manual")}>
+          <div className="pay-icon">🏦</div>
+          <div className="pay-nm">Transferencia / Efectivo</div>
+          <div className="pay-desc">Requiere validación<br/><strong style={{color:"var(--warn)",fontSize:10}}>⚠ Sabonim debe confirmar</strong></div>
+        </div>
+      </div>
+      {method==="card"&&(
+        <div className="panel">
+          <div className="ph"><span className="pt">Datos de tarjeta 카드</span><span style={{fontSize:18}}>🔒</span></div>
+          <div style={{padding:"1.35rem"}}>
+            <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>Número de tarjeta</label>
+              <input className="select-inp" style={{letterSpacing:3,fontFamily:"'Inter',monospace"}} placeholder="0000 0000 0000 0000" value={cNum} onChange={e=>setCNum(fmtCard(e.target.value))} maxLength={19}/></div>
+            <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>Nombre en tarjeta</label>
+              <input className="select-inp" placeholder="NOMBRE APELLIDO" value={cName} onChange={e=>setCName(e.target.value.toUpperCase())}/></div>
+            <div className="frow">
+              <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>Vencimiento</label>
+                <input className="select-inp" placeholder="MM/AA" value={cExp} onChange={e=>setCExp(fmtExp(e.target.value))} maxLength={5}/></div>
+              <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>CVV</label>
+                <input className="select-inp" placeholder="•••" type="password" value={cCVV} onChange={e=>setCCVV(e.target.value.replace(/\D/g,"").slice(0,3))} maxLength={3}/></div>
+            </div>
+          </div>
+        </div>
+      )}
+      {method==="manual"&&(
+        <div className="panel">
+          <div className="ph"><span className="pt">Pago manual 수동 결제</span></div>
+          <div style={{padding:"1.35rem"}}>
+            <div className="pay-methods" style={{marginBottom:"1rem"}}>
+              <div className={"pay-card"+(subM==="transferencia"?" sel":"")} onClick={()=>setSubM("transferencia")} style={{padding:".85rem"}}>
+                <div className="pay-icon" style={{fontSize:22}}>🏦</div>
+                <div className="pay-nm" style={{fontSize:12}}>Transferencia</div>
+              </div>
+              <div className={"pay-card"+(subM==="efectivo"?" sel":"")} onClick={()=>setSubM("efectivo")} style={{padding:".85rem"}}>
+                <div className="pay-icon" style={{fontSize:22}}>💵</div>
+                <div className="pay-nm" style={{fontSize:12}}>Efectivo en Caja</div>
+              </div>
+            </div>
+            {subM==="transferencia"&&(<>
+              <div className="bank-box">
+                {[["Banco","Banco Pichincha"],["Tipo","Cuenta Corriente"],["Número","2200-4891-7730"],["Titular","KO-ffee S.A."],["RUC","1791823456001"],["Monto exacto","$"+resumen.total.toFixed(2)]].map(([l,v])=>(
+                  <div className="bank-row" key={l}><span className="bank-lbl">{l}</span><span className="bank-val">{v}</span></div>
+                ))}
+              </div>
+              <div className={"drop-z"+(drag?" drag":"")+(file?" uploaded":"")}
+                onClick={()=>fileRef.current.click()}
+                onDragOver={e=>{e.preventDefault();setDrag(true)}}
+                onDragLeave={()=>setDrag(false)}
+                onDrop={e=>{e.preventDefault();setDrag(false);setFile(e.dataTransfer.files[0])}}>
+                <input ref={fileRef} type="file" accept="image/*,.pdf" style={{display:"none"}} onChange={e=>setFile(e.target.files[0])}/>
+                <div className="drop-icon">{file?"✅":"📎"}</div>
+                <div className="drop-txt">{file?file.name:"Arrastra tu comprobante o haz click"}</div>
+                <div style={{fontSize:11,color:"var(--muted-light)",marginTop:3,fontWeight:300}}>PNG, JPG o PDF · Máx 5MB</div>
+              </div>
+            </>)}
+            {subM==="efectivo"&&(
+              <div className="efectivo-info">
+                💵 Paga en efectivo directamente en caja al llegar al Dojang.<br/>
+                Tu pedido quedará en <strong>Pendiente de Validación</strong> hasta que el Sabonim confirme el pago.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      <div style={{display:"flex",gap:".75rem",marginTop:".5rem"}}>
+        <button className="btn-back" onClick={onBack}>← Volver</button>
+        <button className="btn-pay" style={{flex:1,marginTop:0}} disabled={!canPay} onClick={()=>onConfirm(method,subM)}>Confirmar Pedido →</button>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   PANEL GENERAL CLIENTE
+══════════════════════════════════════════ */
+function PanelGeneral({pedidos,reservas,puntos}){
+  const belt=getBelt(puntos); const nb=getNextBelt(puntos);
+  const pct=nb?Math.min(100,Math.round(((puntos-belt.min)/(nb.min-belt.min))*100)):100;
+  const isBlack=belt.en==="Negro";
+  return(
+    <div>
+      <div className="page-hd">
+        <div className="page-title-light">Mi Panel <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:15,fontWeight:300,color:"var(--muted-light)"}}>내 대시보드</span></div>
+        <div className="page-sub">Kyorugi — tu actividad en KO-ffee</div>
+      </div>
+      <div className="stats-grid">
+        <div className="stat-box s1"><div className="sl">Puntos · 점수</div><div className="sv yang">{puntos.toLocaleString()}</div><div className="sh">100 pts / $1 · Poomsae</div></div>
+        <div className="stat-box s2"><div className="sl">Reservas activas</div><div className="sv">{reservas.length}</div><div className="sh">{reservas.length>0?`Próxima: ${reservas[0].fecha}`:"Sin reservas"}</div></div>
+        <div className="stat-box s3"><div className="sl">Pedidos realizados</div><div className="sv">{pedidos.length}</div><div className="sh">{pedidos.length>0?`Último: ${pedidos[pedidos.length-1].fecha}`:"Sin pedidos"}</div></div>
+      </div>
+
+      {/* cinturón */}
+      <div className="belt-ind" style={isBlack?{background:"var(--ink)",borderColor:"var(--gold)"}:{}}>
+        <div className="belt-dot" style={{background:belt.color,boxShadow:isBlack?`0 0 8px ${belt.border}44`:"none",border:`2px solid ${belt.border}`}}/>
+        <div className="belt-ind-info">
+          <div className="belt-ind-name" style={isBlack?{color:"var(--dobok)"}:{}}> 🥋 Cinturón {belt.en} <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:12,fontWeight:300,color:isBlack?"var(--gold)":"var(--muted-light)"}}>{belt.ko}</span></div>
+          <div className="belt-ind-hangul" style={isBlack?{color:"rgba(196,150,42,.6)"}:{}}>{belt.reward}</div>
+          <div className="belt-bar" style={{background:isBlack?"rgba(255,255,255,.07)":undefined}}>
+            <div className="belt-fill" style={{width:pct+"%",background:isBlack?`linear-gradient(90deg,${belt.color},var(--gold))`:belt.color}}/>
+          </div>
+          <div className="belt-pts-txt" style={isBlack?{color:"rgba(255,255,255,.3)"}:{}}>{puntos.toLocaleString()} pts · {nb?`Cinturón ${nb.en} (${nb.ko}) a los ${nb.min.toLocaleString()} pts`:"¡Sabonim del Dojang! 🏆"}</div>
+        </div>
+      </div>
+
+      {/* reservas */}
+      <div className="panel">
+        <div className="ph"><span className="pt">Próximas Reservas <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:11,fontWeight:300,color:"var(--muted-light)"}}>예약</span></span><span className="badge b-yang">{reservas.length}</span></div>
+        {reservas.length===0?<div className="empty">Sin reservas — ¡reserva tu mesa en el Dojang! 🥋</div>
+          :reservas.map((r,i)=>(
+            <div className="res-row" key={i}>
+              <div className="res-date"><div className="res-day">{r.dia}</div><div className="res-mon">{r.mes}</div></div>
+              <div className="res-sep"/>
+              <div className="res-info"><div className="res-nm">{r.zona} · Mesa {r.mesa}</div><div className="res-dt">{r.hora} · {r.personas}p</div></div>
+              <span className={"res-st "+(r.estado==="aceptada"?"rs-ok":"rs-pend")}>{r.estado==="aceptada"?"Aceptada ✓":"Pendiente"}</span>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* pedidos */}
+      <div className="panel">
+        <div className="ph"><span className="pt">Historial de Pedidos <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:11,fontWeight:300,color:"var(--muted-light)"}}>주문 내역</span></span><span className="badge b-ok">{pedidos.length}</span></div>
+        {pedidos.length===0?<div className="empty">Sin pedidos — ¡explora el menú Kyukpa!</div>
+          :[...pedidos].reverse().map((p,i)=>(
+            <div className="ped-row" key={i}>
+              <div className="ped-l"><div className="ped-ico">🛍️</div>
+                <div><div className="ped-nm">{p.items.join(", ")}</div>
+                  <div className="ped-dt">{p.fecha} · {p.payMethod==="card"?"💳 Tarjeta":p.payMethod==="efectivo"?"💵 Efectivo":"🏦 Transferencia"}</div>
+                </div>
+              </div>
+              <div className="ped-r">
+                <div className="ped-pr">${p.total.toFixed(2)}</div>
+                <div className="ped-pts">{p.payMethod==="card"?`+${p.pts.toLocaleString()} pts`:"⏳ Pendiente validación"}</div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* puntos */}
+      <div className="panel" style={isBlack?{background:"var(--ink)",borderColor:"var(--gold)"}:{}}>
+        <div className="ph" style={isBlack?{borderBottomColor:"rgba(196,150,42,.2)",background:"rgba(196,150,42,.05)"}:{}}>
+          <span className="pt" style={isBlack?{color:"var(--dobok)"}:{}}>Sistema de Puntos <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:11,fontWeight:300,color:isBlack?"var(--gold)":"var(--muted-light)"}}>점수 체계</span></span>
+          <span className="badge" style={{background:belt.color+"22",color:belt.color,border:`1px solid ${belt.border}44`}}>C. {belt.en} {belt.ko}</span>
+        </div>
+        <div className="pts-body">
+          <div className="pts-rate-tag" style={isBlack?{background:"rgba(196,150,42,.1)",color:"var(--gold)",borderColor:"rgba(196,150,42,.25)"}:{}}>🥋 100 puntos por cada $1 de compra</div>
+          <div className="pts-bar-lbl" style={isBlack?{color:"rgba(255,255,255,.3)"}:{}}><span>{puntos.toLocaleString()} pts</span><span>{nb?`${nb.min.toLocaleString()} pts → ${nb.en} (${nb.ko})`:"Nivel máximo — Sabonim"}</span></div>
+          <div className="pts-bar" style={{background:isBlack?"rgba(255,255,255,.06)":undefined}}>
+            <div className="pts-fill" style={{width:pct+"%",background:isBlack?`linear-gradient(90deg,#333,var(--gold))`:belt.color}}/>
+          </div>
+          <div className="pts-msg" style={isBlack?{color:"rgba(255,255,255,.4)"}:{}}>
+            {nb?<>Faltan <strong>{(nb.min-puntos).toLocaleString()} pts</strong> para el Cinturón {nb.en} ({nb.ko}) · {nb.reward}</>:"¡Eres el Sabonim del Dojang! Nivel máximo alcanzado 🏆"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   MENÚ PAGE
+══════════════════════════════════════════ */
+function MenuPage({onAdd}){
+  const cats=["Todos","Café","Kyukpa","Especiales"];
+  const [cat,setCat]=useState("Todos");
+  const items=cat==="Todos"?MENU:MENU.filter(m=>m.cat===cat);
+  return(
+    <div>
+      <div className="page-hd">
+        <div className="page-title-light">Menú Kyukpa <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:15,fontWeight:300,color:"var(--muted-light)"}}>메뉴</span></div>
+        <div className="page-sub">Specialty coffee & cocina Dojang · <strong style={{color:"var(--yang)"}}>100 pts por $1</strong></div>
+      </div>
+      <div className="panel">
+        <div className="cat-tabs">{cats.map(c=><button key={c} className={"cat-tab"+(cat===c?" active":"")} onClick={()=>setCat(c)}>{c}</button>)}</div>
+        <div className="menu-grid">
+          {items.map(item=>(
+            <div className="mc" key={item.id}>
+              <div className="mc-emoji">{item.emoji}</div>
+              <div className="mc-body">
+                <div className="mc-name">{item.nombre}</div>
+                <div className="mc-desc">{item.desc}</div>
+                <div className="mc-foot">
+                  <div><div className="mc-price">${item.precio.toFixed(2)}</div><div className="mc-pts">+{Math.round(item.precio*PTS_PER_DOLLAR*(1+IVA))} pts</div></div>
+                  <button className="btn-add" onClick={()=>onAdd(item)}>+ Añadir</button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   RESERVAS PAGE
+══════════════════════════════════════════ */
+function ReservasPage({onReserva}){
+  const [sel,setSel]=useState(null);
+  const [fecha,setFecha]=useState(""); const [hora,setHora]=useState(""); const [pax,setPax]=useState("2");
+  const today=new Date().toISOString().split("T")[0];
+  const MESES=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const handle=()=>{
+    if(!sel||!fecha||!hora) return;
+    const d=new Date(fecha+"T12:00:00");
+    onReserva({dia:String(d.getDate()).padStart(2,"0"),mes:MESES[d.getMonth()],zona:sel.zona,mesa:sel.num,hora,personas:parseInt(pax),fecha:`${d.getDate()} ${MESES[d.getMonth()]}`,estado:"pendiente"});
+    setSel(null);setFecha("");setHora("");setPax("2");
+  };
+  return(
+    <div>
+      <div className="page-hd">
+        <div className="page-title-light">Reservar Mesa <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:15,fontWeight:300,color:"var(--muted-light)"}}>예약</span></div>
+        <div className="page-sub">Elige tu zona del Dojang — Kyorugi con el espacio</div>
+      </div>
+      <div className="zonas-grid">
+        {ZONAS.map(zona=>(
+          <div className="zona-card" key={zona.id}>
+            <div className="zona-hd"><span style={{fontSize:18}}>{zona.icon}</span>
+              <div><div className="zona-nm">{zona.nombre}</div><div className="zona-desc">{zona.desc}</div></div>
+            </div>
+            <div className="mesas-grid">
+              {zona.mesas.map(m=>{
+                const isSel=sel&&sel.zona===zona.nombre&&sel.num===m.num;
+                return<button key={m.num} className={"mesa "+(isSel?"sel":m.libre?"libre":"ocupada")} disabled={!m.libre} onClick={()=>setSel({zona:zona.nombre,num:m.num,cap:m.cap})}>
+                  Mesa {m.num}<div className="mesa-cap">{m.cap}p</div></button>;
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      {sel&&(
+        <div className="panel">
+          <div className="ph"><span className="pt">Confirmar Reserva · 예약 확인</span></div>
+          <div className="res-form-panel">
+            <div className="res-sel-info">🥋 {sel.zona} · Mesa {sel.num} · hasta {sel.cap}p</div>
+            <div className="frow" style={{marginBottom:".85rem"}}>
+              <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>Fecha</label>
+                <input className="select-inp" type="date" min={today} value={fecha} onChange={e=>setFecha(e.target.value)}/></div>
+              <div className="fg"><label className="fl" style={{color:"var(--muted)"}}>Hora</label>
+                <input className="select-inp" type="time" min="07:00" max="21:00" value={hora} onChange={e=>setHora(e.target.value)}/></div>
+            </div>
+            <div className="fg" style={{marginBottom:"1rem"}}><label className="fl" style={{color:"var(--muted)"}}>Personas</label>
+              <select className="select-inp" value={pax} onChange={e=>setPax(e.target.value)}>
+                {[...Array(sel.cap)].map((_,i)=><option key={i+1} value={i+1}>{i+1}</option>)}</select></div>
+            <button className="btn-res" onClick={handle} disabled={!fecha||!hora}>Confirmar Reserva · 예약 확인</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+/* ══════════════════════════════════════════
+   MURO DEL DOJANG (public comments)
+══════════════════════════════════════════ */
+function MuroDojang({currentUser,onBack}){
+  const load=()=>{try{const r=localStorage.getItem(LS_KEY);return r?JSON.parse(r):[]}catch{return []}};
+  const [comments,setComments]=useState(load);
+  const [text,setText]=useState(""); const [anonName,setAnonName]=useState("");
+  const isLogged=!!currentUser;
+  const authorName=isLogged?(currentUser.user_metadata?.nombre_completo||currentUser.email.split("@")[0]):(anonName.trim()||"Anónimo");
+  const authorBelt=isLogged?getBelt(currentUser.user_metadata?.puntos||0):null;
+  const initials=n=>n.split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+
+  const addComment=()=>{
+    if(!text.trim()) return;
+    const now=new Date();
+    const fmt=now.toLocaleString("es-EC",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"});
+    const nc={id:Date.now(),author:authorName,time:fmt,text:text.trim(),belt:authorBelt?.en||null,beltKo:authorBelt?.ko||null,beltColor:authorBelt?.color||null,beltBorder:authorBelt?.border||null};
+    const updated=[nc,...comments];
+    setComments(updated);
+    localStorage.setItem(LS_KEY,JSON.stringify(updated));
+    setText("");
+  };
+
+  return(
+    <div className="muro-wrap">
+      <div style={{marginBottom:"1.5rem",display:"flex",alignItems:"flex-start",gap:"1rem",flexWrap:"wrap"}}>
+        <button className="btn-back" onClick={onBack}>← Volver</button>
+        <div>
+          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+            <div className="page-title-light">Muro del Dojang</div>
+            <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:20,fontWeight:300,color:"var(--muted-light)",letterSpacing:3}}>도장 게시판</span>
+          </div>
+          <div className="page-sub">Comentarios abiertos de la comunidad KO-ffee — visible para todos</div>
+        </div>
+      </div>
+
+      <div className="comment-form-card">
+        {!isLogged&&(
+          <div className="fg" style={{marginBottom:".75rem"}}>
+            <input className="fi-light" style={{borderRadius:2,padding:".62rem .85rem",fontFamily:"'Inter',sans-serif",fontSize:14}} type="text" placeholder="Tu nombre (opcional — aparecerá como 'Anónimo')" value={anonName} onChange={e=>setAnonName(e.target.value)}/>
+          </div>
+        )}
+        {isLogged&&(
+          <div className="cmt-author-row">
+            <div className="cmt-avatar" style={{background:authorBelt?.color||"var(--ink)"}}>{initials(authorName)}</div>
+            <div>
+              <div className="cmt-author-name">{authorName}</div>
+              {authorBelt&&<div className="cmt-author-belt" style={{color:authorBelt.color}}>🥋 Cinturón {authorBelt.en} · <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:10}}>{authorBelt.ko}</span></div>}
+            </div>
+          </div>
+        )}
+        <textarea className="cmt-textarea" placeholder="Escribe tu experiencia, poomsae favorito o saludo a la comunidad KO-ffee… ☕🥋" value={text} onChange={e=>setText(e.target.value)}/>
+        <button className="btn-cmt" onClick={addComment} disabled={!text.trim()}>Publicar en el Muro · 게시</button>
+      </div>
+
+      {comments.length===0
+        ?<div className="panel"><div className="empty">Sé el primero en dejar un comentario en el Muro del Dojang 🥋 도장</div></div>
+        :comments.map(c=>{
+          const isBlackBelt=c.belt==="Negro";
+          return(
+            <div className="comment-card" key={c.id} style={isBlackBelt?{background:"var(--ink)",borderColor:"var(--gold)"}:{}}>
+              <div className="cmt-meta">
+                <div className="cmt-avatar" style={{background:c.beltColor||"var(--ink)",border:isBlackBelt?`2px solid var(--gold)`:"none"}}>{initials(c.author)}</div>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                    <span className="cmt-author-name" style={isBlackBelt?{color:"var(--dobok)"}:{}}>{c.author}</span>
+                    {c.belt&&<span style={{fontSize:9,letterSpacing:1.2,textTransform:"uppercase",padding:"2px 7px",borderRadius:2,fontWeight:700,background:c.beltColor+"22",color:c.beltColor,border:`1px solid ${c.beltBorder||c.beltColor}44`}}>C. {c.belt} <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontWeight:300}}>{c.beltKo}</span></span>}
+                  </div>
+                </div>
+                <span className="cmt-time">{c.time}</span>
+              </div>
+              <div className="cmt-text" style={isBlackBelt?{color:"rgba(255,255,255,.65)"}:{}}>{c.text}</div>
+            </div>
+          );
+        })
+      }
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   STAFF DASHBOARD
+══════════════════════════════════════════ */
+function StaffDashboard({onSignOut,addToast,orders,reservas,onAdvance,onValidate,onUpdateReserva}){
+  const [vista,setVista]=useState("kanban");
+  const [search,setSearch]=useState(""); const [found,setFound]=useState(null); const [adj,setAdj]=useState("");
+
+  const MOCK=[
+    {nombre:"Lee Jae-won",email:"lee@ko-ffee.ec",puntos:8400,pedidos:12,reservas:3},
+    {nombre:"Kim Min-ji",email:"kim@ko-ffee.ec",puntos:2100,pedidos:5,reservas:1},
+    {nombre:"Park Sung-hoon",email:"park@ko-ffee.ec",puntos:32500,pedidos:28,reservas:8},
+  ];
+  const doSearch=()=>{const q=search.toLowerCase();setFound(MOCK.find(c=>c.nombre.toLowerCase().includes(q)||c.email.toLowerCase().includes(q))||"none");};
+
+  const pending=orders.filter(o=>o.kStatus==="pendiente");
+  const active=orders.filter(o=>o.kStatus==="espera"||o.kStatus==="preparacion");
+  const done=orders.filter(o=>o.kStatus==="listo");
+
+  const payLabel=m=>m==="card"?"💳 Tarjeta":m==="efectivo"?"💵 Efectivo":"🏦 Transferencia";
+  const payClass=m=>m==="card"?"kpt-card":m==="efectivo"?"kpt-efectivo":"kpt-transfer";
+
+  const navItems=[{id:"kanban",icon:"🗂️",label:"KDS · 주문 관리"},{id:"reservas",icon:"📋",label:"Reservas · 예약"},{id:"clientes",icon:"👥",label:"Dojangsaeng · 수련생"}];
+
+  return(
+    <div className="app">
+      <aside className="sidebar">
+        <div className="sb-top">
+          <div className="sb-icon-wrap" style={{background:"linear-gradient(135deg,#8a0e1c,#001e6b)"}}>⚔️</div>
+          <div className="sb-brand-text">
+            <div className="sb-brand-name">KO<span>-ffee</span></div>
+            <div className="sb-brand-hangul">사범님 패널</div>
+          </div>
+        </div>
+        <nav className="sb-nav">
+          <div className="sb-sec">Control del Dojang · 도장 관리</div>
+          {navItems.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id?" active":"")} onClick={()=>setVista(n.id)}><span className="ni">{n.icon}</span>{n.label}</button>)}
+        </nav>
+        <div className="sb-foot">
+          <div style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(0,52,120,.15)",border:"1px solid rgba(0,52,120,.3)",borderRadius:2,padding:"2px 9px",fontSize:9,letterSpacing:2,textTransform:"uppercase",color:"rgba(130,160,220,.7)",fontWeight:600,marginBottom:7}}>⚔️ Sabonim</div>
+          <div className="sb-user-info">Panel de Administración</div>
+          <button className="btn-signout" onClick={onSignOut}>Cerrar sesión · 로그아웃</button>
+        </div>
+      </aside>
+      <main className="main main-dark">
+
+        {vista==="kanban"&&(
+          <div>
+            <div className="page-hd">
+              <div className="page-title-dark">KDS — Gestión de Pedidos <span style={{fontFamily:"'Noto Sans KR',sans-serif",fontSize:16,fontWeight:300,color:"rgba(255,255,255,.2)"}}>주문 관리</span></div>
+              <div className="page-sub" style={{color:"rgba(255,255,255,.3)"}}>Sistema Kyorugi — control en tiempo real de todos los pedidos del Dojang</div>
+            </div>
+            <div className="kanban">
+              {/* PENDIENTE VALIDACIÓN */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kb-title">⏳ Pendiente Validación</span>
+                  <div className="kb-count" style={{background:"rgba(176,122,26,.18)",color:"var(--warn)"}}>{pending.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {pending.length===0&&<div style={{fontSize:12,color:"rgba(255,255,255,.18)",fontStyle:"italic",padding:".5rem"}}>Sin pedidos pendientes</div>}
+                  {pending.map(o=>(
+                    <div className="korder pendiente" key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay-tag "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-meta">${o.total.toFixed(2)} · {o.fecha}</div>
+                      <div className="ko-btns">
+                        <button className="btn-ko btn-validate" onClick={()=>{onValidate(o.id);addToast(`✓ Pago validado — PED-${String(o.id).slice(-3)} pasa a En Espera`,"ok","✓");}}>✓ Validar Pago Sabonim</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* EN PREPARACIÓN */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kb-title">🔥 En Preparación</span>
+                  <div className="kb-count" style={{background:"rgba(205,46,58,.15)",color:"var(--yang)"}}>{active.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {active.length===0&&<div style={{fontSize:12,color:"rgba(255,255,255,.18)",fontStyle:"italic",padding:".5rem"}}>Sin pedidos activos</div>}
+                  {active.map(o=>(
+                    <div className={"korder "+o.kStatus} key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay-tag "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-meta">${o.total.toFixed(2)} · {o.kStatus==="espera"?"En Espera":"En Preparación"}</div>
+                      <div className="ko-btns">
+                        <button className="btn-ko btn-advance" onClick={()=>{onAdvance(o.id);addToast(o.kStatus==="espera"?"🔥 Poomsae iniciado — pedido en preparación":"⚡ ¡Kyukpa! Orden lista — notificando al cliente","yang","⚡");}}>
+                          {o.kStatus==="espera"?"→ Iniciar Poomsae":"→ Marcar Orden Lista"}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* LISTO */}
+              <div className="kboard">
+                <div className="kboard-hd">
+                  <span className="kb-title">✅ Orden Lista</span>
+                  <div className="kb-count" style={{background:"rgba(30,122,69,.15)",color:"rgba(80,200,120,.8)"}}>{done.length}</div>
+                </div>
+                <div className="kboard-items">
+                  {done.length===0&&<div style={{fontSize:12,color:"rgba(255,255,255,.18)",fontStyle:"italic",padding:".5rem"}}>Sin órdenes listas</div>}
+                  {done.map(o=>(
+                    <div className="korder listo" key={o.id}>
+                      <div className="ko-id">PED-{String(o.id).slice(-3)}<span className={"ko-pay-tag "+payClass(o.payMethod)}>{payLabel(o.payMethod)}</span></div>
+                      <div className="ko-items">{o.items.join("\n")}</div>
+                      <div className="ko-meta">${o.total.toFixed(2)}</div>
+                      <div className="ko-btns"><button className="btn-ko btn-done-ko" disabled>✓ Lista para retirar · 완료</button></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {vista==="reservas"&&(
+          <div>
+            <div className="page-hd">
+              <div className="page-title-dark">Reservas · 예약 관리</div>
+              <div className="page-sub" style={{color:"rgba(255,255,255,.3)"}}>Dojang Manager — gestión de espacios</div>
+            </div>
+            <div className="panel-dark">
+              <div className="ph-dark"><span className="pt-w">Reservas Activas</span><span className="badge b-yang">{reservas.length}</span></div>
+              {reservas.length===0?<div className="empty" style={{color:"rgba(255,255,255,.2)"}}>Sin reservas activas</div>
+                :<table className="s-table">
+                  <thead><tr><th>Mesa</th><th>Zona</th><th>Fecha</th><th>Hora</th><th>Pax</th><th>Estado</th><th>Acción</th></tr></thead>
+                  <tbody>
+                    {reservas.map((r,i)=>(
+                      <tr key={i}>
+                        <td style={{color:"var(--dobok)",fontWeight:600}}>Mesa {r.mesa}</td>
+                        <td>{r.zona}</td><td>{r.dia} {r.mes}</td><td>{r.hora}</td><td>{r.personas}p</td>
+                        <td><span className={"res-st "+(r.estado==="aceptada"?"rs-ok":"rs-pend")}>{r.estado==="aceptada"?"Aceptada":"Pendiente"}</span></td>
+                        <td style={{display:"flex",gap:6}}>
+                          {r.estado!=="aceptada"&&<button className="btn-s bs-a" onClick={()=>{onUpdateReserva(i,"aceptada");addToast(`📅 Reserva aceptada — ${r.zona} Mesa ${r.mesa} · Sabonim notificado`,"ok","📅");}}>Aceptar · 확인</button>}
+                          {r.estado==="aceptada"&&<button className="btn-s bs-f" disabled>Finalizada</button>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              }
+            </div>
+          </div>
+        )}
+
+        {vista==="clientes"&&(
+          <div>
+            <div className="page-hd">
+              <div className="page-title-dark">Dojangsaeng · 수련생 관리</div>
+              <div className="page-sub" style={{color:"rgba(255,255,255,.3)"}}>Busca y ajusta puntos de los miembros del Dojang</div>
+            </div>
+            <div className="panel-dark">
+              <div className="ph-dark"><span className="pt-w">Buscador de Miembros</span></div>
+              <div className="search-bar">
+                <input className="search-inp" placeholder="Nombre o correo del Dojangsaeng…" value={search} onChange={e=>setSearch(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()}/>
+                <button className="btn-search" onClick={doSearch}>Buscar · 검색</button>
+              </div>
+              <div style={{padding:"1.1rem 1.4rem"}}>
+                {found==="none"&&<div style={{color:"rgba(255,255,255,.25)",fontSize:13,fontStyle:"italic"}}>No se encontró ningún Dojangsaeng con ese criterio.</div>}
+                {found&&found!=="none"&&(
+                  <div className="client-card">
+                    <div className="cc-name">{found.nombre}</div>
+                    <div className="cc-meta">{found.email} · {getBelt(found.puntos).en} ({getBelt(found.puntos).ko})</div>
+                    <div className="cc-stats">
+                      <div className="cc-stat"><div className="ccv yang">{found.puntos.toLocaleString()}</div><div className="ccl">Puntos</div></div>
+                      <div className="cc-stat"><div className="ccv">{found.pedidos}</div><div className="ccl">Pedidos</div></div>
+                      <div className="cc-stat"><div className="ccv">{found.reservas}</div><div className="ccl">Reservas</div></div>
+                    </div>
+                    <div className="pts-adj">
+                      <input className="pts-adj-inp" type="number" placeholder="Puntos a ajustar…" value={adj} onChange={e=>setAdj(e.target.value)}/>
+                      <button className="btn-pts-a" onClick={()=>{if(adj){addToast(`+${parseInt(adj).toLocaleString()} pts → ${found.nombre.split(" ")[0]}`,"ok","✓");setAdj("");}}}>+ Añadir</button>
+                      <button className="btn-pts-s" onClick={()=>{if(adj){addToast(`-${parseInt(adj).toLocaleString()} pts ← ${found.nombre.split(" ")[0]}`,"yang","−");setAdj("");}}}>− Quitar</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   CLIENT SHELL
+══════════════════════════════════════════ */
+function ClientShell({user,addToast,sharedOrders,onAddOrder,onGoMuro}){
+  const meta=user.user_metadata||{};
+  const nombre=meta.nombre_completo||user.email;
+  const primerNombre=nombre.split(" ")[0];
+  const belt=getBelt(meta.puntos||0);
+
+  const [vista,setVista]=useState("panel");
+  const [pedidos,setPedidos]=useState([]);
+  const [reservas,setReservas]=useState([]);
+  const [puntos,setPuntos]=useState(0);
+  const [carrito,setCarrito]=useState([]);
+  const [showCart,setShowCart]=useState(false);
+  const [checkout,setCheckout]=useState(null);
+  const prevOrdersRef=useRef([]);
+
+  // Sync order status from staff
+  useEffect(()=>{
+    sharedOrders.forEach(shared=>{
+      const prev=prevOrdersRef.current.find(o=>o.id===shared.id);
+      if(prev&&prev.kStatus!==shared.kStatus){
+        if(shared.kStatus==="preparacion") addToast("🔥 ¡Sabonim Kyorugi! Tu pedido ha entrado a preparación","warn","🔥");
+        if(shared.kStatus==="listo") addToast("✅ ¡Kyukpa! Tu orden está lista para retirar. ¡Comparte tu Poomsae en el Muro del Dojang! 💬","ok","✅");
+      }
+    });
+    prevOrdersRef.current=[...sharedOrders];
+  },[sharedOrders]);
+
+  const addToCart=item=>setCarrito(c=>{const ex=c.find(x=>x.id===item.id);return ex?c.map(x=>x.id===item.id?{...x,qty:x.qty+1}:x):[...c,{...item,qty:1}];});
+  const updateQty=(id,d)=>setCarrito(c=>c.map(x=>x.id===id?{...x,qty:Math.max(1,x.qty+d)}:x));
+  const removeItem=id=>setCarrito(c=>c.filter(x=>x.id!==id));
+  const handleCheckout=resumen=>{setShowCart(false);setCheckout(resumen);setVista("checkout");};
+
+  const confirmPay=(method,subM)=>{
+    const payMethod=method==="card"?"card":subM;
+    const now=new Date();
+    const M=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+    const fecha=`${now.getDate()} ${M[now.getMonth()]} ${now.getFullYear()}`;
+    const id=Date.now();
+    const kStatus=payMethod==="card"?"espera":"pendiente";
+    const order={id,items:carrito.map(x=>x.qty>1?`${x.nombre} ×${x.qty}`:x.nombre),total:checkout.total,pts:checkout.pts,fecha,payMethod,kStatus};
+    setPedidos(p=>[...p,order]);
+    onAddOrder(order);
+    if(payMethod==="card"){
+      setPuntos(p=>p+checkout.pts);
+      addToast(`☕ ¡Poomsae completado! +${checkout.pts.toLocaleString()} pts acreditados`,"ok","☕");
+      setTimeout(()=>addToast("🥋 Pedido ingresó al Dojang — el Sabonim prepara tu orden","warn","🥋"),1400);
+    } else {
+      addToast(`⏳ Pedido enviado — Pendiente de validación por el Sabonim`,"warn","⏳");
+      if(payMethod==="efectivo") addToast("💵 Recuerda pagar en caja al llegar al Dojang","warn","💵");
+    }
+    setCarrito([]);setCheckout(null);setVista("panel");
+  };
+
+  const cartCount=carrito.reduce((s,x)=>s+x.qty,0);
+  const isBlack=belt.en==="Negro";
+  const navItems=[{id:"panel",icon:"🏠",label:"Mi Panel 내 패널"},{id:"menu",icon:"☕",label:"Menú Kyukpa 메뉴"},{id:"reservas",icon:"📅",label:"Reservar 예약"}];
+
+  return(
+    <div className="app">
+      <aside className="sidebar">
+        <div className="sb-top">
+          <div className="sb-icon-wrap"><TaegeukSymbol size={20}/></div>
+          <div className="sb-brand-text">
+            <div className="sb-brand-name">KO<span>-ffee</span></div>
+            <div className="sb-brand-hangul">커피 도장</div>
+          </div>
+        </div>
+        <nav className="sb-nav">
+          <div className="sb-sec">Mi Dojang · 나의 도장</div>
+          {navItems.map(n=><button key={n.id} className={"nav-btn"+(vista===n.id&&vista!=="checkout"?" active":"")} onClick={()=>{setVista(n.id);setCheckout(null);}}><span className="ni">{n.icon}</span>{n.label}</button>)}
+          <div className="sb-sec" style={{marginTop:8}}>Comunidad · 커뮤니티</div>
+          <button className="nav-btn" onClick={onGoMuro}><span className="ni">💬</span>Muro del Dojang 도장</button>
+        </nav>
+        <div className="sb-foot">
+          <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,padding:"0 .2rem"}}>
+            <div style={{width:10,height:10,borderRadius:"50%",background:belt.color,border:`1.5px solid ${belt.border}`,flexShrink:0}}/>
+            <span style={{fontSize:10,color:"rgba(255,255,255,.3)",fontWeight:300,letterSpacing:.3}}>C. {belt.en} · {belt.ko}</span>
+          </div>
+          <div className="sb-user-info">👤 <strong>{primerNombre}</strong> · {puntos.toLocaleString()} pts</div>
+          <button className="btn-signout" onClick={()=>sb.auth.signOut()}>Cerrar sesión · 로그아웃</button>
+        </div>
+      </aside>
+      <main className="main main-light">
+        {vista==="panel"&&<PanelGeneral pedidos={pedidos} reservas={reservas} puntos={puntos}/>}
+        {vista==="menu"&&<MenuPage onAdd={addToCart}/>}
+        {vista==="reservas"&&<ReservasPage onReserva={r=>{setReservas(p=>[...p,r]);addToast("📅 Reserva enviada — el Sabonim la confirmará pronto","ok","📅");}}/>}
+        {vista==="checkout"&&checkout&&<CheckoutPage resumen={checkout} carrito={carrito} onConfirm={confirmPay} onBack={()=>{setVista("menu");setCheckout(null);}}/>}
+      </main>
+      {carrito.length>0&&vista!=="checkout"&&(
+        <button className="cart-fab" onClick={()=>setShowCart(true)}>
+          <span>🛒 Pedido</span>
+          <span className="cart-fab-n">{cartCount}</span>
+          <span style={{color:"rgba(255,255,255,.45)",fontSize:11}}>${carrito.reduce((s,x)=>s+x.precio*x.qty,0).toFixed(2)}</span>
+        </button>
+      )}
+      {showCart&&<CartDrawer carrito={carrito} onClose={()=>setShowCart(false)} onUpdate={updateQty} onRemove={removeItem} onCheckout={handleCheckout}/>}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════
+   APP ROOT
+══════════════════════════════════════════ */
+function App(){
+  const [screen,setScreen]=useState("landing");
+  const [session,setSession]=useState(null);
+  const [loading,setLoading]=useState(true);
+  const [isStaff,setIsStaff]=useState(false);
+  const [toasts,addToast]=useToasts();
+  const [sharedOrders,setSharedOrders]=useState([]);
+  const [sharedReservas,setSharedReservas]=useState([]);
+
+  useEffect(()=>{
+    sb.auth.getSession().then(({data:{session}})=>{
+      setSession(session);
+      if(session){setIsStaff(session.user?.user_metadata?.is_staff||false);setScreen("app");}
+      setLoading(false);
+    });
+    const {data:{subscription}}=sb.auth.onAuthStateChange((_e,session)=>{
+      setSession(session);
+      if(session){setIsStaff(session.user?.user_metadata?.is_staff||false);setScreen("app");}
+      else setScreen("landing");
+    });
+    return()=>subscription.unsubscribe();
+  },[]);
+
+  const advanceOrder=id=>setSharedOrders(prev=>prev.map(o=>{
+    if(o.id!==id) return o;
+    return{...o,kStatus:o.kStatus==="espera"?"preparacion":o.kStatus==="preparacion"?"listo":"listo"};
+  }));
+  const validateOrder=id=>setSharedOrders(prev=>prev.map(o=>o.id===id?{...o,kStatus:"espera"}:o));
+  const updateReserva=(i,estado)=>setSharedReservas(prev=>prev.map((r,idx)=>idx===i?{...r,estado}:r));
+
+  if(loading) return<div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"var(--ink)",color:"rgba(255,255,255,.2)",fontSize:13,fontFamily:"'Inter',sans-serif",gap:12}}><TaegeukSymbol size={20}/> Cargando KO-ffee…</div>;
+
+  return(<>
+    <Toasts toasts={toasts}/>
+    {screen==="landing"&&<LandingPage onLogin={()=>setScreen("login")} onMuro={()=>setScreen("muro")}/>}
+    {screen==="login"&&<LoginForm onSwitch={()=>setScreen("register")}/>}
+    {screen==="register"&&<RegisterForm onSwitch={()=>setScreen("login")}/>}
+    {screen==="muro"&&(
+      <div style={{background:"var(--ivory)",minHeight:"100vh",padding:"2.5rem"}}>
+        <MuroDojang currentUser={session?.user||null} onBack={()=>setScreen(session?"app":"landing")}/>
+      </div>
+    )}
+    {screen==="app"&&session&&(
+      isStaff
+        ?<StaffDashboard onSignOut={()=>sb.auth.signOut()} addToast={addToast} orders={sharedOrders} reservas={sharedReservas} onAdvance={advanceOrder} onValidate={validateOrder} onUpdateReserva={updateReserva}/>
+        :<ClientShell user={session.user} addToast={addToast} sharedOrders={sharedOrders} onAddOrder={o=>setSharedOrders(p=>[...p,o])} onGoMuro={()=>setScreen("muro")}/>
+    )}
+  </>);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
