@@ -13,16 +13,16 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   /* Paleta Taegeukgi Premium (Taekwondo WTF) */
-  --yang:#CD2E3A;      
+  --yang:#CD2E3A;      /* Rojo coreano / Yang */
   --yang-dark:#9a1e28;
   --yang-glow:rgba(205,46,58,.14);
-  --eum:#003478;       
+  --eum:#003478;       /* Azul coreano / Eum */
   --eum-light:#e8eef8;
   --eum-glow:rgba(0,52,120,.12);
   /* Dobok & Tonos de Arroz/Papel */
-  --dobok:#FAFAF8;     
-  --ivory:#F5F2EC;     
-  --paper:#EDE9E0;     
+  --dobok:#FAFAF8;     /* Blanco Dobok impecable */
+  --ivory:#F5F2EC;     /* Marfil cálido */
+  --paper:#EDE9E0;     /* Papel de arroz tradicional */
   --linen:#E8E3D8;
   /* Tintas */
   --ink:#1C1C1C;
@@ -133,87 +133,6 @@ body{font-family:'Inter',sans-serif;background:var(--ivory);color:var(--ink);min
 .ranks-banner{background:var(--ink);color:var(--dobok);padding:2rem;border-radius:4px;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.5rem}
 .rank-badge{padding:.4rem 1.2rem;border-radius:2px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
 
-/* --- TRACKER PERSISTENTE DE PEDIDOS --- */
-.order-tracker {
-  background: var(--dobok);
-  border: 2px solid var(--eum);
-  border-radius: 4px;
-  padding: 1.5rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 15px var(--eum-glow);
-}
-.tracker-hd {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px dashed var(--border);
-  padding-bottom: 1rem;
-}
-.tracker-title {
-  font-family: 'Nanum Myeongjo', serif;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--eum);
-}
-.tracker-steps {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  max-width: 600px;
-  margin: 0 auto;
-}
-.tracker-steps::before {
-  content: '';
-  position: absolute;
-  top: 14px;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  background: var(--border);
-  z-index: 0;
-}
-.t-step {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--muted-light);
-}
-.t-icon {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: var(--dobok);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  transition: all 0.3s;
-}
-.t-step.active .t-icon {
-  border-color: var(--eum);
-  background: var(--eum);
-  color: var(--dobok);
-  box-shadow: 0 0 0 4px var(--eum-light);
-}
-.t-step.done .t-icon {
-  border-color: var(--ok);
-  background: var(--ok);
-  color: var(--dobok);
-}
-.t-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-.t-step.active .t-label { color: var(--eum); }
-.t-step.done .t-label { color: var(--ok); }
-
 /* --- CARRITO DRAWER --- */
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100}
 .cart-drawer{position:fixed;right:0;top:0;bottom:0;width:380px;background:var(--dobok);z-index:101;box-shadow:-6px 0 30px rgba(0,0,0,.15);display:flex;flex-direction:column;padding:1.5rem}
@@ -315,7 +234,7 @@ const sb = createClient(
 const STAFF_CODE = "KOFFEE-001";
 const PTS_PER_DOLLAR = 100;
 const IVA = 0.12;
-const LS_KEY = "koffee_dojang_comments_v3";
+const LS_KEY = "koffee_dojang_comments_v2";
 
 /* --- TABLA DE CINTURONES WTF --- */
 const BELTS = [
@@ -341,6 +260,13 @@ const MENU = [
   {id:8,cat:"Comida",emoji:"🥪",nombre:"Sando de Cerdo Bulgogi",desc:"Pan shokupan, lomo marinado, alioli de gochujang",precio:8.50}
 ];
 
+/* --- ZONAS DE RESERVA DEL DOJANG --- */
+const ZONAS = [
+  {id:"geumgang",nombre:"Zona Geumgang (Premium)",icon:"⛩️",desc:"Espacios con mesas bajas de madera y esteras tradicionales.",mesas:[{num:1,cap:4},{num:2,cap:4},{num:3,cap:2}]},
+  {id:"taebaek",nombre:"Zona Taebaek (Baristas)",icon:"☕",desc:"Barra frontal interactiva con vista directa al ritual de filtrados.",mesas:[{num:4,cap:1},{num:5,cap:1},{num:6,cap:2}]},
+  {id:"pyongwon",nombre:"Zona Pyongwon (Estudio)",icon:"🧘",desc:"Área silenciosa optimizada para lectura, análisis y trabajo fluido.",mesas:[{num:7,cap:2},{num:8,cap:4}]}
+];
+
 /* --- COMPONENTES AUXILIARES --- */
 function ToastContainer({toasts}){
   return (
@@ -364,9 +290,9 @@ function LandingPage({onGoLogin}){
           <div className="land-logo-hangul">커피 도장</div>
         </div>
         <div className="land-nav-links">
-          <a href="#">Concepto</a>
-          <a href="#">Rangos WTF</a>
-          <a href="#">Muro</a>
+          <a href="#concepto">Concepto</a>
+          <a href="#rangos">Rangos WTF</a>
+          <a href="#muro">Muro</a>
         </div>
         <button className="btn-nav-login" onClick={onGoLogin}>Ingresar al Dojo</button>
       </nav>
@@ -433,8 +359,8 @@ function LoginForm({onSwitch}){
               </div>
               {staffOn && (
                 <div style={{marginTop:10}}>
-                  <label className="fl">Código Autorizado (10 caracteres)</label>
-                  <input className="fi" type="password" placeholder="KOFFEE-XXX" value={code} onChange={e=>setCode(e.target.value.toUpperCase())} maxLength={10} required/>
+                  <label className="fl">Código Autorizado</label>
+                  <input className="fi" type="password" placeholder="KOFFEE-XXX" value={code} onChange={e=>setCode(e.target.value)} required/>
                 </div>
               )}
             </div>
@@ -502,7 +428,7 @@ function RegisterForm({onSwitch}){
               {staffOn && (
                 <div style={{marginTop:10}}>
                   <label className="fl">Código de Activación</label>
-                  <input className="fi" type="password" placeholder="KOFFEE-XXX" value={code} onChange={e=>setCode(e.target.value.toUpperCase())} maxLength={10} required/>
+                  <input className="fi" type="password" placeholder="KOFFEE-XXX" value={code} onChange={e=>setCode(e.target.value)} required/>
                 </div>
               )}
             </div>
@@ -559,7 +485,7 @@ function CartDrawer({carrito,onClose,onUpdate,onRemove,onCheckout}){
             <div className="cart-line"><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
             <div className="cart-line"><span>IVA (12%)</span><span>${iva.toFixed(2)}</span></div>
             <div className="cart-total-line"><span>Total</span><span>${total.toFixed(2)}</span></div>
-            <div style={{fontSize:11,color:"var(--gold)",marginBottom:15,fontWeight:600}}>🥋 Ganarás +{pts.toLocaleString()} puntos</div>
+            <div style={{fontSize:11,color:var(--gold),marginBottom:15,fontWeight:600}}>🥋 Ganarás +{pts.toLocaleString()} puntos</div>
             <button className="btn-checkout" onClick={()=>onCheckout({sub,iva,total,pts})}>Proceder al Pago →</button>
           </div>
         )}
@@ -575,7 +501,7 @@ function CheckoutPage({resumen,onConfirm,onBack}){
 
   return (
     <div>
-      <button style={{background:"none",border:"none",color:"var(--eum)",cursor:"pointer",fontWeight:600,marginBottom:15}} onClick={onBack}>← Volver al Menú</button>
+      <button style={{background:"none",border:"none",color:var(--eum),cursor pointer,fontWeight:600,marginBottom:15}} onClick={onBack}>← Volver al Menú</button>
       <h2 className="myeongjo" style={{fontSize:24,marginBottom:5}}>Finalizar Orden</h2>
       <p style={{fontSize:13,color:"var(--muted)"}}>Selecciona tu método de liquidación.</p>
       
@@ -621,16 +547,18 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
   const [openCart,setOpenCart]=useState(false);
   const [checkoutResumen,setCheckoutResumen]=useState(null);
 
+  // Muro del Dojang State
   const [comentarios,setComentarios]=useState([]);
   const [nuevoComentario,setNuevoComentario]=useState("");
 
+  // Carga inicial del Muro desde LocalStorage para persistencia fluida
   useEffect(()=>{
     const cached = localStorage.getItem(LS_KEY);
     if(cached) setComentarios(JSON.parse(cached));
     else {
       const iniciales = [
         {id:1,autor:"Sabonim Kim",texto:"Bienvenidos al Dojang. Recuerden entrenar con perseverancia. La cortesía es nuestro primer pilar.",fecha:"Hace 2 horas"},
-        {id:2,autor:"Aspirante",texto:"El Jeju Volcanic Latte tiene el balance perfecto de dulzura y potencia, ideal antes del entrenamiento.",fecha:"Hace 30 mins"}
+        {id:2,autor:"Fabián Aguilar",texto:"El Jeju Volcanic Latte tiene el balance perfecto de dulzura y potencia, ideal antes del entrenamiento.",fecha:"Hace 30 mins"}
       ];
       setComentarios(iniciales);
       localStorage.setItem(LS_KEY,JSON.stringify(iniciales));
@@ -640,7 +568,12 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
   const handleAddComment = (e)=>{
     e.preventDefault();
     if(!nuevoComentario.trim()) return;
-    const cmt = { id: Date.now(), autor: nombre.split(" ")[0], texto: nuevoComentario, fecha: "Ahora mismo" };
+    const cmt = {
+      id: Date.now(),
+      autor: nombre.split(" ")[0],
+      texto: nuevoComentario,
+      fecha: "Ahora mismo"
+    };
     const actualizados = [cmt, ...comentarios];
     setComentarios(actualizados);
     localStorage.setItem(LS_KEY,JSON.stringify(actualizados));
@@ -648,23 +581,11 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
     addToast("Comentario publicado en el muro del Dojang","ok","🥋");
   };
 
+  // Cálculo Dinámico de Puntos y Cinturón
   const misPedidos = globalPedidos.filter(p=>p.userId===user.id);
   const puntosTotales = misPedidos.reduce((acc,p)=>acc+p.puntos,0);
   const cinturonActual = getBelt(puntosTotales);
   const proximoCinturon = getNextBelt(puntosTotales);
-  
-  // Extraemos el pedido más reciente para mostrarlo en el Tracker
-  const pedidoActivo = misPedidos.length > 0 ? misPedidos[0] : null;
-
-  // Lógica para determinar el progreso visual
-  const getStepStatus = (stepName, currentStatus) => {
-    const states = ["recibido", "preparacion", "listo"];
-    const stepIdx = states.indexOf(stepName);
-    const currIdx = states.indexOf(currentStatus);
-    if (stepIdx < currIdx) return "done";
-    if (stepIdx === currIdx) return "active";
-    return "";
-  };
 
   const handleAddToCart = (item)=>{
     setCarrito(prev=>{
@@ -675,9 +596,19 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
     addToast(`${item.nombre} añadido al pedido`,"eum","☕");
   };
 
-  const handleUpdateQty = (id,delta)=> setCarrito(prev=>prev.map(x=>x.id===id?{...x,qty:Math.max(1,x.qty+delta)}:x));
-  const handleRemove = (id)=> setCarrito(prev=>prev.filter(x=>x.id!==id));
-  const handleCheckoutInit = (resumen)=>{ setCheckoutResumen(resumen); setOpenCart(false); setVista("checkout"); };
+  const handleUpdateQty = (id,delta)=>{
+    setCarrito(prev=>prev.map(x=>x.id===id?{...x,qty:Math.max(1,x.qty+delta)}:x));
+  };
+
+  const handleRemove = (id)=>{
+    setCarrito(prev=>prev.filter(x=>x.id!==id));
+  };
+
+  const handleCheckoutInit = (resumen)=>{
+    setCheckoutResumen(resumen);
+    setOpenCart(false);
+    setVista("checkout");
+  };
 
   const handleConfirmarPago = (metodo)=>{
     const nuevoPedido = {
@@ -692,7 +623,7 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
     };
     onAddPedido(nuevoPedido);
     setCarrito([]);
-    setVista("menu"); // Regresa al menú para poder ver el Tracker en la parte superior
+    setVista("pedidos");
     addToast("¡Pedido recibido en el KDS del Dojang!","ok","🔥");
   };
 
@@ -708,7 +639,7 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
           <button className={`c-nav-btn ${vista==="muro"?"active":""}`} onClick={()=>setVista("muro")}>⛩️ Muro Dojang</button>
         </nav>
         <div style={{display:"flex",alignItems:"center",gap:15}}>
-          <button style={{background:"none",border:"none",fontSize:20,cursor:"pointer",position:"relative"}} onClick={()=>setOpenCart(true)}>
+          <button style={{background:"none",border:"none",fontSize:20,cursor pointer,position:"relative"}} onClick={()=>setOpenCart(true)}>
             🛒 {carrito.length>0 && <span style={{position:"absolute",top:-5,right:-5,background:"var(--yang)",color:"white",fontSize:10,borderRadius:"50%",padding:"2px 6px"}}>{carrito.reduce((s,x)=>s+x.qty,0)}</span>}
           </button>
           <button className="btn-nav-login" style={{background:"var(--ink)"}} onClick={()=>sb.auth.signOut()}>Salir</button>
@@ -716,32 +647,7 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
       </header>
 
       <main className="client-main">
-        {/* --- TRACKER PERSISTENTE DE ORDEN --- */}
-        {pedidoActivo && vista !== "checkout" && (
-          <div className="order-tracker">
-            <div className="tracker-hd">
-              <div className="tracker-title">Estado de Orden {pedidoActivo.id}</div>
-              <div style={{fontSize:12,color:"var(--muted)",fontWeight:600}}>Total: ${pedidoActivo.total.toFixed(2)}</div>
-            </div>
-            <div className="tracker-steps">
-              <div className={`t-step ${getStepStatus("recibido", pedidoActivo.estado)}`}>
-                <div className="t-icon">1</div><div className="t-label">Recibido</div>
-              </div>
-              <div className={`t-step ${getStepStatus("preparacion", pedidoActivo.estado)}`}>
-                <div className="t-icon">2</div><div className="t-label">En Preparación</div>
-              </div>
-              <div className={`t-step ${getStepStatus("listo", pedidoActivo.estado)}`}>
-                <div className="t-icon">3</div><div className="t-label">Listo para Retirar</div>
-              </div>
-            </div>
-            {pedidoActivo.estado === "listo" && (
-               <div style={{textAlign:"center",marginTop:20,fontSize:13,color:"var(--ok)",fontWeight:600,paddingTop:15,borderTop:"1px dashed var(--border)"}}>
-                 ¡Tu orden está lista! Por favor, acércate a la barra y déjanos tus comentarios en el Muro del Dojang.
-               </div>
-            )}
-          </div>
-        )}
-
+        {/* Banner de Rango unificado */}
         <div className="ranks-banner">
           <div>
             <div style={{fontSize:11,textTransform:"uppercase",color:"var(--muted-light)",letterSpacing:1}}>Rango Actual</div>
@@ -791,10 +697,10 @@ function ClientDashboard({user,addToast,globalPedidos,onAddPedido}){
             ) : (
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
                 {misPedidos.map(p=>(
-                  <div key={p.id} style={{background:"var(--dobok)",border:"1px solid var(--border)",padding:"1.2rem",borderRadius:4,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  <div key={p.id} style={{background:"var(--dobok)",border:"1px solid var(--border)",padding:"1.2rem",borderRadius:4,display:"flex",justifyContent:space-between,alignItems:"center"}}>
                     <div>
                       <strong>{p.id}</strong> <span style={{marginLeft:10,fontSize:13,color:"var(--muted)"}}>{p.items}</span>
-                      <div style={{fontSize:11,color:"var(--gold)",marginTop:4}}>🥋 Acumuló +{p.puntos} puntos</div>
+                      <div style={{fontSize:11,color:var(--gold),marginTop:4}}>🥋 Acumuló +{p.puntos} puntos</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <span className={`s-status ${p.estado}`}>{p.estado}</span>
@@ -935,16 +841,13 @@ function App(){
     return () => subscription.unsubscribe();
   },[]);
 
-  const handleAddPedido = (p) => {
-    setGlobalPedidos(prev=>[p, ...prev]);
-  };
-  
+  const handleAddPedido = (p) => setGlobalPedidos(prev=>[p, ...prev]);
   const handleUpdatePedido = (id,nuevoEstado) => {
     setGlobalPedidos(prev=>prev.map(p=>p.id===id?{...p,estado:nuevoEstado}:p));
     addToast(`Orden ${id} modificada a ${nuevoEstado}`,"eum","📋");
   };
 
-  if(loading) return <div className="loading-screen"><span className="spinner" style={{marginRight:10}}></span> Cargando credenciales del Dojo…</div>;
+  if(loading) return <div className="loading-screen"><span className="spinner" style={{marginRight:10}}/> Cargando credenciales del Dojo…</div>;
 
   return (
     <>
@@ -963,8 +866,8 @@ function App(){
   );
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App/>);
+const root = riots.createRoot(document.getElementById('root'));
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>
